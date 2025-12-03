@@ -1,8 +1,6 @@
-# main.py
-
 import torch
-from datasets import load_dataset, IterableDataset
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from datasets import IterableDataset, load_dataset
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # --- 1. CONFIGURATION CONSTANTS ---
 MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use
@@ -77,7 +75,6 @@ def main():
 
     # 5. Optimizer and Loss
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
-    loss_fn = torch.nn.CrossEntropyLoss()
 
     # 6. Training Loop
     EPOCHS = 2
@@ -93,9 +90,7 @@ def main():
             labels = batch["label"].to(DEVICE)
 
             # Forward pass: compute model outputs and loss
-            outputs = model(
-                input_ids=input_ids, attention_mask=attention_mask, labels=labels
-            )
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
             loss = outputs.loss  # Extract the loss value from outputs
 
             optimizer.zero_grad()  # Reset gradients from previous step
