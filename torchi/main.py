@@ -1,5 +1,7 @@
+from typing import Any
+
 import torch
-from datasets import IterableDataset, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # --- 1. CONFIGURATION CONSTANTS ---
@@ -9,13 +11,13 @@ BATCH_SIZE = 16  # Batch size for training
 DEVICE = "cpu"  # Default to CPU; Mac M3 will often auto-accelerate PyTorch
 
 
-def load_data(dataset_name="imdb"):
+def load_data(dataset_name="imdb") -> DatasetDict:
     """
     Loads and prepares the dataset from the Hugging Face Hub.
     """
     print(f"Loading dataset: {dataset_name}...")
     # Load the train and test split for the chosen dataset
-    dataset = load_dataset(dataset_name)
+    dataset: DatasetDict = load_dataset(dataset_name)
     return dataset
 
 
@@ -45,13 +47,13 @@ def main():
         print("Using CPU.")
 
     # 2. Load Data and Tokenizer
-    raw_datasets = load_data()
+    raw_datasets: DatasetDict = load_data()
 
     # Instantiate the tokenizer (needed for all text processing)
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    tokenizer: AutoTokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-    # --- NEXT STEP: Add the tokenization function here ---
-    tokenized_datasets: IterableDataset = raw_datasets.map(
+    # Tokenize datasets
+    tokenized_datasets: DatasetDict = raw_datasets.map(
         lambda x: preprocess_function(x, tokenizer),
         batched=True,
         remove_columns=["text"],
@@ -60,7 +62,7 @@ def main():
     print(tokenized_datasets)
 
     # 3. Model Loading (to ensure environment works)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=2)
+    model: AutoModelForSequenceClassification = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=2)
     model.to(DEVICE)  # Move the model to the chosen device (CPU or MPS)
 
     print("\nSetup complete. Starting training...")
@@ -68,30 +70,30 @@ def main():
     # 4. Prepare DataLoaders
     from torch.utils.data import DataLoader
 
-    train_dataset = tokenized_datasets["train"].with_format("torch")
-    test_dataset = tokenized_datasets["test"].with_format("torch")
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
+    train_dataset: Dataset = tokenized_datasets["train"].with_format("torch")
+    test_dataset: Dataset = tokenized_datasets["test"].with_format("torch")
+    train_loader: DataLoader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    test_loader: DataLoader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
-    # 5. Optimizer and Loss
-    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
+    # 5. Optimizer
+    optimizer: torch.optim.AdamW = torch.optim.AdamW(model.parameters(), lr=2e-5)
 
     # 6. Training Loop
-    EPOCHS = 2
+    EPOCHS: int = 2
     for epoch in range(EPOCHS):
         model.train()  # Set model to training mode
-        total_loss = 0
-        num_batches = len(train_loader)
+        total_loss: float = 0.0
+        num_batches: int = len(train_loader)
         # Iterate over batches from the training DataLoader
         for batch_idx, batch in enumerate(train_loader):
             # Batch items are already torch tensors; move to device
-            input_ids = batch["input_ids"].to(DEVICE)
-            attention_mask = batch["attention_mask"].to(DEVICE)
-            labels = batch["label"].to(DEVICE)
+            input_ids: torch.Tensor = batch["input_ids"].to(DEVICE)
+            attention_mask: torch.Tensor = batch["attention_mask"].to(DEVICE)
+            labels: torch.Tensor = batch["label"].to(DEVICE)
 
             # Forward pass: compute model outputs and loss
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-            loss = outputs.loss  # Extract the loss value from outputs
+            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+            loss: torch.Tensor = outputs.loss  # Extract the loss value from outputs
 
             optimizer.zero_grad()  # Reset gradients from previous step
             loss.backward()  # Backpropagate to compute gradients
@@ -102,26 +104,26 @@ def main():
             # Print progress every 100 batches
             if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == num_batches:
                 print(f"Epoch {epoch + 1} | Batch {batch_idx + 1}/{num_batches} | Loss: {loss.item():.4f}")
-        avg_loss = total_loss / num_batches  # Average loss for the epoch
+        avg_loss: float = total_loss / num_batches  # Average loss for the epoch
         print(f"Epoch {epoch + 1}/{EPOCHS} - Training loss: {avg_loss:.4f}")
 
     # 7. Evaluation Loop
     model.eval()  # Set model to evaluation mode (disables dropout, etc.)
-    correct = 0
-    total = 0
+    correct: int = 0
+    total: int = 0
     # Disable gradient calculation for evaluation (faster, less memory)
     with torch.no_grad():
         for batch in test_loader:
             # Batch items are already torch tensors; move to device
-            input_ids = batch["input_ids"].to(DEVICE)
-            attention_mask = batch["attention_mask"].to(DEVICE)
-            labels = batch["label"].to(DEVICE)
+            input_ids: torch.Tensor = batch["input_ids"].to(DEVICE)
+            attention_mask: torch.Tensor = batch["attention_mask"].to(DEVICE)
+            labels: torch.Tensor = batch["label"].to(DEVICE)
             # Forward pass (no labels needed for prediction)
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-            preds = torch.argmax(outputs.logits, dim=1)  # Get predicted class
+            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask)
+            preds: torch.Tensor = torch.argmax(outputs.logits, dim=1)  # Get predicted class
             correct += (preds == labels).sum().item()  # Count correct predictions
             total += labels.size(0)  # Count total samples
-    accuracy = correct / total if total > 0 else 0  # Compute accuracy
+    accuracy: float = correct / total if total > 0 else 0  # Compute accuracy
     print(f"Test Accuracy: {accuracy:.4f}")
 
 
