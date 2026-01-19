@@ -1,98 +1,31 @@
 # AI/ML workshop
 
-The goal of this Git repository is for me to learn and practice AI/ML concepts and techniques. It contains code examples, tutorials, and projects that I work on to enhance my understanding of artificial intelligence and machine learning.
-
-I will be covering the usage of PyTorch, TensorFlow, Hugging Face, LangChain and any other relevant libraries and frameworks.
-
-Prior to this, I will also brush up on my knowledge of Python programming, data manipulation with libraries like NumPy and Pandas, and data visualization using Matplotlib and Seaborn. Furthermore, I will revisit my Coursera ML course materials to reinforce foundational concepts.
+The goal of this Git repository is to learn and practice AI/ML concepts and techniques through code examples, tutorials, and projects that enhance understanding of artificial intelligence and machine learning. This covers practical experience with PyTorch, TensorFlow, Hugging Face, LangChain, and other relevant libraries, alongside foundational work in Python programming, data manipulation (NumPy, Pandas), data visualization (Matplotlib, Seaborn), and reinforcement of ML theory from Coursera materials.
 
 ## Learnings & Progress
 
 ### Project 1: Custom Text Classifier (PyTorch)
-- PyTorch is more intuitive for ML on macOS, with native MPS acceleration.
-- Hugging Face automates datasets, tokenizers, and classifiers, but understanding BERT internals is valuable.
-- Covered tokenization, training, and evaluation; prediction should be straightforward to add.
+PyTorch is more intuitive for ML on macOS, with native MPS acceleration. Hugging Face automates datasets, tokenizers, and classifiers, but understanding BERT internals is valuable. Covered tokenization, training, and evaluation; prediction should be straightforward to add.
 
-### Project 2: Semantic Search Engine with RAG
-- Built RAG apps for Wikipedia, source code, and mechanical keyboards using LangChain and LlamaIndex.
-- Learned optimization: context windows, chunk size/overlap, retrieval k, RRF with BM25/Chroma.
-- Evaluated using LLM-as-judge on correctness, faithfulness, relevance.
-- Ollama is simpler but less customizable than Hugging Face; LangGraph improved over basic LangChain.
-
-### Project 3: LLM Code Review Agent
-- Applied RAG concepts with LangChain tools (MCP).
-- Basic implementation; could be enhanced with custom MCP servers for deeper learning.
+### Projects 2-3: AI Agents & RAG Applications
+Developed semantic search engines and code review agents using LangChain, LlamaIndex, and LangGraph. Implemented RAG with hybrid retrieval (BM25 + semantic search), optimized chunking strategies, and evaluated using LLM-as-judge metrics. **[Full details in AGENTS.md](AGENTS.md)**
 
 ### Project 4: Sklearn Machine Learning Algorithms
-- Implemented supervised learning algorithms: linear/logistic regression, decision trees, random forest, KNN, SVM.
-- Covered unsupervised learning: K-means clustering and PCA for dimensionality reduction.
-- Learned hyperparameter tuning with GridSearchCV and RandomizedSearchCV.
-- Understood evaluation metrics, feature scaling, cross-validation, and algorithm selection.
-- Built complete examples with visualization and educational comments.
+Implemented 8 classical ML algorithms across supervised learning (linear/logistic regression, decision trees, random forest, KNN, SVM) and unsupervised learning (K-means clustering, PCA). Built complete examples with hyperparameter tuning, cross-validation, and evaluation metrics. **[Full details in docs/sklearn.md](docs/sklearn.md#project-4-classical-ml-algorithms)**
 
 ### Project 5: ML Fundamentals with NumPy
-- Implemented core mathematical concepts from ML: linear algebra operations, vector/matrix calculations.
-- Built linear regression from scratch using normal equation and gradient descent.
-- Explored cost functions, feature scaling techniques (standardization, min-max scaling).
-- Demonstrated eigenvalues/eigenvectors for PCA foundations.
-- **Detailed learnings documented in [`docs/numpy.md`](docs/numpy.md)** and [`docs/ml_theory.md`](docs/ml_theory.md).
+Implemented core ML concepts from scratch: linear algebra operations, linear regression (normal equation + gradient descent), cost functions, feature scaling, and PCA. **[Full details in docs/numpy.md](docs/numpy.md#project-5-ml-fundamentals-with-numpy)**
 
 ### Project 6: PyTorch Deep Learning Across Multiple Domains
-- **Image Classification** (`examples/pytorch/image_classification.py`): CIFAR-10 with ResNet-18, data augmentation, achieving 80.35% accuracy
-- **Text Classification** (`examples/pytorch/text_classification.py`): IMDb sentiment analysis with BERT fine-tuning
-- **Question Answering** (`examples/pytorch/question_answering.py`): SQuAD extractive QA with BERT span prediction
-- **Time Series Forecasting** (`examples/pytorch/time_series_forecasting.py`): LSTM-based weather forecasting with multi-step prediction
-- **Tabular Classification** (`examples/pytorch/tabular_classification.py`): Titanic survival prediction with MLP and categorical embeddings
-- Key learnings: MPS acceleration, model architectures (CNN, RNN, Transformer, MLP), data preprocessing, evaluation metrics
-- All examples follow production-quality patterns with type hints, comprehensive comments, and proper error handling
+Built 5 production-quality neural networks: image classification (CIFAR-10, ResNet-18), text classification (IMDb, BERT), question answering (SQuAD), time series forecasting (LSTM), and tabular classification (MLP with embeddings). Demonstrated MPS acceleration, transfer learning, and proper data handling across domains. **[Full details in docs/pytorch.md](docs/pytorch.md#project-6-deep-learning-across-multiple-domains)**
 
 ### Project 7: Parameter-Efficient Fine-Tuning with LoRA
-- **PEFT/LoRA Implementation** (`examples/pytorch/fine_tuning.py`): Fine-tune DistilBERT on AG News with LoRA adapters
-- Demonstrates ~99% parameter reduction while maintaining competitive performance
-- Training with AdamW optimizer, learning rate scheduling, and gradient checkpointing
-- Shows how to save/load adapters for inference-time deployment
-- Key learnings: Low-rank adaptation, parameter efficiency, adapter-based transfer learning
-- **Practical value**: Deploy large models on consumer hardware (M3 Mac or single GPU)
+Fine-tuned DistilBERT on AG News using LoRA adapters, achieving 86% accuracy with 98.89% parameter reduction. Demonstrated PEFT for efficient adaptation of large models on consumer hardware. **[Full details in docs/pytorch.md](docs/pytorch.md#project-7-parameter-efficient-fine-tuning-with-lora)**
 
 ### Bonus: Backpropagation from Scratch & ML Theory
-- **examples/numpy/backpropagation.py**: Implements 2-layer neural network with manual backpropagation
-- Step-by-step gradient computation using chain rule and partial derivatives
-- **Gradient verification**: Numerical gradient checking against analytical gradients (finite differences)
-- Trained on XOR problem with visualization of learning curves and decision boundaries
-- **Enhanced docs/ml_theory.md**: Added comprehensive ML theory sections covering:
-  - Calculus foundations (partial derivatives, chain rule)
-  - Gradient descent variants (BGD, SGD, Mini-batch, Adam/Momentum/RMSprop)
-  - Backpropagation algorithm with computational graphs
-  - Regularization theory (L1/L2, Dropout)
+Implemented a 2-layer neural network with manual backpropagation to understand gradient computation via chain rule. Included gradient verification and trained on the XOR problem. Comprehensive ML theory documentation covering calculus, optimization, regularization, and convergence. **[Full details in docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch)** and **[docs/ml_theory.md](docs/ml_theory.md)**
 
 ## Current Readiness: 9/10 for AI/LLM Practitioner
-
-### Repository Structure
-```
-├── examples/                  # Organized ML examples by domain
-│   ├── sklearn/              # Classical ML (8 algorithms + evaluation)
-│   ├── pytorch/              # Deep learning (6 domain-specific examples)
-│   └── numpy/                # ML fundamentals from scratch
-├── utils/                    # Shared utilities (DRY principle)
-│   ├── device_utils.py       # Device detection (MPS/CUDA/CPU)
-│   ├── data_utils.py         # Data loading & preprocessing
-│   └── eval_utils.py         # Evaluation metrics & visualization
-├── docs/                     # Comprehensive learning documentation
-│   ├── README.md             # Navigation guide
-│   ├── ml_theory.md          # Mathematical foundations
-│   ├── numpy.md              # Linear algebra & fundamentals
-│   ├── sklearn.md            # Classical ML algorithms
-│   ├── pytorch.md            # Deep learning & PEFT/LoRA
-│   ├── rag.md                # RAG & LLM applications
-│   └── model_selection.md    # Algorithm selection guide
-└── projects/                 # High-level project work
-
-**Refactoring Benefits**:
-- ~400+ lines of duplicated code consolidated into reusable utilities
-- Consistent folder structure for easy navigation
-- Centralized documentation with navigation guide
-- Cleaner dependencies (removed unused torchvision)
-```
 
 ### Strengths
 - ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)

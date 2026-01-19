@@ -1,6 +1,35 @@
-# Sklearn Machine Learning Algorithms
+# Machine Learning Model Selection & Sklearn Algorithms
 
-This document summarizes the sklearn examples in the `playground/` folder, organized by learning type (supervised vs unsupervised) and ordered from least complex to most complex. Each algorithm includes a brief description, key concepts, use cases, and reference to the example file.
+This document covers model selection strategies and detailed sklearn algorithm implementations. Learn which algorithms work best for different data types and problems, then dive into 8 complete algorithm examples organized by learning type.
+
+## Model Selection Guide
+
+Choose your algorithm based on your problem type, data characteristics, and constraints:
+
+| Model Type      | Best For                        | Data Type         | Pros                | Cons                | Examples |
+|-----------------|---------|----------|----------|---------|----------|
+| **Logistic/Linear Regression** | Simple classification/regression | Tabular | Fast, interpretable | Limited complexity | sklearn |
+| **Decision Trees** | Interpretable decisions, feature importance | Tabular | Human-readable rules, fast | Can overfit easily | sklearn |
+| **Random Forests** | Tabular, high accuracy, feature importance | Tabular | Fast, accurate, interpretable | Less flexible | sklearn |
+| **SVM** | Complex patterns, non-linear boundaries | Tabular, text | Powerful, works in high dimensions | Slow on large data | sklearn |
+| **KNN** | Pattern recognition, anomaly detection | Tabular | Simple, no training | Slow at prediction, needs scaling | sklearn |
+| **K-Means** | Customer segmentation, clustering | Tabular | Fast, interpretable | Needs k specified | sklearn |
+| **PCA** | Dimensionality reduction, visualization | Tabular | Reduces features, faster training | Loses interpretability | sklearn |
+| **Neural Networks** | Vision, audio, complex tabular | Images, audio, time series | Flexible, powerful | Needs lots of data | pytorch |
+| **LLMs** | Advanced NLP, text understanding | Unstructured text | Contextual, nuanced | Resource intensive, expensive | pytorch |
+
+### Decision Logic
+1. **Tabular data**: Start with Random Forest or SVM for accuracy, Linear/Logistic Regression for speed/interpretability
+2. **Image data**: Use CNNs (ResNet, VGG) or Vision Transformers
+3. **Sequential data**: Use RNNs (LSTM, GRU) or Transformers
+4. **Text data**: Use BERT, GPT, or other LLMs for deep understanding
+5. **Unsupervised**: PCA for dimensionality reduction, K-Means for clustering
+
+---
+
+## Sklearn Algorithm Reference
+
+This section summarizes the sklearn examples in the `examples/sklearn/` folder, organized by learning type (supervised vs unsupervised) and ordered from least complex to most complex. Each algorithm includes a brief description, key concepts, use cases, and reference to the example file.
 
 ## Supervised Learning Algorithms
 
@@ -146,3 +175,30 @@ Unsupervised learning finds patterns in data without labeled examples.
 - SVM with kernels or ensemble methods
 
 Remember: No single algorithm is universally best. The choice depends on your data, problem type, interpretability needs, and computational constraints. Always experiment and validate!
+
+---
+
+## Project 4: Classical ML Algorithms
+
+This project implemented 8 complete examples covering supervised and unsupervised learning:
+
+### Supervised Learning
+- **Linear Regression**: California Housing dataset - predicting house prices
+- **Logistic Regression**: Binary classification with regularization
+- **Decision Trees**: Interpretable tree-based classification with pruning
+- **Random Forest**: Ensemble method combining multiple trees for improved accuracy
+- **KNN**: Distance-based classification with k-nearest neighbors
+- **SVM**: Support vector machines with kernel methods for non-linear classification
+
+### Unsupervised Learning
+- **K-Means Clustering**: Customer segmentation and pattern discovery
+- **PCA**: Dimensionality reduction for visualization and feature extraction
+
+### Key Learnings
+- Hyperparameter tuning with GridSearchCV and RandomizedSearchCV
+- Cross-validation for robust evaluation
+- Feature scaling and preprocessing importance
+- Evaluation metrics: accuracy, precision, recall, F1-score, confusion matrix
+- Model comparison and algorithm selection strategies
+- Complete examples with visualization and educational comments
+

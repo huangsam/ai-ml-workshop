@@ -1,6 +1,10 @@
 # RAG and LLM Learnings
 
-## Project 2: Advanced RAG Techniques
+## Project 2: Semantic Search Engine with RAG
+
+**Real Implementation**: [ragchain](https://github.com/huangsam/ragchain) - Complete RAG application with multiple domains and retrieval strategies.
+
+### Advanced RAG Techniques
 
 ### Retrieval Strategies
 - **Hybrid Search**: Combining semantic (dense) and keyword-based (sparse) retrieval using Reciprocal Rank Fusion (RRF)
@@ -32,9 +36,11 @@
 - **Knowledge Graph Integration**: Combining vector search with structured knowledge
 - **Temporal RAG**: Handling time-sensitive information and updates
 
-## Project 3: LLM Agent Development
+## Project 3: LLM Code Review Agent
 
-### Tool Integration
+**Real Implementation**: [codebot](https://github.com/huangsam/codebot) - Agentic system for automated code review with tool integration.
+
+### Agent Development & Tool Integration
 - **LangChain Tools**: Pre-built tools for common tasks (web search, calculators, APIs)
 - **Custom MCP Servers**: Building domain-specific tools using Model Context Protocol
 - **Function Calling**: Enabling LLMs to execute code and interact with external systems

@@ -114,3 +114,86 @@
 - **Learning rate**: Use 1e-4 to 5e-4 (higher than full fine-tuning)
 - **Dataset size**: Effective with 100-1000 samples; benefits from quality over quantity
 - **Evaluation**: Monitor both adapter performance and generalization to new tasks
+
+---
+
+## Project 6: Deep Learning Across Multiple Domains
+
+This project implemented 5 domain-specific neural networks demonstrating key architectural patterns:
+
+### Image Classification
+- **Dataset**: CIFAR-10 (60,000 32x32 color images, 10 classes)
+- **Model**: ResNet-18 pre-trained on ImageNet, fine-tuned for classification
+- **Key techniques**: Data augmentation (rotation, flipping, color jitter), transfer learning, MPS acceleration
+- **Performance**: 80.35% accuracy
+- **File**: `examples/pytorch/image_classification.py`
+
+### Text Classification
+- **Dataset**: IMDb (movie sentiment analysis)
+- **Model**: BERT-base-uncased with fine-tuning for sequence classification
+- **Key techniques**: Tokenization, attention mechanisms, classification head
+- **File**: `examples/pytorch/text_classification.py`
+
+### Question Answering
+- **Dataset**: SQuAD v1.1 (extractive QA on Wikipedia)
+- **Model**: BERT-base with span prediction for start/end token selection
+- **Key techniques**: Context encoding, span prediction, evaluation with Exact Match and F1
+- **File**: `examples/pytorch/question_answering.py`
+
+### Time Series Forecasting
+- **Dataset**: Synthetic weather data (temperature, humidity, wind speed)
+- **Model**: LSTM for multi-step ahead forecasting
+- **Key techniques**: Sequence processing, look-back windows, temporal pattern learning
+- **File**: `examples/pytorch/time_series_forecasting.py`
+
+### Tabular Classification
+- **Dataset**: Titanic survival prediction (mixed categorical/numerical features)
+- **Model**: MLP with categorical embeddings for structured data
+- **Key techniques**: Feature embeddings, categorical encoding, MLP architecture
+- **File**: `examples/pytorch/tabular_classification.py`
+
+### Cross-Domain Learnings
+- MPS acceleration on Apple Silicon for efficient training
+- Model architectures: CNN (images), LSTM (sequences), Transformers (NLP), MLP (tabular)
+- Data preprocessing: tokenization, normalization, augmentation
+- Evaluation metrics specific to each domain
+- Production-quality code: type hints, comprehensive comments, proper error handling
+
+---
+
+## Project 7: Parameter-Efficient Fine-Tuning with LoRA
+
+This project demonstrates efficient adaptation of large language models without full fine-tuning:
+
+### Implementation Details
+- **Model**: DistilBERT-base-uncased (lightweight baseline)
+- **Dataset**: AG News (topic classification, 120,000 articles)
+- **LoRA Configuration**: r=8, alpha=16, dropout=0.05
+- **Target Modules**: q_lin, v_lin (DistilBERT attention projections)
+- **Performance**: 86% accuracy with 98.89% parameter reduction
+- **File**: `examples/pytorch/fine_tuning.py`
+
+### Technical Achievements
+- Implemented PEFT/LoRA adapters using Hugging Face `peft` library
+- AdamW optimizer with linear learning rate scheduling
+- Gradient computation through small adapter matrices instead of full model
+- Parameter efficiency: ~99% reduction in trainable parameters
+
+### Practical Value
+- Deploy large models on consumer hardware (M3 Mac or single GPU)
+- Reduced memory footprint for multi-task learning
+- Fast adaptation to new domains with minimal data
+- Easy saving/loading of lightweight adapters for inference
+
+### Key Insights
+- Different transformer architectures use varying module naming (q_proj vs q_lin)
+- Low-rank approximation preserves model performance surprisingly well
+- LoRA enables practitioners to fine-tune billion-parameter models on consumer hardware
+
+
+### Best Practices
+- **Rank selection**: Start with r=8-16; increase for complex tasks
+- **Target modules**: Focus on attention layers; include MLP layers for generation tasks
+- **Learning rate**: Use 1e-4 to 5e-4 (higher than full fine-tuning)
+- **Dataset size**: Effective with 100-1000 samples; benefits from quality over quantity
+- **Evaluation**: Monitor both adapter performance and generalization to new tasks

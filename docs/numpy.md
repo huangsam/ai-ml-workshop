@@ -430,4 +430,76 @@ Random deactivation of neurons during training.
 | **Regularization** | Penalize complexity | L1/L2 loss terms, Dropout |
 | **Evaluation** | Cost functions measure fit | Loss/accuracy metrics |
 
-See [numpy/backpropagation.py](../numpy/backpropagation.py) for a complete implementation demonstrating these concepts.
+See [examples/numpy/backpropagation.py](../examples/numpy/backpropagation.py) for a complete implementation demonstrating these concepts.
+
+---
+
+## Project 5: ML Fundamentals with NumPy
+
+This project implements core ML concepts from scratch using NumPy:
+
+### Linear Algebra Foundations
+- Vector and matrix operations (dot products, transpose, inverse)
+- Eigenvalue decomposition for PCA
+- Matrix multiplication and reshaping for data manipulation
+- Broadcasting for efficient vectorized operations
+
+### Cost Functions & Optimization
+- **Mean Squared Error (MSE)**: Regression loss function
+- **Gradient computation**: Partial derivatives for each parameter
+- **Gradient descent**: Iterative optimization using learning rates
+- **Normal equation**: Closed-form solution for linear regression
+
+### Feature Scaling
+- **Standardization**: Zero mean, unit variance (z-score normalization)
+- **Min-Max scaling**: Scale to [0, 1] range
+- **Importance**: Prevents features with large scales from dominating
+
+### Linear Regression Implementation
+- Normal equation approach: θ = (X^T X)^(-1) X^T y
+- Gradient descent approach: θ := θ - α∇J(θ)
+- Comparison of convergence and computational complexity
+- Feature engineering and polynomial features
+
+### Principal Component Analysis (PCA)
+- Eigenvalue/eigenvector computation from covariance matrix
+- Variance explained by each principal component
+- Dimensionality reduction while preserving information
+- Applications: visualization, feature extraction, noise reduction
+
+---
+
+## Bonus: Backpropagation from Scratch
+
+This bonus project implements a neural network with manual backpropagation to understand gradient computation:
+
+### Neural Network Architecture
+- 2-layer neural network: Input → Hidden (sigmoid) → Output (linear)
+- Trained on XOR problem (non-linearly separable)
+- Manual weight initialization and forward propagation
+
+### Backpropagation Algorithm
+- Forward pass: Compute layer-by-layer activations
+- Loss computation: MSE loss for the problem
+- Backward pass: Compute gradients using chain rule
+  - Output layer: ∂L/∂z = (ŷ - y) ⊙ g'(z)
+  - Hidden layer: ∂L/∂z = (W^T δ) ⊙ g'(z)
+  - Parameter gradients: ∂L/∂W = δ a^T
+
+### Gradient Verification
+- **Numerical gradient** using finite differences: (f(θ+ε) - f(θ-ε)) / (2ε)
+- **Analytical gradient** from backpropagation
+- Verification with ε ≈ 1e-5 to catch implementation bugs
+- Essential for debugging custom neural network implementations
+
+### Key Insights
+- Gradient computation through composition of functions (chain rule)
+- ReLU activations prevent vanishing gradient problems
+- Proper weight initialization crucial for training stability
+- XOR problem requires hidden layer (linear separator insufficient)
+- Learning curves show convergence behavior and potential overfitting
+
+### Files
+- `examples/numpy/main.py`: Linear algebra operations and concepts
+- `examples/numpy/backpropagation.py`: Complete neural network with manual backprop
+
