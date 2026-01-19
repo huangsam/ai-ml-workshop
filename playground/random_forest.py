@@ -1,5 +1,8 @@
 """
 Random Forest Example using Breast Cancer Dataset
+
+This script demonstrates Random Forest, an ensemble method that combines
+multiple decision trees for better accuracy and reduced overfitting.
 """
 
 import matplotlib.pyplot as plt
@@ -12,7 +15,8 @@ from sklearn.model_selection import RandomizedSearchCV, train_test_split
 
 
 def main():
-    # Load the Breast Cancer dataset
+    # Step 1: Load and prepare the dataset
+    # Same Breast Cancer dataset as other examples
     cancer = load_breast_cancer()
     X = pd.DataFrame(cancer.data, columns=cancer.feature_names)
     y = pd.Series(cancer.target, name="target")
@@ -24,14 +28,15 @@ def main():
     print(f"Class distribution: {y.value_counts().to_dict()}")
     print()
 
-    # Split the data
+    # Step 2: Split the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Hyperparameter tuning with RandomizedSearchCV
+    # Step 3: Hyperparameter tuning
+    # Random Forest has many parameters to control tree growth and ensemble
     param_grid = {
         "n_estimators": [50, 100, 200, 300],  # Number of trees in the forest
         "max_depth": [None, 10, 20, 30],  # Maximum depth of each tree; None means unlimited
@@ -41,7 +46,7 @@ def main():
     }
 
     search = RandomizedSearchCV(RandomForestClassifier(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
-    search.fit(X_train, y_train)
+    search.fit(X_train, y_train)  # Tune parameters
 
     # Best model
     model = search.best_estimator_
@@ -50,17 +55,17 @@ def main():
     print()
 
     print("Model trained successfully!")
-    print(f"Number of trees: {model.n_estimators}")
-    print(f"Max depth: {model.max_depth}")
-    print(f"Min samples split: {model.min_samples_split}")
-    print(f"Min samples leaf: {model.min_samples_leaf}")
+    print(f"Number of trees: {model.n_estimators}")  # How many trees
+    print(f"Max depth: {model.max_depth}")  # Tree depth limit
+    print(f"Min samples split: {model.min_samples_split}")  # Split threshold
+    print(f"Min samples leaf: {model.min_samples_leaf}")  # Leaf size minimum
     print()
 
-    # Make predictions
-    y_pred = model.predict(X_test)
-    model.predict_proba(X_test)[:, 1]
+    # Step 4: Make predictions
+    y_pred = model.predict(X_test)  # Class predictions
+    y_pred_proba = model.predict_proba(X_test)[:, 1]  # Probabilities
 
-    # Evaluate the model
+    # Step 5: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")
@@ -69,13 +74,13 @@ def main():
     print(classification_report(y_test, y_pred, target_names=cancer.target_names))
     print()
 
-    # Confusion Matrix
+    # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:")
     print(cm)
     print()
 
-    # Plot confusion matrix
+    # Step 6: Visualize results
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
     plt.title("Confusion Matrix - Random Forest (Tuned)")
@@ -84,21 +89,22 @@ def main():
     plt.savefig("random_forest_confusion_matrix.png", dpi=300, bbox_inches="tight")
     print("Confusion matrix plot saved as 'random_forest_confusion_matrix.png'")
 
-    # Feature importance
+    # Step 7: Feature importance
+    # Random Forest provides built-in feature importance
     feature_importance = pd.DataFrame({"feature": X.columns, "importance": model.feature_importances_}).sort_values("importance", ascending=False)
 
     print("Top 5 Most Important Features:")
     print(feature_importance.head())
     print()
 
-    # Plot feature importance
+    # Plot feature importance as a bar chart
     plt.figure(figsize=(12, 8))
     top_features = feature_importance.head(10)
     plt.barh(range(len(top_features)), top_features["importance"])
     plt.yticks(range(len(top_features)), top_features["feature"])
     plt.xlabel("Feature Importance")
     plt.title("Top 10 Feature Importances - Random Forest")
-    plt.gca().invert_yaxis()
+    plt.gca().invert_yaxis()  # Highest at top
     plt.savefig("random_forest_feature_importance.png", dpi=300, bbox_inches="tight")
     print("Feature importance plot saved as 'random_forest_feature_importance.png'")
 

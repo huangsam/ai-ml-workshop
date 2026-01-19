@@ -1,3 +1,10 @@
+"""
+Support Vector Machine Example using Breast Cancer Dataset
+
+This script demonstrates SVM, which finds the optimal hyperplane to separate
+classes with maximum margin, using kernel tricks for non-linear data.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -10,7 +17,7 @@ from sklearn.svm import SVC
 
 
 def main():
-    # Load the Breast Cancer dataset
+    # Step 1: Load and prepare the dataset
     cancer = load_breast_cancer()
     X = pd.DataFrame(cancer.data, columns=cancer.feature_names)
     y = pd.Series(cancer.target, name="target")
@@ -22,19 +29,21 @@ def main():
     print(f"Class distribution: {y.value_counts().to_dict()}")
     print()
 
-    # Split the data
+    # Step 2: Split the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Scale the features (important for SVM)
+    # Step 3: Preprocess the data
+    # SVM is sensitive to feature scales, so standardization is crucial
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Hyperparameter tuning with RandomizedSearchCV
+    # Step 4: Hyperparameter tuning
+    # SVM parameters control the margin, kernel, and regularization
     param_grid = {
         "C": [0.1, 1, 10, 100],  # Regularization parameter; smaller values specify stronger regularization
         "gamma": ["scale", "auto", 0.01, 0.1, 1],  # Kernel coefficient for 'rbf', 'poly', and 'sigmoid'
@@ -51,16 +60,16 @@ def main():
     print()
 
     print("Model trained successfully!")
-    print(f"Kernel: {model.kernel}")
-    print(f"C (regularization): {model.C}")
-    print(f"Gamma: {model.gamma}")
-    print(f"Number of support vectors: {model.n_support_}")
+    print(f"Kernel: {model.kernel}")  # Type of kernel used
+    print(f"C (regularization): {model.C}")  # Regularization strength
+    print(f"Gamma: {model.gamma}")  # Kernel parameter
+    print(f"Number of support vectors: {model.n_support_}")  # Key data points
     print()
 
-    # Make predictions
-    y_pred = model.predict(X_test_scaled)
+    # Step 5: Make predictions
+    y_pred = model.predict(X_test_scaled)  # Class predictions
 
-    # Evaluate the model
+    # Step 6: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")
@@ -69,13 +78,13 @@ def main():
     print(classification_report(y_test, y_pred, target_names=cancer.target_names))
     print()
 
-    # Confusion Matrix
+    # Confusion matrix
     cm = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:")
     print(cm)
     print()
 
-    # Plot confusion matrix
+    # Step 7: Visualize results
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
     plt.title("Confusion Matrix - SVM (Tuned)")
@@ -84,7 +93,8 @@ def main():
     plt.savefig("svm_confusion_matrix.png", dpi=300, bbox_inches="tight")
     print("Confusion matrix plot saved as 'svm_confusion_matrix.png'")
 
-    # Test different kernels (using best C and gamma from tuning)
+    # Step 8: Additional analysis - test different kernels
+    # Compare kernels using the best C and gamma found
     kernels = ["linear", "poly", "rbf", "sigmoid"]
     accuracies = []
 
