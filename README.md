@@ -37,6 +37,15 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - Demonstrated eigenvalues/eigenvectors for PCA foundations.
 - **Detailed learnings documented in [`docs/numpy.md`](docs/numpy.md)**.
 
+### Project 6: PyTorch Deep Learning Across Multiple Domains
+- **Image Classification** (`image_classification.py`): CIFAR-10 with ResNet-18, data augmentation, achieving 80.35% accuracy
+- **Text Classification** (`text_classification.py`): IMDb sentiment analysis with BERT fine-tuning
+- **Question Answering** (`question_answering.py`): SQuAD extractive QA with BERT span prediction
+- **Time Series Forecasting** (`time_series_forecasting.py`): LSTM-based weather forecasting with multi-step prediction
+- **Tabular Classification** (`tabular_classification.py`): Titanic survival prediction with MLP and categorical embeddings
+- Key learnings: MPS acceleration, model architectures (CNN, RNN, Transformer, MLP), data preprocessing, evaluation metrics
+- All examples follow production-quality patterns with type hints, comprehensive comments, and proper error handling
+
 ## Current Readiness: 8-9/10 for AI/LLM Practitioner
 
 ### Strengths
@@ -57,8 +66,8 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 
 ## Next Steps (Priority Order)
 1. **Fine-tune a model** using PEFT/LoRA on a domain-specific task ← Biggest ROI for career advancement
-2. **Revisit Coursera ML fundamentals** to solidify theoretical understanding (see numpy/ folder)
-3. **Build an advanced RAG project** with multi-agent system or complex reasoning
-4. **Learn MLOps basics** (Weights & Biases for experiment tracking, model registry)
-5. **Contribute to open source** (LangChain/LlamaIndex issues or PRs)
-6. **Brush up on visualization** (Matplotlib, Seaborn for model evaluation and EDA)
+2. **Add advanced PyTorch techniques**: Attention mechanisms, custom loss functions, model ensembles
+3. **Revisit Coursera ML fundamentals** to solidify theoretical understanding (see numpy/ folder)
+4. **Build an advanced RAG project** with multi-agent system or complex reasoning
+5. **Learn MLOps basics** (Weights & Biases for experiment tracking, model registry)
+6. **Contribute to open source** (LangChain/LlamaIndex issues or PRs)
