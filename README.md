@@ -30,6 +30,13 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - Understood evaluation metrics, feature scaling, cross-validation, and algorithm selection.
 - Built complete examples with visualization and educational comments.
 
+### Project 5: ML Fundamentals with NumPy
+- Implemented core mathematical concepts from ML: linear algebra operations, vector/matrix calculations.
+- Built linear regression from scratch using normal equation and gradient descent.
+- Explored cost functions, feature scaling techniques (standardization, min-max scaling).
+- Demonstrated eigenvalues/eigenvectors for PCA foundations.
+- **Detailed learnings documented in [`docs/numpy.md`](docs/numpy.md)**.
+
 ## Current Readiness: 8-9/10 for AI/LLM Practitioner
 
 ### Strengths
@@ -50,7 +57,7 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 
 ## Next Steps (Priority Order)
 1. **Fine-tune a model** using PEFT/LoRA on a domain-specific task ← Biggest ROI for career advancement
-2. **Revisit Coursera ML fundamentals** to solidify theoretical understanding
+2. **Revisit Coursera ML fundamentals** to solidify theoretical understanding (see numpy/ folder)
 3. **Build an advanced RAG project** with multi-agent system or complex reasoning
 4. **Learn MLOps basics** (Weights & Biases for experiment tracking, model registry)
 5. **Contribute to open source** (LangChain/LlamaIndex issues or PRs)
