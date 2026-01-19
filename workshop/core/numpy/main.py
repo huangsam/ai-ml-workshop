@@ -89,7 +89,7 @@ def main():
     # Formula: (A*B)[i,j] = Σ(A[i,k] * B[k,j])
     matrix_prod = np.dot(A, B)
     print(f"Matrix multiplication (A*B):\n{matrix_prod}")
-    print("  - Must have compatible dimensions: A(m×n) * B(n×p) = C(m×p)")
+    print("  - Must have compatible dimensions: A(m*n) * B(n*p) = C(m*p)")
     print("  - Used in neural network forward pass, linear transformations")
     print()
 
@@ -259,9 +259,9 @@ def main():
         Compute Mean Squared Error cost function.
 
         Parameters:
-        X: Feature matrix (m × n)
-        y: Target values (m × 1)
-        theta: Parameters (n × 1)
+        X: Feature matrix (m * n)
+        y: Target values (m * 1)
+        theta: Parameters (n * 1)
 
         Returns:
         cost: Scalar cost value
@@ -284,7 +284,7 @@ def main():
             J_vals[i, j] = compute_cost(X_b, y, t)
 
     print("Cost function analysis:")
-    print(f"  - Grid size: {len(theta0_vals)} × {len(theta1_vals)} = {J_vals.size} points")
+    print(f"  - Grid size: {len(theta0_vals)} * {len(theta1_vals)} = {J_vals.size} points")
     print(f"  - Minimum cost: {np.min(J_vals):.4f}")
     print(f"  - Maximum cost: {np.max(J_vals):.4f}")
     print(f"  - Cost range: {np.max(J_vals) - np.min(J_vals):.4f}")

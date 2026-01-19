@@ -85,10 +85,10 @@
 
 ### LoRA (Low-Rank Adaptation)
 - **Concept**: Inject trainable low-rank matrices into frozen pre-trained weights
-- **Architecture**: For each weight matrix W, add ΔW = BA where B ∈ ℝ^(d×r), A ∈ ℝ^(r×k), r << min(d,k)
+- **Architecture**: For each weight matrix W, add ΔW = BA where B ∈ ℝ^(d*r), A ∈ ℝ^(r*k), r << min(d,k)
 - **Hyperparameters**:
   - **Rank (r)**: Dimension of low-rank matrices (8-64 typical; lower = fewer parameters)
-  - **Alpha (α)**: Scaling factor for LoRA updates (usually 2×r)
+  - **Alpha (α)**: Scaling factor for LoRA updates (usually 2*r)
   - **Dropout**: Regularization in LoRA layers (0.05-0.1 typical)
 - **Target modules**: Model components to adapt (attention layers: query, value, key projections)
   - BERT/DistilBERT: `["q_lin", "v_lin"]` (DistilBERT uses linear projections)
