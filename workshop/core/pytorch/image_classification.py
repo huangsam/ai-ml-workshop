@@ -16,7 +16,7 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-from utils import get_device
+from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
 BATCH_SIZE = 64  # Batch size for training and testing

@@ -17,7 +17,7 @@ import torch.nn as nn
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, Dataset
 
-from utils import get_device
+from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
 SEQUENCE_LENGTH = 24  # Look back 24 hours

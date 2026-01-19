@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, Dataset
 
-from utils import get_device
+from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
 BATCH_SIZE = 32

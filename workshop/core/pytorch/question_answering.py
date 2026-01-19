@@ -14,7 +14,7 @@ import torch
 from datasets import DatasetDict, load_dataset
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, DefaultDataCollator
 
-from utils import get_device
+from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
 MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use

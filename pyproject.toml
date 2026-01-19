@@ -5,6 +5,7 @@ description = "Explore AI and ML concepts with practical examples"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "click>=8.1.7",
     "datasets>=4.4.1",
     "pandas>=2.0.0",
     "peft>=0.18.1",
@@ -14,6 +15,16 @@ dependencies = [
     "torch>=2.9.1",
     "transformers>=4.57.3",
 ]
+
+[project.scripts]
+workshop = "workshop.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["workshop*"]
+
+[tool.uv]
+package = true
 
 [tool.ruff]
 line-length = 160
