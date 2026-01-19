@@ -1,5 +1,5 @@
+
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def main():
@@ -85,7 +85,7 @@ def main():
             t = np.array([[theta0], [theta1]])
             J_vals[i, j] = compute_cost(X_b, y, t)
 
-    print(f"Cost function computed for grid of theta values")
+    print("Cost function computed for grid of theta values")
     print(f"Min cost: {np.min(J_vals):.4f}")
 
     # 6. Feature Scaling
