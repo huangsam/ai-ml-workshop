@@ -1,7 +1,5 @@
 """Data loading and preprocessing utilities for ML examples."""
 
-from typing import Tuple
-
 import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
@@ -15,7 +13,7 @@ def load_and_split_data(
     test_size: float = 0.2,
     random_state: int = 42,
     stratify: bool = True,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Load and split data into train/test sets with stratification for classification.
 
@@ -36,7 +34,7 @@ def load_and_split_data(
 def scale_features(
     X_train: np.ndarray,
     X_test: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray, StandardScaler]:
+) -> tuple[np.ndarray, np.ndarray, StandardScaler]:
     """
     Standardize features using StandardScaler.
 
@@ -59,7 +57,7 @@ def create_data_loaders(
     X_test: np.ndarray,
     y_test: np.ndarray,
     batch_size: int = 32,
-) -> Tuple[DataLoader, DataLoader]:
+) -> tuple[DataLoader, DataLoader]:
     """
     Create PyTorch DataLoaders for training and testing.
 

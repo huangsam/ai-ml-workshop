@@ -8,8 +8,6 @@ Dataset: Synthetic weather data (temperature, humidity, wind speed)
 Model: LSTM network for multi-step forecasting
 """
 
-from typing import Tuple
-
 import numpy as np
 import pandas as pd
 import torch
@@ -51,7 +49,7 @@ class WeatherDataset(Dataset):
     def __len__(self) -> int:
         return len(self.data) - self.seq_length - self.pred_horizon + 1
 
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         # Input: past seq_length time steps
         x = self.data[idx : idx + self.seq_length]
         # Target: next pred_horizon time steps
@@ -75,7 +73,7 @@ class LSTMForecaster(nn.Module):
             output_size: Number of output features (should be pred_horizon * num_features)
             pred_horizon: Number of time steps to predict
         """
-        super(LSTMForecaster, self).__init__()
+        super().__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.output_size = output_size
@@ -155,7 +153,7 @@ def generate_weather_data(num_samples: int = 10000) -> pd.DataFrame:
     return df
 
 
-def prepare_data(df: pd.DataFrame) -> Tuple[DataLoader, DataLoader, MinMaxScaler]:
+def prepare_data(df: pd.DataFrame) -> tuple[DataLoader, DataLoader, MinMaxScaler]:
     """
     Prepare data for training and testing.
 

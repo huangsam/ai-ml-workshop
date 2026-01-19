@@ -11,8 +11,6 @@ Key concepts:
 - How PyTorch/TensorFlow automates this process
 """
 
-from typing import Tuple
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -92,7 +90,7 @@ class SimpleNeuralNetwork:
 
         return self.cache["a2"]
 
-    def backward(self, y_true: np.ndarray, learning_rate: float = 0.01) -> Tuple[dict, float]:
+    def backward(self, y_true: np.ndarray, learning_rate: float = 0.01) -> tuple[dict, float]:
         """
         Backward pass using backpropagation algorithm.
 
@@ -196,7 +194,7 @@ class SimpleNeuralNetwork:
         return numerical_grads
 
 
-def synthetic_xor_data(num_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
+def synthetic_xor_data(num_samples: int = 100) -> tuple[np.ndarray, np.ndarray]:
     """
     Generate XOR dataset (classic non-linear problem).
 

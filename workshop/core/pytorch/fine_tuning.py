@@ -9,8 +9,6 @@ Model: DistilBERT with LoRA adapters
 Key concepts: LoRA, PEFT, parameter efficiency, adapter-based fine-tuning
 """
 
-from typing import Tuple
-
 import torch
 import torch.nn as nn
 from datasets import Dataset, load_dataset
@@ -35,7 +33,7 @@ LORA_DROPOUT = 0.05  # Dropout in LoRA layers
 TARGET_MODULES = ["q_lin", "v_lin"]  # DistilBERT attention modules (query, value)
 
 
-def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> Tuple[Dataset, Dataset]:
+def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> tuple[Dataset, Dataset]:
     """
     Load and prepare a dataset for fine-tuning.
 
@@ -65,7 +63,7 @@ def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> Tuple[D
     return train_dataset, test_dataset
 
 
-def preprocess_data(train_dataset: Dataset, test_dataset: Dataset, tokenizer: AutoTokenizer, max_length: int = 128) -> Tuple[DataLoader, DataLoader]:
+def preprocess_data(train_dataset: Dataset, test_dataset: Dataset, tokenizer: AutoTokenizer, max_length: int = 128) -> tuple[DataLoader, DataLoader]:
     """
     Preprocess and tokenize the data.
 
@@ -211,7 +209,7 @@ def train_epoch(
     return avg_loss, accuracy
 
 
-def evaluate(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> Tuple[float, float]:
+def evaluate(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> tuple[float, float]:
     """
     Evaluate the model on test data.
 

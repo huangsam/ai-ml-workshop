@@ -30,4 +30,4 @@ package = true
 line-length = 160
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["I", "UP"]

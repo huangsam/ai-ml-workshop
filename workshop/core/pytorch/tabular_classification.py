@@ -8,8 +8,6 @@ Dataset: Titanic survival prediction (structured data with categorical/mixed fea
 Model: MLP with embeddings for categorical variables
 """
 
-from typing import Dict, Tuple
-
 import numpy as np
 import pandas as pd
 import torch
@@ -47,7 +45,7 @@ class TabularDataset(Dataset):
     def __len__(self) -> int:
         return len(self.X)
 
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         return self.X[idx], self.y[idx]
 
 
@@ -56,7 +54,7 @@ class TabularClassifier(nn.Module):
     MLP classifier for tabular data with categorical embeddings.
     """
 
-    def __init__(self, num_numerical: int, categorical_info: Dict[str, int], embedding_dim: int = 8):
+    def __init__(self, num_numerical: int, categorical_info: dict[str, int], embedding_dim: int = 8):
         """
         Initialize the model.
 
@@ -65,7 +63,7 @@ class TabularClassifier(nn.Module):
             categorical_info: Dict mapping categorical feature names to their vocab sizes
             embedding_dim: Dimension for categorical embeddings
         """
-        super(TabularClassifier, self).__init__()
+        super().__init__()
 
         # Create embeddings for categorical features
         self.embeddings = nn.ModuleDict()
@@ -90,7 +88,7 @@ class TabularClassifier(nn.Module):
             nn.Sigmoid(),
         )
 
-    def forward(self, x: Dict[str, torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: dict[str, torch.Tensor]) -> torch.Tensor:
         """
         Forward pass.
 
@@ -166,7 +164,7 @@ def load_titanic_data() -> pd.DataFrame:
     return df
 
 
-def preprocess_data(df: pd.DataFrame) -> Tuple[Dict[str, torch.Tensor], torch.Tensor, Dict[str, LabelEncoder]]:
+def preprocess_data(df: pd.DataFrame) -> tuple[dict[str, torch.Tensor], torch.Tensor, dict[str, LabelEncoder]]:
     """
     Preprocess the Titanic data for training.
 
@@ -223,7 +221,7 @@ def preprocess_data(df: pd.DataFrame) -> Tuple[Dict[str, torch.Tensor], torch.Te
     return (features_train, features_test), (targets_train, targets_test), encoders
 
 
-def create_data_loaders(features: Tuple[Dict, Dict], targets: Tuple[torch.Tensor, torch.Tensor]) -> Tuple[DataLoader, DataLoader]:
+def create_data_loaders(features: tuple[dict, dict], targets: tuple[torch.Tensor, torch.Tensor]) -> tuple[DataLoader, DataLoader]:
     """
     Create DataLoaders for training and testing.
 
@@ -292,7 +290,7 @@ def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.opt
     return avg_loss, accuracy
 
 
-def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> Tuple[float, float]:
+def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> tuple[float, float]:
     """
     Evaluate the model on test data.
 

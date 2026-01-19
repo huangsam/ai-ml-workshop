@@ -1,7 +1,5 @@
 """Evaluation utilities for ML examples."""
 
-from typing import Optional
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -18,7 +16,7 @@ from sklearn.metrics import (
 def print_classification_metrics(
     y_true: np.ndarray,
     y_pred: np.ndarray,
-    label_names: Optional[list[str]] = None,
+    label_names: list[str] | None = None,
 ) -> None:
     """
     Print comprehensive classification metrics.
@@ -48,7 +46,7 @@ def print_classification_metrics(
 def plot_confusion_matrix(
     y_true: np.ndarray,
     y_pred: np.ndarray,
-    label_names: Optional[list[str]] = None,
+    label_names: list[str] | None = None,
     title: str = "Confusion Matrix",
 ) -> None:
     """
@@ -73,9 +71,9 @@ def plot_confusion_matrix(
 
 def plot_training_history(
     train_losses: list[float],
-    val_losses: Optional[list[float]] = None,
-    train_accs: Optional[list[float]] = None,
-    val_accs: Optional[list[float]] = None,
+    val_losses: list[float] | None = None,
+    train_accs: list[float] | None = None,
+    val_accs: list[float] | None = None,
 ) -> None:
     """
     Plot training history (loss and accuracy over epochs).

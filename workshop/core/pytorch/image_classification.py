@@ -8,8 +8,6 @@ Dataset: CIFAR-10 (60,000 32x32 color images in 10 classes)
 Model: ResNet-18 (pre-trained on ImageNet, fine-tuned for CIFAR-10)
 """
 
-from typing import Tuple
-
 import torch
 import torch.nn as nn
 import torchvision
@@ -27,7 +25,7 @@ NUM_CLASSES = 10  # CIFAR-10 has 10 classes
 IMAGE_SIZE = 32  # CIFAR-10 images are 32x32
 
 
-def get_data_loaders() -> Tuple[DataLoader, DataLoader]:
+def get_data_loaders() -> tuple[DataLoader, DataLoader]:
     """
     Creates and returns train/test DataLoaders for CIFAR-10 dataset.
 
@@ -134,7 +132,7 @@ def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.opt
     print(f"Training - Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.2f}%")
 
 
-def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> Tuple[float, float]:
+def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> tuple[float, float]:
     """
     Evaluates the model on test data.
 

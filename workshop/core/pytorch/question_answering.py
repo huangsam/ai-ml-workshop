@@ -8,8 +8,6 @@ Dataset: SQuAD v1.1 (extractive QA on Wikipedia articles)
 Model: BERT-base for question answering
 """
 
-from typing import Dict, List, Tuple
-
 import torch
 from datasets import DatasetDict, load_dataset
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, DefaultDataCollator
@@ -39,7 +37,7 @@ def load_data(dataset_name: str = "squad") -> DatasetDict:
     return dataset
 
 
-def preprocess_function(examples: Dict[str, List], tokenizer: AutoTokenizer) -> Dict[str, List]:
+def preprocess_function(examples: dict[str, list], tokenizer: AutoTokenizer) -> dict[str, list]:
     """
     Tokenization function to preprocess question-answering data.
 
@@ -119,7 +117,7 @@ def preprocess_function(examples: Dict[str, List], tokenizer: AutoTokenizer) -> 
     return inputs
 
 
-def compute_metrics(eval_pred: Tuple[torch.Tensor, torch.Tensor]) -> Dict[str, float]:
+def compute_metrics(eval_pred: tuple[torch.Tensor, torch.Tensor]) -> dict[str, float]:
     """
     Computes F1 and Exact Match scores for question answering.
 
