@@ -1,16 +1,12 @@
-"""
-Support Vector Machine Example using Breast Cancer Dataset
-"""
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 
 def main():
@@ -38,9 +34,21 @@ def main():
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Create and train the model
-    model = SVC(kernel="rbf", C=1.0, gamma="scale", random_state=42)
-    model.fit(X_train_scaled, y_train)
+    # Hyperparameter tuning with RandomizedSearchCV
+    param_grid = {
+        "C": [0.1, 1, 10, 100],  # Regularization parameter; smaller values specify stronger regularization
+        "gamma": ["scale", "auto", 0.01, 0.1, 1],  # Kernel coefficient for 'rbf', 'poly', and 'sigmoid'
+        "kernel": ["linear", "rbf", "poly"],  # Specifies the kernel type to be used in the algorithm
+    }
+
+    search = RandomizedSearchCV(SVC(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train_scaled, y_train)
+
+    # Best model
+    model = search.best_estimator_
+    print("Best hyperparameters found:")
+    print(search.best_params_)
+    print()
 
     print("Model trained successfully!")
     print(f"Kernel: {model.kernel}")
@@ -70,18 +78,18 @@ def main():
     # Plot confusion matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
-    plt.title("Confusion Matrix - SVM")
+    plt.title("Confusion Matrix - SVM (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("svm_confusion_matrix.png", dpi=300, bbox_inches="tight")
     print("Confusion matrix plot saved as 'svm_confusion_matrix.png'")
 
-    # Test different kernels
+    # Test different kernels (using best C and gamma from tuning)
     kernels = ["linear", "poly", "rbf", "sigmoid"]
     accuracies = []
 
     for kernel in kernels:
-        svm_temp = SVC(kernel=kernel, C=1.0, gamma="scale", random_state=42)
+        svm_temp = SVC(kernel=kernel, C=model.C, gamma=model.gamma, random_state=42)
         svm_temp.fit(X_train_scaled, y_train)
         y_pred_temp = svm_temp.predict(X_test_scaled)
         accuracies.append(accuracy_score(y_test, y_pred_temp))
@@ -91,7 +99,7 @@ def main():
     plt.bar(kernels, accuracies, color=["blue", "green", "red", "purple"])
     plt.xlabel("Kernel Type")
     plt.ylabel("Accuracy")
-    plt.title("SVM Accuracy vs Kernel Type")
+    plt.title("SVM Accuracy vs Kernel Type (with tuned C and gamma)")
     plt.ylim(0.9, 1.0)  # Focus on high accuracy range
     for i, acc in enumerate(accuracies):
         plt.text(i, acc + 0.001, f"{acc:.4f}", ha="center", va="bottom")

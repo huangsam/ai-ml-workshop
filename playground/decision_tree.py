@@ -2,14 +2,13 @@
 Decision Tree Example using Breast Cancer Dataset
 """
 
-import pandas as pd
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-from sklearn.tree import plot_tree
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
 def main():
@@ -32,9 +31,22 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Create and train the model
-    model = DecisionTreeClassifier(random_state=42, max_depth=4)  # Limit depth for visualization
-    model.fit(X_train, y_train)
+    # Hyperparameter tuning with RandomizedSearchCV
+    param_grid = {
+        "max_depth": [None, 5, 10, 20, 30],  # Maximum depth of the tree; None means unlimited
+        "min_samples_split": [2, 5, 10, 20],  # Minimum number of samples required to split an internal node
+        "min_samples_leaf": [1, 2, 4, 8],  # Minimum number of samples required to be at a leaf node
+        "criterion": ["gini", "entropy"],  # Function to measure the quality of a split
+    }
+
+    search = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train, y_train)
+
+    # Best model
+    model = search.best_estimator_
+    print("Best hyperparameters found:")
+    print(search.best_params_)
+    print()
 
     print("Model trained successfully!")
     print(f"Tree depth: {model.get_depth()}")
@@ -62,7 +74,7 @@ def main():
     # Plot confusion matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
-    plt.title("Confusion Matrix - Decision Tree")
+    plt.title("Confusion Matrix - Decision Tree (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("decision_tree_confusion_matrix.png", dpi=300, bbox_inches="tight")

@@ -2,13 +2,13 @@
 Random Forest Example using Breast Cancer Dataset
 """
 
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
 
 
 def main():
@@ -31,13 +31,29 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Create and train the model
-    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)
-    model.fit(X_train, y_train)
+    # Hyperparameter tuning with RandomizedSearchCV
+    param_grid = {
+        "n_estimators": [50, 100, 200, 300],  # Number of trees in the forest
+        "max_depth": [None, 10, 20, 30],  # Maximum depth of each tree; None means unlimited
+        "min_samples_split": [2, 5, 10],  # Minimum number of samples required to split an internal node
+        "min_samples_leaf": [1, 2, 4],  # Minimum number of samples required to be at a leaf node
+        "bootstrap": [True, False],  # Whether bootstrap samples are used when building trees
+    }
+
+    search = RandomizedSearchCV(RandomForestClassifier(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train, y_train)
+
+    # Best model
+    model = search.best_estimator_
+    print("Best hyperparameters found:")
+    print(search.best_params_)
+    print()
 
     print("Model trained successfully!")
     print(f"Number of trees: {model.n_estimators}")
     print(f"Max depth: {model.max_depth}")
+    print(f"Min samples split: {model.min_samples_split}")
+    print(f"Min samples leaf: {model.min_samples_leaf}")
     print()
 
     # Make predictions
@@ -62,7 +78,7 @@ def main():
     # Plot confusion matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
-    plt.title("Confusion Matrix - Random Forest")
+    plt.title("Confusion Matrix - Random Forest (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("random_forest_confusion_matrix.png", dpi=300, bbox_inches="tight")

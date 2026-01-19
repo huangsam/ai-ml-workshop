@@ -2,13 +2,13 @@
 Linear Regression Example using Boston Housing Dataset
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.datasets import load_boston
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
-import matplotlib.pyplot as plt
+from sklearn.model_selection import GridSearchCV, train_test_split
 
 
 def main():
@@ -30,9 +30,19 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Create and train the model
-    model = LinearRegression()
-    model.fit(X_train, y_train)
+    # Hyperparameter tuning with GridSearchCV (LinearRegression has few params)
+    param_grid = {
+        "fit_intercept": [True, False]  # Whether to calculate the intercept for the model
+    }
+
+    search = GridSearchCV(LinearRegression(), param_grid, cv=5, scoring="neg_mean_squared_error")
+    search.fit(X_train, y_train)
+
+    # Best model
+    model = search.best_estimator_
+    print("Best hyperparameters found:")
+    print(search.best_params_)
+    print()
 
     print("Model trained successfully!")
     print(f"Coefficients: {model.coef_}")
@@ -64,7 +74,7 @@ def main():
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "r--", lw=2)
     plt.xlabel("Actual Values")
     plt.ylabel("Predicted Values")
-    plt.title("Actual vs Predicted House Prices")
+    plt.title("Actual vs Predicted House Prices (Tuned)")
     plt.grid(True)
     plt.savefig("linear_regression_results.png", dpi=300, bbox_inches="tight")
     print("Plot saved as 'linear_regression_results.png'")

@@ -2,15 +2,15 @@
 K-Nearest Neighbors Example using Breast Cancer Dataset
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 
 
 def main():
@@ -38,13 +38,27 @@ def main():
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Create and train the model
-    k = 5  # Number of neighbors
-    model = KNeighborsClassifier(n_neighbors=k)
-    model.fit(X_train_scaled, y_train)
+    # Hyperparameter tuning with RandomizedSearchCV
+    param_grid = {
+        "n_neighbors": [3, 5, 7, 9, 11, 13, 15],  # Number of neighbors to use
+        "weights": ["uniform", "distance"],  # Weight function used in prediction
+        "metric": ["euclidean", "manhattan", "minkowski"],  # Distance metric to use
+        "p": [1, 2],  # Power parameter for Minkowski metric (1=Manhattan, 2=Euclidean)
+    }
+
+    search = RandomizedSearchCV(KNeighborsClassifier(), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train_scaled, y_train)
+
+    # Best model
+    model = search.best_estimator_
+    print("Best hyperparameters found:")
+    print(search.best_params_)
+    print()
 
     print("Model trained successfully!")
-    print(f"Number of neighbors (k): {k}")
+    print(f"Number of neighbors (k): {model.n_neighbors}")
+    print(f"Weights: {model.weights}")
+    print(f"Metric: {model.metric}")
     print()
 
     # Make predictions
@@ -68,7 +82,7 @@ def main():
     # Plot confusion matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cancer.target_names, yticklabels=cancer.target_names)
-    plt.title(f"Confusion Matrix - KNN (k={k})")
+    plt.title(f"Confusion Matrix - KNN (Tuned, k={model.n_neighbors})")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.savefig("knn_confusion_matrix.png", dpi=300, bbox_inches="tight")
