@@ -40,8 +40,8 @@ uv run workshop sklearn kmeans
 uv run workshop sklearn pca
 
 # NumPy examples
-uv run workshop numpy linear-regression
-uv run workshop numpy pca
+uv run workshop numpy fundamentals
+uv run workshop numpy backpropagation
 ```
 
 ## Learnings & Progress
