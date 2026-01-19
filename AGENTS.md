@@ -285,4 +285,5 @@ A comprehensive RAG application demonstrating retrieval-augmented generation acr
 ## Related Documentation
 - Theory: See [docs/rag.md](docs/rag.md) for RAG concepts and components
 - ML Theory: See [docs/ml_theory.md](docs/ml_theory.md) for underlying optimization
+- Future focus areas: See [docs/future_focus.md](docs/future_focus.md)
 - Full workshop overview: See [README.md](README.md)
