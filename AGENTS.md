@@ -81,7 +81,7 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 ### Advanced: LLMs & Production
 1. Master **[PyTorch PEFT/LoRA](docs/pytorch.md#best-practices)** - parameter-efficient fine-tuning for large models
 2. Build with **[RAG](docs/rag.md)** - combine retrieval with generative models (see Projects 2-3 below)
-3. Deploy and optimize (see main README for MLOps gaps)
+3. Deploy and optimize
 
 ---
 
