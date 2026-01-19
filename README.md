@@ -80,11 +80,10 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - ✅ **ML theory formalization** (backpropagation, gradient descent, regularization) with implementations
 
 ### Remaining Gaps
-- ⚠️ **Training from scratch**: Only fine-tuned models; haven't trained large models from scratch
 - ⚠️ **MLOps**: CI/CD for ML, model versioning, experiment tracking (Weights & Biases), monitoring
-- ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
 - ⚠️ **Cost optimization**: Token usage tracking, caching strategies, batch processing at scale
 - ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
+- ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
 
 ## Next Steps (Priority Order)
 1. **Learn MLOps basics** (Weights & Biases experiment tracking, model versioning, checkpoint management) ← Next priority
