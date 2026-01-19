@@ -1,6 +1,20 @@
+[project]
+name = "ai-ml-workshop"
+version = "0.1.0"
+description = "Explore AI and ML concepts with practical examples"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=4.4.1",
+    "ruff>=0.14.7",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+    "torch>=2.9.1",
+    "transformers>=4.57.3",
+]
+
 [tool.ruff]
 line-length = 160
 
-[tool.isort]
-profile = "black"
-line_length = 160
+[tool.ruff.lint]
+extend-select = ["I"]
