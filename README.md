@@ -23,10 +23,18 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - Applied RAG concepts with LangChain tools (MCP).
 - Basic implementation; could be enhanced with custom MCP servers for deeper learning.
 
-## Current Readiness: 7-8/10 for AI/LLM Practitioner
+### Project 4: Sklearn Machine Learning Algorithms
+- Implemented supervised learning algorithms: linear/logistic regression, decision trees, random forest, KNN, SVM.
+- Covered unsupervised learning: K-means clustering and PCA for dimensionality reduction.
+- Learned hyperparameter tuning with GridSearchCV and RandomizedSearchCV.
+- Understood evaluation metrics, feature scaling, cross-validation, and algorithm selection.
+- Built complete examples with visualization and educational comments.
+
+## Current Readiness: 8-9/10 for AI/LLM Practitioner
 
 ### Strengths
 - ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)
+- ✅ Traditional ML proficiency (sklearn: regression, classification, clustering, dimensionality reduction)
 - ✅ RAG expertise including optimization (chunking, retrieval, RRF with BM25/Chroma, evaluation)
 - ✅ Production deployment skills (FastAPI + LangChain/LangGraph from previous work)
 - ✅ Data engineering proficiency (NumPy/Pandas from industry experience)
