@@ -139,9 +139,9 @@ def main():
     for i, (eigenval, eigenvec) in enumerate(zip(eigenvalues, eigenvectors.T)):
         Av = np.dot(A, eigenvec)
         lambda_v = eigenval * eigenvec
-        print(f"  λ_{i+1} = {eigenval:.3f}")
-        print(f"  A*v_{i+1} = {Av}")
-        print(f"  λ_{i+1}*v_{i+1} = {lambda_v}")
+        print(f"  λ_{i + 1} = {eigenval:.3f}")
+        print(f"  A*v_{i + 1} = {Av}")
+        print(f"  λ_{i + 1}*v_{i + 1} = {lambda_v}")
         print(f"  Difference: {np.abs(Av - lambda_v)}")
         print()
 
@@ -227,15 +227,15 @@ def main():
         errors = predictions - y
 
         # Compute gradients: (1/m) * X^T * errors
-        gradients = (1/m) * X_b.T.dot(errors)
+        gradients = (1 / m) * X_b.T.dot(errors)
 
         # Update parameters: θ = θ - η * gradients
         theta = theta - eta * gradients
 
         # Optional: print progress every 100 iterations
         if (iteration + 1) % 200 == 0:
-            cost = (1/(2*m)) * np.sum(errors**2)
-            print(f"  Iteration {iteration+1:4d}: Cost = {cost:.4f}, θ = {theta.ravel()}")
+            cost = (1 / (2 * m)) * np.sum(errors**2)
+            print(f"  Iteration {iteration + 1:4d}: Cost = {cost:.4f}, θ = {theta.ravel()}")
 
     print(f"\nFinal parameters after Gradient Descent: {theta.ravel()}")
     print(f"  - θ₀ (intercept): {theta[0, 0]:.3f} (true: 4.0)")
@@ -269,12 +269,12 @@ def main():
         m = len(y)
         predictions = X.dot(theta)
         errors = predictions - y
-        cost = (1 / (2 * m)) * np.sum(errors ** 2)
+        cost = (1 / (2 * m)) * np.sum(errors**2)
         return cost
 
     # Create grid of theta values to visualize cost function
     theta0_vals = np.linspace(-10, 10, 100)  # θ₀ values
-    theta1_vals = np.linspace(-1, 4, 100)    # θ₁ values
+    theta1_vals = np.linspace(-1, 4, 100)  # θ₁ values
     J_vals = np.zeros((len(theta0_vals), len(theta1_vals)))
 
     # Compute cost for each combination of θ₀, θ₁
@@ -294,7 +294,7 @@ def main():
     min_idx = np.unravel_index(np.argmin(J_vals), J_vals.shape)
     optimal_theta0 = theta0_vals[min_idx[0]]
     optimal_theta1 = theta1_vals[min_idx[1]]
-    print(f"Grid search optimal parameters:")
+    print("Grid search optimal parameters:")
     print(f"  - θ₀: {optimal_theta0:.3f}")
     print(f"  - θ₁: {optimal_theta1:.3f}")
     print(f"  - Cost: {np.min(J_vals):.4f}")
@@ -343,8 +343,12 @@ def main():
     print()
 
     print("Feature statistics (before scaling):")
-    print(f"  - Feature 1: mean={np.mean(sample_data[:, 0]):.2f}, std={np.std(sample_data[:, 0]):.2f}, range=[{np.min(sample_data[:, 0])}, {np.max(sample_data[:, 0])}]")
-    print(f"  - Feature 2: mean={np.mean(sample_data[:, 1]):.2f}, std={np.std(sample_data[:, 1]):.2f}, range=[{np.min(sample_data[:, 1])}, {np.max(sample_data[:, 1])}]")
+    print(
+        f"  - Feature 1: mean={np.mean(sample_data[:, 0]):.2f}, std={np.std(sample_data[:, 0]):.2f}, range=[{np.min(sample_data[:, 0])}, {np.max(sample_data[:, 0])}]"
+    )
+    print(
+        f"  - Feature 2: mean={np.mean(sample_data[:, 1]):.2f}, std={np.std(sample_data[:, 1]):.2f}, range=[{np.min(sample_data[:, 1])}, {np.max(sample_data[:, 1])}]"
+    )
     print()
 
     # Apply standardization
