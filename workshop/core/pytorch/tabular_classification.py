@@ -164,7 +164,9 @@ def load_titanic_data() -> pd.DataFrame:
     return df
 
 
-def preprocess_data(df: pd.DataFrame) -> tuple[dict[str, torch.Tensor], torch.Tensor, dict[str, LabelEncoder]]:
+def preprocess_data(
+    df: pd.DataFrame,
+) -> tuple[tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]], tuple[torch.Tensor, torch.Tensor], dict[str, LabelEncoder]]:
     """
     Preprocess the Titanic data for training.
 
@@ -244,7 +246,7 @@ def create_data_loaders(features: tuple[dict, dict], targets: tuple[torch.Tensor
     return train_loader, test_loader
 
 
-def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, criterion: nn.Module, device: str) -> float:
+def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, criterion: nn.Module, device: str) -> tuple[float, float]:
     """
     Train the model for one epoch.
 
@@ -256,7 +258,7 @@ def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.opt
         device: Device to run on
 
     Returns:
-        Average training loss
+        Tuple of (average_loss, accuracy)
     """
     model.train()
     total_loss = 0.0
@@ -351,7 +353,7 @@ def main() -> None:
     # For this simplified version, we'll only use numerical features
     # A full implementation would handle categorical embeddings properly
     numerical_features = features[0]["numerical"].shape[1]
-    categorical_info = {}  # Empty for simplified version
+    categorical_info: dict[str, int] = {}  # Empty for simplified version
 
     # 3. Create model
     model = TabularClassifier(numerical_features, categorical_info, EMBEDDING_DIM)

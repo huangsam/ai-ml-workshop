@@ -45,7 +45,7 @@ class SimpleNeuralNetwork:
         self.b2 = np.zeros((1, output_size))
 
         # Store intermediate values for backward pass
-        self.cache = {}
+        self.cache: dict[str, np.ndarray] = {}
 
     def relu(self, x: np.ndarray) -> np.ndarray:
         """ReLU activation function."""
