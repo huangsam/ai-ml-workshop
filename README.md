@@ -46,7 +46,26 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - Key learnings: MPS acceleration, model architectures (CNN, RNN, Transformer, MLP), data preprocessing, evaluation metrics
 - All examples follow production-quality patterns with type hints, comprehensive comments, and proper error handling
 
-## Current Readiness: 8-9/10 for AI/LLM Practitioner
+### Project 7: Parameter-Efficient Fine-Tuning with LoRA
+- **PEFT/LoRA Implementation** (`torchi/fine_tuning.py`): Fine-tune DistilBERT on AG News with LoRA adapters
+- Demonstrates ~99% parameter reduction while maintaining competitive performance
+- Training with AdamW optimizer, learning rate scheduling, and gradient checkpointing
+- Shows how to save/load adapters for inference-time deployment
+- Key learnings: Low-rank adaptation, parameter efficiency, adapter-based transfer learning
+- **Practical value**: Deploy large models on consumer hardware (M3 Mac or single GPU)
+
+### Bonus: Backpropagation from Scratch & ML Theory
+- **numpy/backpropagation.py**: Implements 2-layer neural network with manual backpropagation
+- Step-by-step gradient computation using chain rule and partial derivatives
+- **Gradient verification**: Numerical gradient checking against analytical gradients (finite differences)
+- Trained on XOR problem with visualization of learning curves and decision boundaries
+- **Enhanced docs/numpy.md**: Added comprehensive ML theory sections covering:
+  - Calculus foundations (partial derivatives, chain rule)
+  - Gradient descent variants (BGD, SGD, Mini-batch, Adam/Momentum/RMSprop)
+  - Backpropagation algorithm with computational graphs
+  - Regularization theory (L1/L2, Dropout)
+
+## Current Readiness: 8.5-9/10 for AI/LLM Practitioner
 
 ### Strengths
 - ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)
@@ -56,18 +75,21 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - ✅ Data engineering proficiency (NumPy/Pandas from industry experience)
 - ✅ Practical prompt engineering (debugging bad responses, optimization through iteration)
 - ✅ End-to-end project completion across classification, RAG, and agentic workflows
+- ✅ **Deep learning across 5 domains** (CNN, LSTM, Transformers, MLP) with real datasets
+- ✅ **Parameter-efficient fine-tuning** (PEFT/LoRA) for production deployment
+- ✅ **ML theory formalization** (backpropagation, gradient descent, regularization) with implementations
 
-### Key Gaps to Address
-- ⚠️ **Fine-tuning & training**: Haven't trained models from scratch or used PEFT/LoRA
-- ⚠️ **ML fundamentals**: Need to revisit theory (gradient descent, backpropagation, loss functions)
-- ⚠️ **MLOps**: CI/CD for ML, model versioning, experiment tracking, monitoring
-- ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition
-- ⚠️ **Cost optimization**: Token usage, caching strategies, batch processing at scale
+### Remaining Gaps
+- ⚠️ **Training from scratch**: Only fine-tuned models; haven't trained large models from scratch
+- ⚠️ **MLOps**: CI/CD for ML, model versioning, experiment tracking (Weights & Biases), monitoring
+- ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
+- ⚠️ **Cost optimization**: Token usage tracking, caching strategies, batch processing at scale
+- ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
 
 ## Next Steps (Priority Order)
-1. **Fine-tune a model** using PEFT/LoRA on a domain-specific task ← Biggest ROI for career advancement
-2. **Add advanced PyTorch techniques**: Attention mechanisms, custom loss functions, model ensembles
-3. **Revisit Coursera ML fundamentals** to solidify theoretical understanding (see numpy/ folder)
-4. **Build an advanced RAG project** with multi-agent system or complex reasoning
-5. **Learn MLOps basics** (Weights & Biases for experiment tracking, model registry)
-6. **Contribute to open source** (LangChain/LlamaIndex issues or PRs)
+1. **Learn MLOps basics** (Weights & Biases experiment tracking, model versioning, checkpoint management) ← Next priority
+2. **Advanced RAG**: Query decomposition, multi-hop reasoning, routing with different backends
+3. **Deployment & Serving**: TorchServe, vLLM, containerization with Docker, scaling considerations
+4. **Custom training**: Train a small transformer from scratch to understand initialization, learning rates, stability
+5. **Cost optimization**: Token counting, caching strategies, batch processing for inference
+6. **Contribute to open source** (PyTorch, Hugging Face, or LangChain)
