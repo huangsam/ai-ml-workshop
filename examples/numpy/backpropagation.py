@@ -14,7 +14,6 @@ Key concepts:
 from typing import Tuple
 
 import matplotlib.pyplot as plt
-
 import numpy as np
 
 # --- 1. SIMPLE NEURAL NETWORK ---

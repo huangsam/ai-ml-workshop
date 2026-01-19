@@ -6,13 +6,12 @@ Linear regression finds the best straight line to fit the data.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_california_housing
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, train_test_split
-
-import numpy as np
 
 
 def main():

@@ -10,14 +10,13 @@ Model: MLP with embeddings for categorical variables
 
 from typing import Dict, Tuple
 
+import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader, Dataset
-
-import numpy as np
 
 from utils import get_device
 

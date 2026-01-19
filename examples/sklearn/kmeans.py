@@ -6,14 +6,13 @@ that partitions data into k clusters by minimizing within-cluster variance.
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
-
-import numpy as np
 
 
 def main():

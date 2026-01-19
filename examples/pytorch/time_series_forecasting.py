@@ -10,13 +10,12 @@ Model: LSTM network for multi-step forecasting
 
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, Dataset
-
-import numpy as np
 
 from utils import get_device
 
