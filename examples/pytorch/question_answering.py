@@ -14,6 +14,8 @@ import torch
 from datasets import DatasetDict, load_dataset
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, DefaultDataCollator
 
+from utils import get_device
+
 # --- 1. CONFIGURATION CONSTANTS ---
 MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use
 MAX_LENGTH = 384  # Max length for question + context
@@ -152,8 +154,8 @@ def main() -> None:
 
     # 1. Device setup
     global DEVICE
-    if torch.backends.mps.is_available():
-        DEVICE = "mps"
+    DEVICE = get_device()
+    if DEVICE == "mps":
         print(f"🔥 Found MPS device. Using {DEVICE} for acceleration.")
     else:
         print("Using CPU for computation.")

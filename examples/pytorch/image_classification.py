@@ -16,6 +16,8 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
+from utils import get_device
+
 # --- 1. CONFIGURATION CONSTANTS ---
 BATCH_SIZE = 64  # Batch size for training and testing
 NUM_EPOCHS = 5  # Number of training epochs
@@ -177,8 +179,8 @@ def main() -> None:
 
     # 1. Device setup
     global DEVICE
-    if torch.backends.mps.is_available():
-        DEVICE = "mps"
+    DEVICE = get_device()
+    if DEVICE == "mps":
         print(f"🔥 Found MPS device. Using {DEVICE} for acceleration.")
     else:
         print("Using CPU for computation.")

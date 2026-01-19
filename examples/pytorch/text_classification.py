@@ -4,6 +4,8 @@ import torch
 from datasets import Dataset, DatasetDict, load_dataset
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+from utils import get_device
+
 # --- 1. CONFIGURATION CONSTANTS ---
 MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use
 MAX_LENGTH = 128  # Max length for tokenization
@@ -39,12 +41,12 @@ def main():
     """
     # 1. Check for Mac Metal Performance Shaders (MPS) for M-series acceleration
     # This is an important step to leverage your M3 Max chip
-    if torch.backends.mps.is_available():
-        global DEVICE
-        DEVICE = "mps"
+    global DEVICE
+    DEVICE = get_device()
+    if DEVICE == "mps":
         print(f"🔥 Found MPS device. Using {DEVICE} for acceleration.")
     else:
-        print("Using CPU.")
+        print(f"Using {DEVICE.upper()}.")
 
     # 2. Load Data and Tokenizer
     raw_datasets: DatasetDict = load_data()

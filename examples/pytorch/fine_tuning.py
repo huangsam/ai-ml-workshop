@@ -18,6 +18,8 @@ from peft import LoraConfig, TaskType, get_peft_model
 from torch.utils.data import DataLoader
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, get_linear_schedule_with_warmup
 
+from utils import get_device
+
 # --- 1. CONFIGURATION CONSTANTS ---
 MODEL_NAME = "distilbert-base-uncased"  # Lightweight baseline
 TASK_TYPE = TaskType.SEQ_CLS  # Sequence classification
@@ -257,8 +259,8 @@ def main() -> None:
 
     # 1. Device setup
     global DEVICE
-    if torch.backends.mps.is_available():
-        DEVICE = "mps"
+    DEVICE = get_device()
+    if DEVICE == "mps":
         print(f"🔥 Found MPS device. Using {DEVICE} for acceleration.")
     else:
         print("Using CPU for computation.")

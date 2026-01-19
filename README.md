@@ -35,19 +35,19 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - Built linear regression from scratch using normal equation and gradient descent.
 - Explored cost functions, feature scaling techniques (standardization, min-max scaling).
 - Demonstrated eigenvalues/eigenvectors for PCA foundations.
-- **Detailed learnings documented in [`docs/numpy.md`](docs/numpy.md)**.
+- **Detailed learnings documented in [`docs/numpy.md`](docs/numpy.md)** and [`docs/ml_theory.md`](docs/ml_theory.md).
 
 ### Project 6: PyTorch Deep Learning Across Multiple Domains
-- **Image Classification** (`image_classification.py`): CIFAR-10 with ResNet-18, data augmentation, achieving 80.35% accuracy
-- **Text Classification** (`text_classification.py`): IMDb sentiment analysis with BERT fine-tuning
-- **Question Answering** (`question_answering.py`): SQuAD extractive QA with BERT span prediction
-- **Time Series Forecasting** (`time_series_forecasting.py`): LSTM-based weather forecasting with multi-step prediction
-- **Tabular Classification** (`tabular_classification.py`): Titanic survival prediction with MLP and categorical embeddings
+- **Image Classification** (`examples/pytorch/image_classification.py`): CIFAR-10 with ResNet-18, data augmentation, achieving 80.35% accuracy
+- **Text Classification** (`examples/pytorch/text_classification.py`): IMDb sentiment analysis with BERT fine-tuning
+- **Question Answering** (`examples/pytorch/question_answering.py`): SQuAD extractive QA with BERT span prediction
+- **Time Series Forecasting** (`examples/pytorch/time_series_forecasting.py`): LSTM-based weather forecasting with multi-step prediction
+- **Tabular Classification** (`examples/pytorch/tabular_classification.py`): Titanic survival prediction with MLP and categorical embeddings
 - Key learnings: MPS acceleration, model architectures (CNN, RNN, Transformer, MLP), data preprocessing, evaluation metrics
 - All examples follow production-quality patterns with type hints, comprehensive comments, and proper error handling
 
 ### Project 7: Parameter-Efficient Fine-Tuning with LoRA
-- **PEFT/LoRA Implementation** (`torchi/fine_tuning.py`): Fine-tune DistilBERT on AG News with LoRA adapters
+- **PEFT/LoRA Implementation** (`examples/pytorch/fine_tuning.py`): Fine-tune DistilBERT on AG News with LoRA adapters
 - Demonstrates ~99% parameter reduction while maintaining competitive performance
 - Training with AdamW optimizer, learning rate scheduling, and gradient checkpointing
 - Shows how to save/load adapters for inference-time deployment
@@ -55,17 +55,44 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - **Practical value**: Deploy large models on consumer hardware (M3 Mac or single GPU)
 
 ### Bonus: Backpropagation from Scratch & ML Theory
-- **numpy/backpropagation.py**: Implements 2-layer neural network with manual backpropagation
+- **examples/numpy/backpropagation.py**: Implements 2-layer neural network with manual backpropagation
 - Step-by-step gradient computation using chain rule and partial derivatives
 - **Gradient verification**: Numerical gradient checking against analytical gradients (finite differences)
 - Trained on XOR problem with visualization of learning curves and decision boundaries
-- **Enhanced docs/numpy.md**: Added comprehensive ML theory sections covering:
+- **Enhanced docs/ml_theory.md**: Added comprehensive ML theory sections covering:
   - Calculus foundations (partial derivatives, chain rule)
   - Gradient descent variants (BGD, SGD, Mini-batch, Adam/Momentum/RMSprop)
   - Backpropagation algorithm with computational graphs
   - Regularization theory (L1/L2, Dropout)
 
 ## Current Readiness: 9/10 for AI/LLM Practitioner
+
+### Repository Structure
+```
+├── examples/                  # Organized ML examples by domain
+│   ├── sklearn/              # Classical ML (8 algorithms + evaluation)
+│   ├── pytorch/              # Deep learning (6 domain-specific examples)
+│   └── numpy/                # ML fundamentals from scratch
+├── utils/                    # Shared utilities (DRY principle)
+│   ├── device_utils.py       # Device detection (MPS/CUDA/CPU)
+│   ├── data_utils.py         # Data loading & preprocessing
+│   └── eval_utils.py         # Evaluation metrics & visualization
+├── docs/                     # Comprehensive learning documentation
+│   ├── README.md             # Navigation guide
+│   ├── ml_theory.md          # Mathematical foundations
+│   ├── numpy.md              # Linear algebra & fundamentals
+│   ├── sklearn.md            # Classical ML algorithms
+│   ├── pytorch.md            # Deep learning & PEFT/LoRA
+│   ├── rag.md                # RAG & LLM applications
+│   └── model_selection.md    # Algorithm selection guide
+└── projects/                 # High-level project work
+
+**Refactoring Benefits**:
+- ~400+ lines of duplicated code consolidated into reusable utilities
+- Consistent folder structure for easy navigation
+- Centralized documentation with navigation guide
+- Cleaner dependencies (removed unused torchvision)
+```
 
 ### Strengths
 - ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)
@@ -80,9 +107,9 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - ✅ **ML theory formalization** (backpropagation, gradient descent, regularization) with implementations
 
 ### Remaining Gaps
+- ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
 - ⚠️ **MLOps**: CI/CD for ML, model versioning, experiment tracking (Weights & Biases), monitoring
 - ⚠️ **Cost optimization**: Token usage tracking, caching strategies, batch processing at scale
-- ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
 - ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
 
 ## Next Steps (Priority Order for AI/LLM Ops)

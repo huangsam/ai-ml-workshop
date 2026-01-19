@@ -18,6 +18,8 @@ from torch.utils.data import DataLoader, Dataset
 
 import numpy as np
 
+from utils import get_device
+
 # --- 1. CONFIGURATION CONSTANTS ---
 SEQUENCE_LENGTH = 24  # Look back 24 hours
 PREDICTION_HORIZON = 6  # Predict next 6 hours
@@ -265,8 +267,8 @@ def main() -> None:
 
     # 1. Device setup
     global DEVICE
-    if torch.backends.mps.is_available():
-        DEVICE = "mps"
+    DEVICE = get_device()
+    if DEVICE == "mps":
         print(f"🔥 Found MPS device. Using {DEVICE} for acceleration.")
     else:
         print("Using CPU for computation.")
