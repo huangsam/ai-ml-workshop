@@ -66,31 +66,3 @@ Fine-tuned DistilBERT on AG News using LoRA adapters, achieving 86% accuracy wit
 
 ### Bonus: Backpropagation from Scratch & ML Theory
 Implemented a 2-layer neural network with manual backpropagation to understand gradient computation via chain rule. Included gradient verification and trained on the XOR problem. Comprehensive ML theory documentation covering calculus, optimization, regularization, and convergence. **[Full details in docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch)** and **[docs/ml_theory.md](docs/ml_theory.md)**
-
-## Current Readiness: 9/10 for AI/LLM Practitioner
-
-### Strengths
-- ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)
-- ✅ Traditional ML proficiency (sklearn: regression, classification, clustering, dimensionality reduction)
-- ✅ RAG expertise including optimization (chunking, retrieval, RRF with BM25/Chroma, evaluation)
-- ✅ Production deployment skills (FastAPI + LangChain/LangGraph from previous work)
-- ✅ Data engineering proficiency (NumPy/Pandas from industry experience)
-- ✅ Practical prompt engineering (debugging bad responses, optimization through iteration)
-- ✅ End-to-end project completion across classification, RAG, and agentic workflows
-- ✅ **Deep learning across 5 domains** (CNN, LSTM, Transformers, MLP) with real datasets
-- ✅ **Parameter-efficient fine-tuning** (PEFT/LoRA) for production deployment
-- ✅ **ML theory formalization** (backpropagation, gradient descent, regularization) with implementations
-
-### Remaining Gaps
-- ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
-- ⚠️ **MLOps**: CI/CD for ML, model versioning, experiment tracking (Weights & Biases), monitoring
-- ⚠️ **Cost optimization**: Token usage tracking, caching strategies, batch processing at scale
-- ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
-
-## Next Steps (Priority Order for AI/LLM Ops)
-1. **Deployment & Serving**: TorchServe, vLLM, containerization with Docker, scaling considerations
-2. **Learn MLOps basics**: Weights & Biases experiment tracking, model versioning, checkpoint management
-3. **Cost optimization**: Token counting, caching strategies, batch processing for inference
-4. **Advanced RAG**: Query decomposition, multi-hop reasoning, routing with different backends
-5. **Custom training**: Train a small transformer from scratch to understand initialization, learning rates, stability
-6. **Contribute to open source** (PyTorch, Hugging Face, or LangChain)
