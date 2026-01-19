@@ -126,31 +126,31 @@ This project implemented 5 domain-specific neural networks demonstrating key arc
 - **Model**: ResNet-18 pre-trained on ImageNet, fine-tuned for classification
 - **Key techniques**: Data augmentation (rotation, flipping, color jitter), transfer learning, MPS acceleration
 - **Performance**: 80.35% accuracy
-- **File**: `examples/pytorch/image_classification.py`
+- **File**: `workshop/core/pytorch/image_classification.py`
 
 ### Text Classification
 - **Dataset**: IMDb (movie sentiment analysis)
 - **Model**: BERT-base-uncased with fine-tuning for sequence classification
 - **Key techniques**: Tokenization, attention mechanisms, classification head
-- **File**: `examples/pytorch/text_classification.py`
+- **File**: `workshop/core/pytorch/text_classification.py`
 
 ### Question Answering
 - **Dataset**: SQuAD v1.1 (extractive QA on Wikipedia)
 - **Model**: BERT-base with span prediction for start/end token selection
 - **Key techniques**: Context encoding, span prediction, evaluation with Exact Match and F1
-- **File**: `examples/pytorch/question_answering.py`
+- **File**: `workshop/core/pytorch/question_answering.py`
 
 ### Time Series Forecasting
 - **Dataset**: Synthetic weather data (temperature, humidity, wind speed)
 - **Model**: LSTM for multi-step ahead forecasting
 - **Key techniques**: Sequence processing, look-back windows, temporal pattern learning
-- **File**: `examples/pytorch/time_series_forecasting.py`
+- **File**: `workshop/core/pytorch/time_series_forecasting.py`
 
 ### Tabular Classification
 - **Dataset**: Titanic survival prediction (mixed categorical/numerical features)
 - **Model**: MLP with categorical embeddings for structured data
 - **Key techniques**: Feature embeddings, categorical encoding, MLP architecture
-- **File**: `examples/pytorch/tabular_classification.py`
+- **File**: `workshop/core/pytorch/tabular_classification.py`
 
 ### Cross-Domain Learnings
 - MPS acceleration on Apple Silicon for efficient training
@@ -171,7 +171,7 @@ This project demonstrates efficient adaptation of large language models without 
 - **LoRA Configuration**: r=8, alpha=16, dropout=0.05
 - **Target Modules**: q_lin, v_lin (DistilBERT attention projections)
 - **Performance**: 86% accuracy with 98.89% parameter reduction
-- **File**: `examples/pytorch/fine_tuning.py`
+- **File**: `workshop/core/pytorch/fine_tuning.py`
 
 ### Technical Achievements
 - Implemented PEFT/LoRA adapters using Hugging Face `peft` library

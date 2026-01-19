@@ -2,6 +2,48 @@
 
 The goal of this Git repository is to learn and practice AI/ML concepts and techniques through code examples, tutorials, and projects that enhance understanding of artificial intelligence and machine learning. This covers practical experience with PyTorch, TensorFlow, Hugging Face, LangChain, and other relevant libraries, alongside foundational work in Python programming, data manipulation (NumPy, Pandas), data visualization (Matplotlib, Seaborn), and reinforcement of ML theory from Coursera materials.
 
+## Getting Started
+
+### Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ai-ml-workshop
+
+# Install dependencies with uv
+uv sync
+
+# Or install in editable mode for development
+uv pip install -e .
+```
+
+### Running Examples
+This workshop uses a CLI interface to run examples. After installation, you can run examples using:
+
+```bash
+# PyTorch examples
+uv run workshop pytorch fine-tuning          # PEFT/LoRA fine-tuning
+uv run workshop pytorch image-classification # ResNet-18 on CIFAR-10
+uv run workshop pytorch text-classification  # BERT on IMDb
+uv run workshop pytorch question-answering   # BERT on SQuAD
+uv run workshop pytorch time-series          # LSTM forecasting
+uv run workshop pytorch tabular              # MLP with embeddings
+
+# Scikit-learn examples
+uv run workshop sklearn linear-regression
+uv run workshop sklearn logistic-regression
+uv run workshop sklearn knn
+uv run workshop sklearn decision-tree
+uv run workshop sklearn svm
+uv run workshop sklearn random-forest
+uv run workshop sklearn kmeans
+uv run workshop sklearn pca
+
+# NumPy examples
+uv run workshop numpy linear-regression
+uv run workshop numpy pca
+```
+
 ## Learnings & Progress
 
 ### Project 1: Custom Text Classifier (PyTorch)

@@ -430,7 +430,7 @@ Random deactivation of neurons during training.
 | **Regularization** | Penalize complexity | L1/L2 loss terms, Dropout |
 | **Evaluation** | Cost functions measure fit | Loss/accuracy metrics |
 
-See [examples/numpy/backpropagation.py](../examples/numpy/backpropagation.py) for a complete implementation demonstrating these concepts.
+See [workshop/core/numpy/backpropagation.py](../workshop/core/numpy/backpropagation.py) for a complete implementation demonstrating these concepts.
 
 ---
 
@@ -500,6 +500,5 @@ This bonus project implements a neural network with manual backpropagation to un
 - Learning curves show convergence behavior and potential overfitting
 
 ### Files
-- `examples/numpy/main.py`: Linear algebra operations and concepts
-- `examples/numpy/backpropagation.py`: Complete neural network with manual backprop
-
+- `workshop/core/numpy/main.py`: Linear algebra operations and concepts
+- `workshop/core/numpy/backpropagation.py`: Complete neural network with manual backprop

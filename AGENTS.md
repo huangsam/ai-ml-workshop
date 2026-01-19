@@ -6,29 +6,27 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 
 ## Repository Structure
 ```
-├── examples/                 # Organized ML examples by domain
-│   ├── sklearn/              # Classical ML (8 algorithms + evaluation)
-│   ├── pytorch/              # Deep learning (6 domain-specific examples)
-│   └── numpy/                # ML fundamentals from scratch
-├── utils/                    # Shared utilities (DRY principle)
-│   ├── device_utils.py       # Device detection (MPS/CUDA/CPU)
-│   ├── data_utils.py         # Data loading & preprocessing
-│   └── eval_utils.py         # Evaluation metrics & visualization
+├── workshop/                 # Main package
+│   ├── core/                 # Organized ML examples by domain
+│   │   ├── sklearn/          # Classical ML (8 algorithms + evaluation)
+│   │   ├── pytorch/          # Deep learning (6 domain-specific examples)
+│   │   └── numpy/            # ML fundamentals from scratch
+│   ├── utils/                # Shared utilities (DRY principle)
+│   │   ├── device_utils.py   # Device detection (MPS/CUDA/CPU)
+│   │   ├── data_utils.py     # Data loading & preprocessing
+│   │   └── eval_utils.py     # Evaluation metrics & visualization
+│   ├── cli.py                # CLI interface for running examples
+│   └── __init__.py           # Package initialization
 ├── docs/                     # Comprehensive learning documentation
 │   ├── ml_theory.md          # Mathematical foundations
 │   ├── numpy.md              # Linear algebra & fundamentals
 │   ├── sklearn.md            # ML algorithms & model selection guide
 │   ├── pytorch.md            # Deep learning & PEFT/LoRA
 │   └── rag.md                # RAG & LLM applications
+├── pyproject.toml            # Project configuration with dependencies
 ├── README.md                 # High-level overview & projects
 ├── AGENTS.md                 # This file (projects 2-3 + navigation)
-└── projects/                 # High-level project work
-
-**Refactoring Benefits**:
-- ~400+ lines of duplicated code consolidated into reusable utilities
-- Consistent folder structure for easy navigation
-- Centralized documentation with navigation guide
-- Cleaner dependencies (removed unused torchvision)
+└── uv.lock                   # Dependency lock file
 ```
 
 ---
@@ -43,7 +41,7 @@ The goal of this repository is to learn and practice AI/ML concepts through code
   - Project 5: ML Fundamentals implementation
   - Bonus: Backpropagation from scratch
 - **[Scikit-Learn](docs/sklearn.md)** - Classical ML algorithms, hyperparameter tuning, evaluation metrics
-  - Project 4: 8 complete algorithm implModel selection guide, cmentations
+  - Project 4: 8 complete algorithm implementations
 - **[PyTorch](docs/pytorch.md)** - Deep learning, CNNs, RNNs, Transformers, PEFT/LoRA fine-tuning
   - Project 6: 5 domain-specific neural networks
   - Project 7: Parameter-efficient fine-tuning
@@ -223,7 +221,7 @@ Query → Tool Selection → Tool Execution → Observation → Reasoning → Re
 1. **Learning**: Read [README.md](README.md) for high-level overview, then follow learning paths above
 2. **Projects**: Navigate to specific project documentation for detailed implementation
 3. **Reference**: Use Cmd+F to find specific topics across any document
-4. **Implementation**: Link examples back to code in `examples/` folder
+4. **Implementation**: Link examples back to code in `workshop/core/` folder
 5. **Teaching**: Share specific sections with others learning ML/AI
 
 A comprehensive RAG application demonstrating retrieval-augmented generation across multiple domains.

@@ -29,7 +29,7 @@ Choose your algorithm based on your problem type, data characteristics, and cons
 
 ## Sklearn Algorithm Reference
 
-This section summarizes the sklearn examples in the `examples/sklearn/` folder, organized by learning type (supervised vs unsupervised) and ordered from least complex to most complex. Each algorithm includes a brief description, key concepts, use cases, and reference to the example file.
+This section summarizes the sklearn examples in the `workshop/core/sklearn/` folder, organized by learning type (supervised vs unsupervised) and ordered from least complex to most complex. Each algorithm includes a brief description, key concepts, use cases, and reference to the example file.
 
 ## Supervised Learning Algorithms
 
@@ -201,4 +201,3 @@ This project implemented 8 complete examples covering supervised and unsupervise
 - Evaluation metrics: accuracy, precision, recall, F1-score, confusion matrix
 - Model comparison and algorithm selection strategies
 - Complete examples with visualization and educational comments
-
