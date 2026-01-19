@@ -6,13 +6,14 @@ classes with maximum margin, using kernel tricks for non-linear data.
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.preprocessing import StandardScaler
+
+import numpy as np
 from sklearn.svm import SVC
 
 

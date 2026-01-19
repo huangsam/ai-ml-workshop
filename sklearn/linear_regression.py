@@ -1,30 +1,31 @@
 """
-Linear Regression Example using Boston Housing Dataset
+Linear Regression Example using California Housing Dataset
 
 This script demonstrates linear regression for predicting house prices.
 Linear regression finds the best straight line to fit the data.
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 
+import numpy as np
+
 
 def main():
     # Step 1: Load and prepare the dataset
-    # Boston Housing dataset contains features like crime rate, average rooms, etc.
-    # Target is median house value in $1000s
-    boston = load_boston()
-    X = pd.DataFrame(boston.data, columns=boston.feature_names)  # Features as DataFrame
-    y = pd.Series(boston.target, name="MEDV")  # Target variable
+    # California Housing dataset contains features like median income, house age, etc.
+    # Target is median house value in $100,000s
+    california = fetch_california_housing()
+    X = pd.DataFrame(california.data, columns=california.feature_names)  # Features as DataFrame
+    y = pd.Series(california.target, name="MedHouseVal")  # Target variable
 
-    print("Boston Housing Dataset:")
+    print("California Housing Dataset:")
     print(f"Features: {list(X.columns)}")  # List of feature names
-    print(f"Target: {y.name} (Median value of owner-occupied homes in $1000's)")
+    print(f"Target: {y.name} (Median house value in $100,000's)")
     print(f"Dataset shape: {X.shape}")  # Number of samples and features
     print()
 
