@@ -69,7 +69,6 @@ def main():
 
     # Step 5: Make predictions
     y_pred = model.predict(X_test_scaled)  # Class predictions
-    y_pred_proba = model.predict_proba(X_test_scaled)[:, 1]  # Probability of positive class
 
     # Step 6: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)  # Fraction of correct predictions
