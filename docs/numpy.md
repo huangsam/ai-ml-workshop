@@ -173,3 +173,261 @@ Scales to fixed range (usually 0-1).
 - **Automatic Differentiation**: Frameworks like PyTorch handle gradient computation
 
 This foundation provides the mathematical intuition needed to understand and debug modern ML algorithms, even when using high-level libraries like scikit-learn or deep learning frameworks.
+
+## Calculus Foundations for Machine Learning
+
+### Partial Derivatives
+In ML, cost functions depend on multiple parameters. Partial derivatives measure how cost changes with respect to each parameter independently.
+
+**Definition**: `∂J/∂θⱼ` = rate of change of cost J with respect to parameter θⱼ
+
+**Example in Linear Regression**:
+```
+J(θ₀, θ₁) = (1/(2m)) * Σ(θ₀ + θ₁x^(i) - y^(i))²
+
+∂J/∂θ₀ = (1/m) * Σ(θ₀ + θ₁x^(i) - y^(i))
+∂J/∂θ₁ = (1/m) * Σ(θ₀ + θ₁x^(i) - y^(i)) * x^(i)
+```
+
+**Intuition**:
+- Positive gradient: Increase parameters to decrease cost
+- Negative gradient: Decrease parameters to decrease cost
+- Zero gradient: At critical point (local minimum/maximum)
+
+### The Chain Rule
+Enables gradient computation through nested function compositions. **Critical for backpropagation in neural networks.**
+
+**Simple Form**: If `y = f(g(x))`, then `dy/dx = (dy/dg) * (dg/dx)`
+
+**Example**: Sigmoid composed with linear function
+```
+z = θ^T * x           (linear layer)
+a = sigmoid(z)        (activation)
+J = loss(a, y)        (cost function)
+
+dJ/dθ = (dJ/da) * (da/dz) * (dz/dθ)
+      = (dJ/da) * sigmoid'(z) * x
+```
+
+**Multi-layer Case**: For deep networks, chain rule applies recursively
+```
+dJ/dθ₁ = (dJ/da_n) * (da_n/dz_n) * ... * (da₂/dz₂) * (dz₂/dθ₁)
+```
+
+This is **backpropagation**: computing gradients from output to input.
+
+### Gradient Verification
+Before training on large datasets, verify gradients are correct using **numerical gradient checking**.
+
+**Finite Differences Approximation**:
+```
+∂J/∂θ ≈ (J(θ + ε) - J(θ - ε)) / (2ε)    [where ε ≈ 1e-5]
+```
+
+**Verification Process**:
+1. Compute analytical gradient: `dθ_analytical = backprop()`
+2. Compute numerical gradient: `dθ_numerical = finite_differences()`
+3. Check relative error: `|dθ_analytical - dθ_numerical| / (|dθ_analytical| + |dθ_numerical|) < 1e-4`
+4. If passes, implementation is correct; if fails, debug backprop code
+
+**Trade-offs**:
+- Analytical gradients: Fast, scalable, but complex to implement
+- Numerical gradients: Slow (requires 2m forward passes), but simple and reliable for verification
+
+## Gradient Descent Variants
+
+### Batch Gradient Descent (BGD)
+Uses entire training set for each update.
+
+**Update Rule**: `θ = θ - η * ∇J(θ)`
+
+**Pros**:
+- Smooth convergence (each step uses all data)
+- Can use larger learning rates
+- Better for parallel computation
+
+**Cons**:
+- Slow: Must process all m examples before each update
+- Memory intensive for large datasets
+- May get stuck in local minima
+
+### Stochastic Gradient Descent (SGD)
+Updates after each single example.
+
+**Update Rule**: `θ = θ - η * ∇J(θ; x^(i), y^(i))`
+
+**Pros**:
+- Fast: Updates immediately after each example
+- Can escape local minima (noise helps)
+- Online learning possible (streaming data)
+
+**Cons**:
+- Noisy convergence (oscillates around minimum)
+- Harder to parallelize
+- Requires learning rate scheduling
+
+### Mini-Batch Gradient Descent
+Compromise: Update after b training examples (batch size).
+
+**Update Rule**: `θ = θ - η * (1/b) * Σ∇J(θ; x^(i), y^(i))` for i ∈ batch
+
+**Pros**:
+- Best of both worlds: less noisy than SGD, faster than BGD
+- Parallelizable (process batch on GPU)
+- Practical default for deep learning
+
+**Cons**:
+- Introduces batch size as hyperparameter
+- Still requires learning rate tuning
+
+**Modern Practice**: Mini-batch is standard in frameworks like PyTorch/TensorFlow
+
+### Advanced Optimizers
+**Momentum**:
+- Accumulates gradients over time: `v = βv + ∇J`
+- Accelerates in consistent directions, dampens oscillations
+- Default β ≈ 0.9
+
+**RMSprop**:
+- Adapts learning rate per parameter: `θ = θ - η/(sqrt(v) + ε) * ∇J`
+- Helps with features at different scales
+
+**Adam (Adaptive Moment Estimation)**:
+- Combines momentum and RMSprop
+- Maintains both first moment (mean) and second moment (variance) of gradients
+- Most popular optimizer in deep learning
+
+## Backpropagation Deep Dive
+
+### Computational Graph
+Visual representation of nested function composition.
+
+**Example**: `L = loss(sigmoid(linear(x)))`
+```
+x → [Linear: z = Wx + b] → z → [Sigmoid: a = 1/(1+e^-z)] → a → [Loss: J] → L
+                                 ↓                           ↓
+                         (da/dz = a(1-a))        (dJ/da = (a-y)/m)
+```
+
+**Forward Pass**: Compute each intermediate value (z, a, L)
+**Backward Pass**: Compute gradients using chain rule in reverse order
+
+### Backpropagation Algorithm
+
+**Forward Pass**: Store all intermediate values
+```python
+z1 = W1 @ x + b1
+a1 = relu(z1)
+z2 = W2 @ a1 + b2
+a2 = sigmoid(z2)
+L = binary_cross_entropy(a2, y)
+```
+
+**Backward Pass**: Compute gradients from output to input using chain rule
+```python
+# Output layer gradient
+dL/da2 = (a2 - y) / m                    # Loss derivative
+
+# Sigmoid gradient
+da2/dz2 = a2 * (1 - a2)                  # Activation derivative
+dL/dz2 = dL/da2 * da2/dz2
+
+# Weight gradients
+dL/dW2 = dL/dz2 @ a1.T                   # Chain rule: dz2/dW2 = a1^T
+dL/db2 = sum(dL/dz2)
+
+# Backprop to hidden layer
+dL/da1 = dL/dz2 @ W2.T                   # Chain rule: dz2/da1 = W2^T
+
+# ReLU gradient
+da1/dz1 = (z1 > 0)                       # Step function
+dL/dz1 = dL/da1 * da1/dz1
+
+# Hidden layer weight gradients
+dL/dW1 = x.T @ dL/dz1
+dL/db1 = sum(dL/dz1)
+```
+
+**Parameter Update**:
+```python
+W1 = W1 - learning_rate * dL/dW1
+b1 = b1 - learning_rate * dL/db1
+W2 = W2 - learning_rate * dL/dW2
+b2 = b2 - learning_rate * dL/db2
+```
+
+### Why Backpropagation Works
+
+**Efficiency**: Computes all gradients in O(1) backward pass vs O(n_params) forward passes
+**Correctness**: Chain rule guarantees mathematically correct gradients
+**Generality**: Works for any differentiable function composition
+
+**Key Insight**: Gradients propagate information about how to improve predictions through all layers simultaneously.
+
+### Why This Matters Today
+
+- **PyTorch/TensorFlow**: Autograd automates backprop; understanding it helps debug training
+- **Custom Layers**: Implementing gradients for novel architectures requires backprop knowledge
+- **Numerical Issues**: Understanding vanishing/exploding gradients helps with network design
+- **Transfer Learning**: Fine-tuning involves backprop with frozen layers
+
+## Regularization Theory
+
+### Why Regularization?
+
+**Overfitting Problem**: Model memorizes training data, poor generalization
+
+**Example**:
+- Training error: 1%
+- Test error: 20% ← Problem!
+
+**Solution**: Add penalty term to cost function that discourages large weights
+
+### L1 Regularization (Lasso)
+**Cost Function**: `J(θ) = (1/(2m)) * Σ(h_θ(x^(i)) - y^(i))² + (λ/(2m)) * Σ|θ|`
+
+**Properties**:
+- Penalty proportional to absolute value of weights
+- Encourages **sparsity**: many weights become exactly zero
+- Feature selection effect
+
+**Gradient**: `∂J/∂θⱼ = ... + (λ/m) * sign(θⱼ)`
+
+### L2 Regularization (Ridge)
+**Cost Function**: `J(θ) = (1/(2m)) * Σ(h_θ(x^(i)) - y^(i))² + (λ/(2m)) * Σ θⱼ²`
+
+**Properties**:
+- Penalty proportional to squared weights
+- Encourages small weights, but rarely zero
+- More stable than L1
+
+**Gradient**: `∂J/∂θⱼ = ... + (λ/m) * θⱼ`
+
+### Hyperparameter: Regularization Strength (λ)
+- **λ = 0**: No regularization (may overfit)
+- **λ = optimal**: Best generalization
+- **λ = very large**: Underfitting (all weights → 0)
+
+**Selection**: Use cross-validation to find best λ
+
+### Dropout (Deep Learning)
+Random deactivation of neurons during training.
+
+**Benefits**:
+- Prevents co-adaptation of neurons
+- Acts as ensemble of models
+- Effective regularization for deep networks
+
+**Implementation**: During training, drop each neuron with probability p; scale activations by 1/(1-p) during inference
+
+## Summary: From Theory to Practice
+
+| Concept | Theory | Implementation |
+|---------|--------|-----------------|
+| **Optimization** | Gradient descent minimizes cost | SGD/Adam in PyTorch |
+| **Gradients** | Partial derivatives via chain rule | Backpropagation/Autograd |
+| **Feature Scaling** | Normalization for stability | StandardScaler/MinMaxScaler |
+| **Regularization** | Penalize complexity | L1/L2 loss terms, Dropout |
+| **Evaluation** | Cost functions measure fit | Loss/accuracy metrics |
+
+See [numpy/backpropagation.py](../numpy/backpropagation.py) for a complete implementation demonstrating these concepts.
