@@ -34,7 +34,6 @@ def numpy():
     pass
 
 
-# PyTorch commands
 @pytorch.command()
 def fine_tuning():
     """Run PEFT/LoRA fine-tuning example."""
@@ -83,7 +82,6 @@ def tabular_classification():
     main()
 
 
-# Scikit-learn commands
 @sklearn.command()
 def linear_regression():
     """Run linear regression example."""
@@ -148,7 +146,6 @@ def pca():
     main()
 
 
-# NumPy commands
 @numpy.command()
 def fundamentals():
     """Run NumPy fundamentals example."""
