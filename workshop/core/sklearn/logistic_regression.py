@@ -47,10 +47,10 @@ def main():
 
     # Step 4: Hyperparameter tuning
     # Logistic regression uses regularization to prevent overfitting
+    # Note: Using default penalty (L2) to avoid deprecation warnings
     param_grid = {
         "C": [0.01, 0.1, 1, 10, 100],  # Inverse of regularization strength; smaller values specify stronger regularization
-        "penalty": ["l1", "l2"],  # Regularization norm (l1 for Lasso, l2 for Ridge)
-        "solver": ["liblinear", "lbfgs"],  # Algorithm to use in the optimization problem
+        "solver": ["lbfgs", "liblinear"],  # Algorithm to use in the optimization problem
     }
 
     search = RandomizedSearchCV(LogisticRegression(random_state=42, max_iter=1000), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
