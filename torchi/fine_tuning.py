@@ -30,7 +30,7 @@ DEVICE = "cpu"  # Will check for MPS acceleration
 LORA_R = 8  # Rank of LoRA update matrices (lower = fewer parameters)
 LORA_ALPHA = 16  # LoRA scaling factor
 LORA_DROPOUT = 0.05  # Dropout in LoRA layers
-TARGET_MODULES = ["q_proj", "v_proj"]  # Which modules to apply LoRA to
+TARGET_MODULES = ["q_lin", "v_lin"]  # DistilBERT attention modules (query, value)
 
 
 def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> Tuple[Dataset, Dataset]:
