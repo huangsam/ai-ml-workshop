@@ -137,8 +137,8 @@ def load_titanic_data() -> pd.DataFrame:
         titanic = fetch_openml("titanic", version=1, as_frame=True)
         df = titanic.frame
         # Convert survived to numeric if it's categorical
-        if df['survived'].dtype.name == 'category':
-            df['survived'] = df['survived'].astype(int)
+        if df["survived"].dtype.name == "category":
+            df["survived"] = df["survived"].astype(int)
     except Exception:
         # Fallback: create synthetic data similar to Titanic
         print("OpenML failed, creating synthetic Titanic-like data...")
@@ -376,13 +376,13 @@ def main() -> None:
         train_loss, train_acc = train_model(model, train_loader, optimizer, criterion, DEVICE)
         test_loss, test_acc = evaluate_model(model, test_loader, criterion, DEVICE)
 
-        print(".4f")
+        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Train Loss: {train_loss:.4f}, Test Acc: {test_acc:.2f}%")
         if test_acc > best_acc:
             best_acc = test_acc
 
     # 7. Final evaluation
     print("Final Results:")
-    print(".4f")
+    print(f"Best Test Accuracy: {best_acc:.2f}%")
     print("\nTraining complete! 🎉")
     print("Note: This is a simplified implementation focusing on numerical features.")
     print("For full tabular learning, implement proper categorical embeddings.")

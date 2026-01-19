@@ -148,9 +148,9 @@ def generate_weather_data(num_samples: int = 10000) -> pd.DataFrame:
 
     print(f"Generated {len(df)} hours of weather data")
     print(f"Date range: {df.index.min()} to {df.index.max()}")
-    print(".2f")
-    print(".2f")
-    print(".2f")
+    print(f"Temperature range: {df['temperature'].min():.2f}°C to {df['temperature'].max():.2f}°C")
+    print(f"Humidity range: {df['humidity'].min():.2f}% to {df['humidity'].max():.2f}%")
+    print(f"Wind speed range: {df['wind_speed'].min():.2f} to {df['wind_speed'].max():.2f} m/s")
     return df
 
 
@@ -297,14 +297,14 @@ def main() -> None:
         train_loss = train_model(model, train_loader, optimizer, criterion, DEVICE)
         test_loss = evaluate_model(model, test_loader, criterion, DEVICE)
 
-        print(".4f")
+        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}")
         if test_loss < best_loss:
             best_loss = test_loss
             # Could save model here: torch.save(model.state_dict(), 'best_model.pth')
 
     # 6. Final evaluation
     print("\nFinal Results:")
-    print(".4f")
+    print(f"Best Test Loss: {best_loss:.4f}")
     print("\nTraining complete! 🎉")
     print("Note: This is a basic LSTM implementation. For production use,")
     print("consider techniques like teacher forcing, attention mechanisms,")

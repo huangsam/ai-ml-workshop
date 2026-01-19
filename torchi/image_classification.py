@@ -205,12 +205,12 @@ def main() -> None:
 
         # Evaluate after each epoch
         test_loss, test_acc = evaluate_model(model, test_loader, criterion, DEVICE)
-        print(".4f")
+        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Test Loss: {test_loss:.4f}, Accuracy: {test_acc:.2f}%")
 
     # 6. Final evaluation
     print("\nFinal Evaluation:")
     final_loss, final_acc = evaluate_model(model, test_loader, criterion, DEVICE)
-    print(".4f")
+    print(f"Final Test Loss: {final_loss:.4f}, Final Accuracy: {final_acc:.2f}%")
 
     print("\nTraining complete! 🎉")
 
