@@ -158,9 +158,8 @@ def train_epoch(
     model: nn.Module,
     train_loader: DataLoader,
     optimizer: torch.optim.Optimizer,
-    criterion: nn.Module,
     device: str,
-) -> float:
+) -> tuple[float, float]:
     """
     Train the model for one epoch.
 
@@ -168,11 +167,10 @@ def train_epoch(
         model: The PEFT model with LoRA
         train_loader: Training data loader
         optimizer: Optimizer
-        criterion: Loss function
         device: Device to run on
 
     Returns:
-        Average training loss
+        Tuple of (average_loss, accuracy)
     """
     model.train()
     total_loss = 0.0
@@ -209,14 +207,13 @@ def train_epoch(
     return avg_loss, accuracy
 
 
-def evaluate(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> tuple[float, float]:
+def evaluate(model: nn.Module, test_loader: DataLoader, device: str) -> tuple[float, float]:
     """
     Evaluate the model on test data.
 
     Args:
         model: The PEFT model with LoRA
         test_loader: Test data loader
-        criterion: Loss function
         device: Device to run on
 
     Returns:
@@ -280,7 +277,6 @@ def main() -> None:
 
     # 6. Setup training
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-    criterion = nn.CrossEntropyLoss()
     total_steps = len(train_loader) * NUM_EPOCHS
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
 
@@ -296,11 +292,11 @@ def main() -> None:
         print("-" * 40)
 
         # Train
-        train_loss, train_acc = train_epoch(model, train_loader, optimizer, criterion, DEVICE)
+        train_loss, train_acc = train_epoch(model, train_loader, optimizer, DEVICE)
         scheduler.step()
 
         # Evaluate
-        test_loss, test_acc = evaluate(model, test_loader, criterion, DEVICE)
+        test_loss, test_acc = evaluate(model, test_loader, DEVICE)
 
         print(f"Training - Loss: {train_loss:.4f}, Accuracy: {train_acc:.2f}%")
         print(f"Testing  - Loss: {test_loss:.4f}, Accuracy: {test_acc:.2f}%")
