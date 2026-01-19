@@ -65,7 +65,7 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
   - Backpropagation algorithm with computational graphs
   - Regularization theory (L1/L2, Dropout)
 
-## Current Readiness: 8.5-9/10 for AI/LLM Practitioner
+## Current Readiness: 9/10 for AI/LLM Practitioner
 
 ### Strengths
 - ✅ Practical experience with modern ML stack (PyTorch, Hugging Face, LangChain, LlamaIndex)
@@ -85,10 +85,10 @@ Prior to this, I will also brush up on my knowledge of Python programming, data 
 - ⚠️ **Deployment**: Model serving (TorchServe, vLLM), containerization, scaling
 - ⚠️ **Advanced RAG**: Multi-hop reasoning, agentic RAG, query decomposition, routing
 
-## Next Steps (Priority Order)
-1. **Learn MLOps basics** (Weights & Biases experiment tracking, model versioning, checkpoint management) ← Next priority
-2. **Advanced RAG**: Query decomposition, multi-hop reasoning, routing with different backends
-3. **Deployment & Serving**: TorchServe, vLLM, containerization with Docker, scaling considerations
-4. **Custom training**: Train a small transformer from scratch to understand initialization, learning rates, stability
-5. **Cost optimization**: Token counting, caching strategies, batch processing for inference
+## Next Steps (Priority Order for AI/LLM Ops)
+1. **Deployment & Serving**: TorchServe, vLLM, containerization with Docker, scaling considerations
+2. **Learn MLOps basics**: Weights & Biases experiment tracking, model versioning, checkpoint management
+3. **Cost optimization**: Token counting, caching strategies, batch processing for inference
+4. **Advanced RAG**: Query decomposition, multi-hop reasoning, routing with different backends
+5. **Custom training**: Train a small transformer from scratch to understand initialization, learning rates, stability
 6. **Contribute to open source** (PyTorch, Hugging Face, or LangChain)
