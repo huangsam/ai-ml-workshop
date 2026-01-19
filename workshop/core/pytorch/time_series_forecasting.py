@@ -126,7 +126,7 @@ def generate_weather_data(num_samples: int = 10000) -> pd.DataFrame:
     np.random.seed(42)
 
     # Generate time index (hourly)
-    time_index = pd.date_range(start="2020-01-01", periods=num_samples, freq="H")
+    time_index = pd.date_range(start="2020-01-01", periods=num_samples, freq="h")
 
     # Temperature: seasonal pattern + daily variation + noise
     seasonal_temp = 20 + 10 * np.sin(2 * np.pi * np.arange(num_samples) / (24 * 365))  # Annual cycle

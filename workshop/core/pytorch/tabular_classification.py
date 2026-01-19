@@ -178,9 +178,9 @@ def preprocess_data(df: pd.DataFrame) -> tuple[dict[str, torch.Tensor], torch.Te
 
     # Handle missing values
     df = df.copy()
-    df["age"].fillna(df["age"].median(), inplace=True)
-    df["fare"].fillna(df["fare"].median(), inplace=True)
-    df["embarked"].fillna("S", inplace=True)  # Most common
+    df["age"] = df["age"].fillna(df["age"].median())
+    df["fare"] = df["fare"].fillna(df["fare"].median())
+    df["embarked"] = df["embarked"].fillna("S")  # Most common
 
     # Encode categorical variables
     categorical_features = ["pclass", "sex", "embarked"]
