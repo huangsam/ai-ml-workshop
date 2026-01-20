@@ -67,6 +67,15 @@
 - **NLP-specific**: BLEU (machine translation), Exact Match / F1 (QA), Perplexity (language modeling)
 - Track both training and test metrics to detect overfitting
 
+### Inference / Prediction
+- Switch to evaluation mode: `model.eval()` disables dropout and batch normalization training behavior
+- Disable gradients: `with torch.no_grad():` reduces memory and speeds up inference
+- **Text classification**: Tokenize input → forward pass → `argmax(logits)` for predicted class
+- **Image classification**: Preprocess image (normalize, resize) → forward pass → `max(outputs)` for class
+- **Time series**: Normalize input with fitted scaler → forward pass → `inverse_transform()` for real values
+- **Question answering**: Tokenize question + context → get start/end logits → decode answer span
+- **Tabular**: Encode categorical features → forward pass → threshold probability for binary classification
+
 ## Practical Integration
 - Datasets, PyTorch, and Transformers work together for efficient supervised learning workflows.
 - Preprocessing, batching, training, and evaluation are streamlined with these libraries.
