@@ -35,6 +35,87 @@ def preprocess_function(examples, tokenizer: AutoTokenizer):
     )
 
 
+def train_model(
+    model: AutoModelForSequenceClassification,
+    train_loader: torch.utils.data.DataLoader,
+    optimizer: torch.optim.AdamW,
+    device: str,
+    epochs: int,
+) -> float:
+    """
+    Train the model for the specified number of epochs.
+
+    Args:
+        model: The BERT model for sequence classification
+        train_loader: Training data loader
+        optimizer: Optimizer for updating model parameters
+        device: Device to run training on
+        epochs: Number of training epochs
+
+    Returns:
+        Average training loss from the last epoch
+    """
+    model.train()  # Set model to training mode
+    for epoch in range(epochs):
+        total_loss: float = 0.0
+        num_batches: int = len(train_loader)
+        # Iterate over batches from the training DataLoader
+        for batch_idx, batch in enumerate(train_loader):
+            # Batch items are already torch tensors; move to device
+            input_ids: torch.Tensor = batch["input_ids"].to(device)
+            attention_mask: torch.Tensor = batch["attention_mask"].to(device)
+            labels: torch.Tensor = batch["label"].to(device)
+
+            # Forward pass: compute model outputs and loss
+            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+            loss: torch.Tensor = outputs.loss  # Extract the loss value from outputs
+
+            optimizer.zero_grad()  # Reset gradients from previous step
+            loss.backward()  # Backpropagate to compute gradients
+            optimizer.step()  # Update model weights
+
+            total_loss += loss.item()  # Accumulate batch loss
+
+            # Print progress every 100 batches
+            if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == num_batches:
+                print(f"Epoch {epoch + 1} | Batch {batch_idx + 1}/{num_batches} | Loss: {loss.item():.4f}")
+        avg_loss: float = total_loss / num_batches  # Average loss for the epoch
+        print(f"Epoch {epoch + 1}/{epochs} - Training loss: {avg_loss:.4f}")
+
+    return avg_loss
+
+
+def evaluate_model(model: AutoModelForSequenceClassification, test_loader: torch.utils.data.DataLoader, device: str) -> float:
+    """
+    Evaluate the model on test data.
+
+    Args:
+        model: The BERT model for sequence classification
+        test_loader: Test data loader
+        device: Device to run evaluation on
+
+    Returns:
+        Test accuracy
+    """
+    model.eval()  # Set model to evaluation mode (disables dropout, etc.)
+    correct: int = 0
+    total: int = 0
+    # Disable gradient calculation for evaluation (faster, less memory)
+    with torch.no_grad():
+        for batch in test_loader:
+            # Batch items are already torch tensors; move to device
+            input_ids: torch.Tensor = batch["input_ids"].to(device)
+            attention_mask: torch.Tensor = batch["attention_mask"].to(device)
+            labels: torch.Tensor = batch["label"].to(device)
+            # Forward pass (no labels needed for prediction)
+            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask)
+            preds: torch.Tensor = torch.argmax(outputs.logits, dim=1)  # Get predicted class
+            correct += (preds == labels).sum().item()  # Count correct predictions
+            total += labels.size(0)  # Count total samples
+    accuracy: float = correct / total if total > 0 else 0  # Compute accuracy
+    return accuracy
+
+
 def main():
     """
     Main entry point for the text classification project.
@@ -80,53 +161,14 @@ def main():
     # 5. Optimizer
     optimizer: torch.optim.AdamW = torch.optim.AdamW(model.parameters(), lr=2e-5)
 
-    # 6. Training Loop
+    # 6. Training
     EPOCHS: int = 2
-    for epoch in range(EPOCHS):
-        model.train()  # Set model to training mode
-        total_loss: float = 0.0
-        num_batches: int = len(train_loader)
-        # Iterate over batches from the training DataLoader
-        for batch_idx, batch in enumerate(train_loader):
-            # Batch items are already torch tensors; move to device
-            input_ids: torch.Tensor = batch["input_ids"].to(DEVICE)
-            attention_mask: torch.Tensor = batch["attention_mask"].to(DEVICE)
-            labels: torch.Tensor = batch["label"].to(DEVICE)
+    final_train_loss = train_model(model, train_loader, optimizer, DEVICE, EPOCHS)
+    print(f"Final Training Loss: {final_train_loss:.4f}")
 
-            # Forward pass: compute model outputs and loss
-            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-            loss: torch.Tensor = outputs.loss  # Extract the loss value from outputs
-
-            optimizer.zero_grad()  # Reset gradients from previous step
-            loss.backward()  # Backpropagate to compute gradients
-            optimizer.step()  # Update model weights
-
-            total_loss += loss.item()  # Accumulate batch loss
-
-            # Print progress every 100 batches
-            if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == num_batches:
-                print(f"Epoch {epoch + 1} | Batch {batch_idx + 1}/{num_batches} | Loss: {loss.item():.4f}")
-        avg_loss: float = total_loss / num_batches  # Average loss for the epoch
-        print(f"Epoch {epoch + 1}/{EPOCHS} - Training loss: {avg_loss:.4f}")
-
-    # 7. Evaluation Loop
-    model.eval()  # Set model to evaluation mode (disables dropout, etc.)
-    correct: int = 0
-    total: int = 0
-    # Disable gradient calculation for evaluation (faster, less memory)
-    with torch.no_grad():
-        for batch in test_loader:
-            # Batch items are already torch tensors; move to device
-            input_ids: torch.Tensor = batch["input_ids"].to(DEVICE)
-            attention_mask: torch.Tensor = batch["attention_mask"].to(DEVICE)
-            labels: torch.Tensor = batch["label"].to(DEVICE)
-            # Forward pass (no labels needed for prediction)
-            outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask)
-            preds: torch.Tensor = torch.argmax(outputs.logits, dim=1)  # Get predicted class
-            correct += (preds == labels).sum().item()  # Count correct predictions
-            total += labels.size(0)  # Count total samples
-    accuracy: float = correct / total if total > 0 else 0  # Compute accuracy
-    print(f"Test Accuracy: {accuracy:.4f}")
+    # 7. Evaluation
+    test_accuracy = evaluate_model(model, test_loader, DEVICE)
+    print(f"Test Accuracy: {test_accuracy:.4f}")
 
 
 if __name__ == "__main__":
