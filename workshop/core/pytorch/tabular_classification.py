@@ -384,6 +384,28 @@ def main() -> None:
     # 7. Final evaluation
     print("Final Results:")
     print(f"Best Test Accuracy: {best_acc:.2f}%")
+
+    # 8. Prediction demo
+    print("\n" + "=" * 50)
+    print("Prediction Demo")
+    print("=" * 50)
+    model.eval()
+    with torch.no_grad():
+        # Get samples from test loader
+        inputs, labels = next(iter(test_loader))
+        inputs = inputs[:5].to(DEVICE)
+        labels = labels[:5]
+        batch_features = {"numerical": inputs}
+        outputs = model(batch_features).squeeze()
+        predictions = (outputs > 0.5).float()
+        print("Sample Titanic survival predictions:")
+        for i in range(5):
+            actual = "Survived" if labels[i] == 1 else "Did not survive"
+            predicted = "Survived" if predictions[i] == 1 else "Did not survive"
+            prob = outputs[i].item() * 100
+            status = "✓" if labels[i] == predictions[i] else "✗"
+            print(f"  {status} Actual: {actual:18} | Predicted: {predicted} ({prob:.1f}%)")
+
     print("\nTraining complete! 🎉")
     print("Note: This is a simplified implementation focusing on numerical features.")
     print("For full tabular learning, implement proper categorical embeddings.")

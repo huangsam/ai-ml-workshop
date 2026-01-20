@@ -242,7 +242,30 @@ def main() -> None:
     avg_eval_loss = eval_loss / num_batches
     print(f"Validation loss: {avg_eval_loss:.4f}")
 
-    print("\nTraining complete! 🎉")
+    # 9. Prediction demo
+    print("\n" + "=" * 60)
+    print("Prediction Demo")
+    print("=" * 60)
+    sample_context = "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is named after the engineer Gustave Eiffel, whose company designed and built the tower. Constructed from 1887 to 1889, it was initially criticized but has become a global cultural icon of France."
+    sample_questions = [
+        "Where is the Eiffel Tower located?",
+        "Who designed the Eiffel Tower?",
+        "When was the Eiffel Tower built?",
+    ]
+    model.eval()
+    with torch.no_grad():
+        for question in sample_questions:
+            inputs = tokenizer(question, sample_context, return_tensors="pt", max_length=MAX_LENGTH, truncation=True, padding="max_length")
+            inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+            outputs = model(**inputs)
+            start_idx = torch.argmax(outputs.start_logits)
+            end_idx = torch.argmax(outputs.end_logits)
+            answer_tokens = inputs["input_ids"][0][start_idx : end_idx + 1]
+            answer = tokenizer.decode(answer_tokens, skip_special_tokens=True)
+            print(f"Q: {question}")
+            print(f"A: {answer if answer else '[No answer found]'}\n")
+
+    print("Training complete! 🎉")
     print("Note: For full QA evaluation, use proper F1/Exact Match metrics.")
 
 

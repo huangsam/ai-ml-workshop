@@ -304,6 +304,29 @@ def main() -> None:
     # 6. Final evaluation
     print("\nFinal Results:")
     print(f"Best Test Loss: {best_loss:.4f}")
+
+    # 7. Prediction demo
+    print("\n" + "=" * 50)
+    print("Prediction Demo")
+    print("=" * 50)
+    model.eval()
+    with torch.no_grad():
+        # Get a sample from test loader
+        sample_input, sample_target = next(iter(test_loader))
+        sample_input = sample_input[:1].to(DEVICE)  # Take first sample
+        sample_target = sample_target[:1]
+        prediction = model(sample_input)
+        # Inverse transform to get real values
+        pred_flat = prediction.cpu().numpy().reshape(-1, input_size)
+        target_flat = sample_target.numpy().reshape(-1, input_size)
+        pred_real = scaler.inverse_transform(pred_flat)
+        target_real = scaler.inverse_transform(target_flat)
+        print(f"Predicting next {PREDICTION_HORIZON} hours of weather:")
+        print(f"{'Hour':<6} {'Pred Temp':<12} {'Actual Temp':<12} {'Pred Humid':<12} {'Actual Humid'}")
+        print("-" * 60)
+        for i in range(PREDICTION_HORIZON):
+            print(f"{i + 1:<6} {pred_real[i, 0]:<12.1f} {target_real[i, 0]:<12.1f} {pred_real[i, 1]:<12.1f} {target_real[i, 1]:.1f}")
+
     print("\nTraining complete! 🎉")
     print("Note: This is a basic LSTM implementation. For production use,")
     print("consider techniques like teacher forcing, attention mechanisms,")

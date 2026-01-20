@@ -170,6 +170,25 @@ def main():
     test_accuracy = evaluate_model(model, test_loader, DEVICE)
     print(f"Test Accuracy: {test_accuracy:.4f}")
 
+    # 8. Prediction demo
+    print("\n" + "=" * 50)
+    print("Prediction Demo")
+    print("=" * 50)
+    sample_texts = [
+        "This movie was absolutely fantastic! I loved every moment of it.",
+        "Terrible film. Complete waste of time and money.",
+    ]
+    model.eval()
+    with torch.no_grad():
+        for text in sample_texts:
+            inputs = tokenizer(text, return_tensors="pt", padding="max_length", truncation=True, max_length=MAX_LENGTH)
+            inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+            outputs = model(**inputs)
+            prediction = torch.argmax(outputs.logits, dim=1).item()
+            label = "Positive" if prediction == 1 else "Negative"
+            print(f'Text: "{text[:50]}..."')
+            print(f"Prediction: {label}\n")
+
 
 if __name__ == "__main__":
     main()

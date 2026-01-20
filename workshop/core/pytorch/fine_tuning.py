@@ -310,7 +310,29 @@ def main() -> None:
     print("Training complete! 🎉")
     print("=" * 60)
     print(f"Best Test Accuracy: {best_accuracy:.2f}%")
-    print("\nKey Benefits of LoRA:")
+
+    # 9. Prediction demo
+    print("\n" + "=" * 60)
+    print("Prediction Demo")
+    print("=" * 60)
+    # AG News categories: World, Sports, Business, Sci/Tech
+    label_names = ["World", "Sports", "Business", "Sci/Tech"]
+    sample_texts = [
+        "The stock market reached record highs today as investors celebrated.",
+        "The team won the championship after a thrilling overtime victory.",
+        "Scientists discovered a new exoplanet in a nearby solar system.",
+    ]
+    model.eval()
+    with torch.no_grad():
+        for text in sample_texts:
+            inputs = tokenizer(text, return_tensors="pt", padding="max_length", truncation=True, max_length=128)
+            inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+            outputs = model(**inputs)
+            prediction = torch.argmax(outputs.logits, dim=1).item()
+            print(f'Text: "{text[:60]}..."')
+            print(f"Category: {label_names[prediction]}\n")
+
+    print("Key Benefits of LoRA:")
     print(f"  • {model._param_reduction:.2f}% fewer parameters to train")
     print("  • Faster training on consumer hardware (M3 Mac or single GPU)")
     print("  • Easy to adapt to multiple downstream tasks")

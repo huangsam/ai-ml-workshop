@@ -212,6 +212,25 @@ def main() -> None:
     final_loss, final_acc = evaluate_model(model, test_loader, criterion, DEVICE)
     print(f"Final Test Loss: {final_loss:.4f}, Final Accuracy: {final_acc:.2f}%")
 
+    # 7. Prediction demo
+    print("\n" + "=" * 50)
+    print("Prediction Demo")
+    print("=" * 50)
+    classes = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+    model.eval()
+    with torch.no_grad():
+        # Get a batch from test loader
+        images, labels = next(iter(test_loader))
+        images, labels = images[:5].to(DEVICE), labels[:5]  # Take first 5 samples
+        outputs = model(images)
+        _, predictions = outputs.max(1)
+        print("Sample predictions from test set:")
+        for i in range(5):
+            actual = classes[labels[i]]
+            predicted = classes[predictions[i]]
+            status = "✓" if actual == predicted else "✗"
+            print(f"  {status} Actual: {actual:12} | Predicted: {predicted}")
+
     print("\nTraining complete! 🎉")
 
 
