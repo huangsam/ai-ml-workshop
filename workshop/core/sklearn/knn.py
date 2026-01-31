@@ -5,15 +5,15 @@ This script demonstrates KNN, a simple algorithm that classifies based on
 the majority vote of the k nearest data points in feature space.
 """
 
-import matplotlib.pyplot as plt  # Plotting
-import numpy as np  # Arrays
-import pandas as pd  # Data frames
-import seaborn as sns  # Heatmaps
-from sklearn.datasets import load_breast_cancer  # Dataset
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix  # Metrics
-from sklearn.model_selection import RandomizedSearchCV, train_test_split  # Tuning and splitting
-from sklearn.neighbors import KNeighborsClassifier  # Model
-from sklearn.preprocessing import StandardScaler  # Scaling
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 
 
 def main():
