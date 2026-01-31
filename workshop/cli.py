@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 
 @click.group()
-@click.version_option()
+@click.version_option(package_name="ai-ml-workshop")
 def cli():
     """AI/ML Workshop - Run examples and experiments."""
     pass
