@@ -146,6 +146,14 @@ def pca():
     main()
 
 
+@sklearn.command()
+def xgboost():
+    """Run XGBoost example."""
+    from workshop.core.sklearn.xgboost import main
+
+    main()
+
+
 @numpy.command()
 def fundamentals():
     """Run NumPy fundamentals example."""
