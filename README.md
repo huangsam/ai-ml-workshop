@@ -77,3 +77,14 @@ To support MLOps and production ML workflows, explored distributed data processi
 - **Project 9: Apache Spark Trial** - Developed distributed data processing jobs using PySpark for ETL, MLlib integration, and RDD/DataFrame operations. Optimized for large datasets with partitioning and caching. **[Repository: huangsam/spark-trial](https://github.com/huangsam/spark-trial)**
 
 These projects emphasize distributed systems principles (fault tolerance, scalability) and connect to ML via data preprocessing for Projects 4-7.
+
+## Related Repositories & Broader Portfolio
+
+This AI/ML workshop focuses on machine learning concepts and implementations. For a complete view of my engineering experience, including production deployments and DevOps, check out these related projects:
+
+- **[chowist](https://github.com/huangsam/chowist)**: A Django-based web application for restaurant discovery and reviews, deployed with Docker and Kubernetes.
+- **[terraform-aws](https://github.com/huangsam/terraform-aws)**: Infrastructure as Code for AWS deployments, including EC2, RDS, and networking setups.
+- **[ansible-vagrant](https://github.com/huangsam/ansible-vagrant)**: Automated provisioning and configuration management using Ansible with Vagrant for local development environments.
+- **[spring-demo](https://github.com/huangsam/spring-demo)**: A Spring Boot application in Kotlin, demonstrating microservices architecture and REST APIs.
+
+These projects complement the ML work here by providing the production engineering foundation needed for MLOps and distributed systems.
