@@ -22,7 +22,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 │   ├── numpy.md              # Linear algebra & fundamentals
 │   ├── sklearn.md            # ML algorithms & model selection guide
 │   ├── pytorch.md            # Deep learning & PEFT/LoRA
-│   └── rag.md                # RAG & LLM applications
+│   ├── rag.md                # RAG & LLM applications
+│   └── data_pipelines.md     # Data engineering & distributed systems
 ├── pyproject.toml            # Project configuration with dependencies
 ├── README.md                 # High-level overview & projects
 ├── AGENTS.md                 # This file (projects 2-3 + navigation)
@@ -45,6 +46,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 - **[PyTorch](docs/pytorch.md)** - Deep learning, CNNs, RNNs, Transformers, PEFT/LoRA fine-tuning
   - Project 6: 5 domain-specific neural networks
   - Project 7: Parameter-efficient fine-tuning
+- **[Data Pipelines](docs/data_pipelines.md)** - Distributed processing with Flink, Beam, Spark for ETL and ML preprocessing
+  - Projects 8-9: Scalable data engineering for MLOps
 
 ### Application Domains
 - **[RAG & LLMs](docs/rag.md)** - Retrieval-Augmented Generation, vector stores, prompt optimization
@@ -62,6 +65,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 | Project 5 | [docs/numpy.md](docs/numpy.md#project-5-ml-fundamentals-with-numpy) | ML fundamentals from scratch |
 | Project 6 | [docs/pytorch.md](docs/pytorch.md#project-6-deep-learning-across-multiple-domains) | Deep learning across 5 domains |
 | Project 7 | [docs/pytorch.md](docs/pytorch.md#project-7-parameter-efficient-fine-tuning-with-lora) | PEFT/LoRA fine-tuning |
+| Project 8 | [docs/data_pipelines.md](docs/data_pipelines.md) | Distributed data processing with Flink & Beam |
+| Project 9 | [docs/data_pipelines.md](docs/data_pipelines.md) | Distributed data processing with Spark |
 | Bonus | [docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch) + [docs/ml_theory.md](docs/ml_theory.md) | Backpropagation & theory |
 
 ---
@@ -81,7 +86,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 ### Advanced: LLMs & Production
 1. Master **[PyTorch PEFT/LoRA](docs/pytorch.md#best-practices)** - parameter-efficient fine-tuning for large models
 2. Build with **[RAG](docs/rag.md)** - combine retrieval with generative models (see Projects 2-3 below)
-3. Deploy and optimize
+3. Explore **[Data Pipelines](docs/data_pipelines.md)** - distributed processing for scalable ML workflows
+4. Deploy and optimize
 
 ---
 
@@ -285,5 +291,6 @@ A comprehensive RAG application demonstrating retrieval-augmented generation acr
 ## Related Documentation
 - Theory: See [docs/rag.md](docs/rag.md) for RAG concepts and components
 - ML Theory: See [docs/ml_theory.md](docs/ml_theory.md) for underlying optimization
+- Data Pipelines: See [docs/data_pipelines.md](docs/data_pipelines.md) for distributed processing
 - Future focus areas: See [docs/future_focus.md](docs/future_focus.md)
 - Full workshop overview: See [README.md](README.md)

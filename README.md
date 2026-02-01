@@ -68,3 +68,12 @@ Fine-tuned DistilBERT on AG News using LoRA adapters, achieving 86% accuracy wit
 
 ### Bonus: Backpropagation from Scratch & ML Theory
 Implemented a 2-layer neural network with manual backpropagation to understand gradient computation via chain rule. Included gradient verification and trained on the XOR problem. Comprehensive ML theory documentation covering calculus, optimization, regularization, and convergence. **[Full details in docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch)** and **[docs/ml_theory.md](docs/ml_theory.md)**
+
+### Projects 8 and onwards: Data Pipelines & Distributed Processing
+To support MLOps and production ML workflows, explored distributed data processing frameworks for scalable ETL, streaming, and batch analytics. These complement ML projects by handling large-scale data ingestion, transformation, and feature engineering before model training.
+
+- **Project 8: Apache Flink & Beam Trials** - Built streaming and batch data pipelines with Flink (event-time processing, state management) and Beam (unified batch/streaming with portability). Demonstrated windowed aggregations, transforms, and integration with Kafka/Dataflow. **[Repositories: huangsam/flink-trial](https://github.com/huangsam/flink-trial)** and **[huangsam/beam-trial](https://github.com/huangsam/beam-trial)**
+
+- **Project 9: Apache Spark Trial** - Developed distributed data processing jobs using PySpark for ETL, MLlib integration, and RDD/DataFrame operations. Optimized for large datasets with partitioning and caching. **[Repository: huangsam/spark-trial](https://github.com/huangsam/spark-trial)**
+
+These projects emphasize distributed systems principles (fault tolerance, scalability) and connect to ML via data preprocessing for Projects 4-7.
