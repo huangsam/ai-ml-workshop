@@ -69,7 +69,7 @@ Fine-tuned DistilBERT on AG News using LoRA adapters, achieving 86% accuracy wit
 ### Bonus: Backpropagation from Scratch & ML Theory
 Implemented a 2-layer neural network with manual backpropagation to understand gradient computation via chain rule. Included gradient verification and trained on the XOR problem. Comprehensive ML theory documentation covering calculus, optimization, regularization, and convergence. **[Full details in docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch)** and **[docs/ml_theory.md](docs/ml_theory.md)**
 
-### Projects 8 and onwards: Data Pipelines & Distributed Processing
+### Projects 8-9: Data Pipelines & Distributed Processing
 To support MLOps and production ML workflows, explored distributed data processing frameworks for scalable ETL, streaming, and batch analytics. These complement ML projects by handling large-scale data ingestion, transformation, and feature engineering before model training.
 
 - **Project 8: Apache Flink & Beam Trials** - Built streaming and batch data pipelines with Flink (event-time processing, state management) and Beam (unified batch/streaming with portability). Demonstrated windowed aggregations, transforms, and integration with Kafka/Dataflow. **[Repositories: huangsam/flink-trial](https://github.com/huangsam/flink-trial)** and **[huangsam/beam-trial](https://github.com/huangsam/beam-trial)**
@@ -78,13 +78,24 @@ To support MLOps and production ML workflows, explored distributed data processi
 
 These projects emphasize distributed systems principles (fault tolerance, scalability) and connect to ML via data preprocessing for Projects 4-7.
 
+### Projects 10-11: Media Analysis & Computer Vision
+Explored image and video analysis through two complementary approaches: generic cross-platform implementation and Apple-specific optimization. These projects serve as feature extractors for ML pipelines and demonstrate the trade-offs between portability and platform-specific performance.
+
+- **Project 10: Vidicant** - A cross-platform C++ library with Python bindings using OpenCV for image and video feature extraction (brightness, colors, motion, edge detection). Supports Windows, macOS, and Linux. Demonstrates pybind11 integration for Python interoperability. **[Repository: huangsam/vidicant](https://github.com/huangsam/vidicant)**
+
+- **Project 11: xcode-trial** - A Swift-based multimodal video analysis tool leveraging Apple's native frameworks (Vision Framework, AVFoundation, Core Image) for high-performance analysis on macOS. Extracts faces, scenes, audio, text, colors, and motion with JSON output. **[Repository: huangsam/xcode-trial](https://github.com/huangsam/xcode-trial)**
+
+Key learnings explored generic vs native approaches: cross-platform flexibility with OpenCV vs peak performance with Apple silicon acceleration. Both projects output structured features suitable for ML pipelines (Projects 4-7). **[Full details in docs/media_analysis.md](docs/media_analysis.md)**
+
 ## Related Repositories & Broader Portfolio
 
-This AI/ML workshop focuses on machine learning concepts and implementations. For a complete view of my engineering experience, including production deployments and DevOps, check out these related projects:
+This AI/ML workshop focuses on machine learning concepts and implementations, plus image/video analysis for feature extraction. For a complete view of my engineering experience, including production deployments and DevOps, check out these related projects:
 
 - **[chowist](https://github.com/huangsam/chowist)**: A Django-based web application for restaurant discovery and reviews, deployed with Docker and Kubernetes.
 - **[terraform-aws](https://github.com/huangsam/terraform-aws)**: Infrastructure as Code for AWS deployments, including EC2, RDS, and networking setups.
 - **[ansible-vagrant](https://github.com/huangsam/ansible-vagrant)**: Automated provisioning and configuration management using Ansible with Vagrant for local development environments.
 - **[spring-demo](https://github.com/huangsam/spring-demo)**: A Spring Boot application in Kotlin, demonstrating microservices architecture and REST APIs.
+- **[flink-trial](https://github.com/huangsam/flink-trial)** and **[beam-trial](https://github.com/huangsam/beam-trial)**: Distributed data processing with Apache Flink and Apache Beam
+- **[spark-trial](https://github.com/huangsam/spark-trial)**: Distributed ML preprocessing with Apache Spark
 
 These projects complement the ML work here by providing the production engineering foundation needed for MLOps and distributed systems.

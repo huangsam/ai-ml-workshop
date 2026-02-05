@@ -23,7 +23,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 │   ├── sklearn.md            # ML algorithms & model selection guide
 │   ├── pytorch.md            # Deep learning & PEFT/LoRA
 │   ├── rag.md                # RAG & LLM applications
-│   └── data_pipelines.md     # Data engineering & distributed systems
+│   ├── data_pipelines.md     # Data engineering & distributed systems
+│   └── media_analysis.md     # Image & video analysis (generic & Apple)
 ├── pyproject.toml            # Project configuration with dependencies
 ├── README.md                 # High-level overview & projects
 ├── AGENTS.md                 # This file (projects 2-3 + navigation)
@@ -48,6 +49,9 @@ The goal of this repository is to learn and practice AI/ML concepts through code
   - Project 7: Parameter-efficient fine-tuning
 - **[Data Pipelines](docs/data_pipelines.md)** - Distributed processing with Flink, Beam, Spark for ETL and ML preprocessing
   - Projects 8-9: Scalable data engineering for MLOps
+- **[Media Analysis](docs/media_analysis.md)** - Image and video feature extraction
+  - Project 10: Vidicant (generic cross-platform with OpenCV)
+  - Project 11: xcode-trial (Apple-specific with native frameworks)
 
 ### Application Domains
 - **[RAG & LLMs](docs/rag.md)** - Retrieval-Augmented Generation, vector stores, prompt optimization
@@ -67,6 +71,8 @@ The goal of this repository is to learn and practice AI/ML concepts through code
 | Project 7 | [docs/pytorch.md](docs/pytorch.md#project-7-parameter-efficient-fine-tuning-with-lora) | PEFT/LoRA fine-tuning |
 | Project 8 | [docs/data_pipelines.md](docs/data_pipelines.md) | Distributed data processing with Flink & Beam |
 | Project 9 | [docs/data_pipelines.md](docs/data_pipelines.md) | Distributed data processing with Spark |
+| Project 10 | [docs/media_analysis.md](docs/media_analysis.md#project-10-vidicant-generic-cross-platform-media-analysis) | Vidicant: generic cross-platform media analysis |
+| Project 11 | [docs/media_analysis.md](docs/media_analysis.md#project-11-xcode-trial-apple-specific-multimodal-video-analysis) | xcode-trial: Apple-specific video analysis |
 | Bonus | [docs/numpy.md](docs/numpy.md#bonus-backpropagation-from-scratch) + [docs/ml_theory.md](docs/ml_theory.md) | Backpropagation & theory |
 
 ---
