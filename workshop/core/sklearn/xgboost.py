@@ -11,6 +11,7 @@ import seaborn as sns
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 
@@ -35,35 +36,48 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Step 3: Hyperparameter tuning
-    # XGBoost has many parameters for controlling boosting and tree growth
+    # Step 3: Define Pipeline and Hyperparameter Grid
+    # Using a Pipeline is best practice for consistency, even though XGBoost doesn't require scaling.
+    # Gradient boosting trees are scale-invariant, but Pipelines make the code more maintainable and extensible.
+    pipeline = Pipeline(
+        [
+            ("xgb", XGBClassifier(random_state=42, eval_metric="logloss")),  # Model step
+        ]
+    )
+
+    # Parameter grid for the pipeline steps
+    # Note the double underscore notation: 'step_name__parameter_name'
     param_grid = {
-        "n_estimators": [50, 100, 200, 300],  # Number of boosting rounds
-        "max_depth": [3, 6, 9, 12],  # Maximum depth of each tree
-        "learning_rate": [0.01, 0.1, 0.2, 0.3],  # Step size shrinkage
-        "subsample": [0.6, 0.8, 1.0],  # Subsample ratio of training instances
-        "colsample_bytree": [0.6, 0.8, 1.0],  # Subsample ratio of columns when constructing each tree
-        "gamma": [0, 0.1, 0.2, 0.3],  # Minimum loss reduction required to make a further partition
+        "xgb__n_estimators": [50, 100, 200, 300],  # Number of boosting rounds
+        "xgb__max_depth": [3, 6, 9, 12],  # Maximum depth of each tree
+        "xgb__learning_rate": [0.01, 0.1, 0.2, 0.3],  # Step size shrinkage
+        "xgb__subsample": [0.6, 0.8, 1.0],  # Subsample ratio of training instances
+        "xgb__colsample_bytree": [0.6, 0.8, 1.0],  # Subsample ratio of columns when constructing each tree
+        "xgb__gamma": [0, 0.1, 0.2, 0.3],  # Minimum loss reduction required to make a further partition
     }
 
-    search = RandomizedSearchCV(XGBClassifier(random_state=42, eval_metric="logloss"), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    # GridSearchCV will now cross-validate the entire pipeline
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
     search.fit(X_train, y_train)  # Tune parameters
 
-    # Best model
-    model = search.best_estimator_
+    # Best model (it's a fitted pipeline)
+    best_pipeline = search.best_estimator_
     print("Best hyperparameters found:")
     print(search.best_params_)
     print()
 
     print("Model trained successfully!")
-    print(f"Number of estimators: {model.n_estimators}")  # Number of boosting rounds
-    print(f"Max depth: {model.max_depth}")  # Maximum tree depth
-    print(f"Learning rate: {model.learning_rate}")  # Learning rate
-    print(f"Subsample: {model.subsample}")  # Subsample ratio
+    # Access the XGBoost model inside the pipeline
+    final_model = best_pipeline.named_steps["xgb"]
+    print(f"Number of estimators: {final_model.n_estimators}")  # Number of boosting rounds
+    print(f"Max depth: {final_model.max_depth}")  # Maximum tree depth
+    print(f"Learning rate: {final_model.learning_rate}")  # Learning rate
+    print(f"Subsample: {final_model.subsample}")  # Subsample ratio
     print()
 
     # Step 4: Make predictions
-    y_pred = model.predict(X_test)  # Class predictions
+    # The pipeline automatically applies any preprocessing (if added) to the test data
+    y_pred = best_pipeline.predict(X_test)  # Class predictions
 
     # Step 5: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
@@ -91,7 +105,7 @@ def main():
 
     # Step 7: Feature importance
     # XGBoost provides built-in feature importance
-    feature_importance = pd.DataFrame({"feature": X.columns, "importance": model.feature_importances_}).sort_values("importance", ascending=False)
+    feature_importance = pd.DataFrame({"feature": X.columns, "importance": final_model.feature_importances_}).sort_values("importance", ascending=False)
 
     print("Top 5 Most Important Features:")
     print(feature_importance.head())

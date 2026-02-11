@@ -11,6 +11,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.datasets import load_iris
 from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
@@ -27,25 +28,31 @@ def main():
     print(f"Species: {iris.target_names}")
     print()
 
-    # Step 2: Preprocess the data
-    # PCA is affected by scales, so standardize features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    # Step 2: Define Pipeline
+    # Using a Pipeline is best practice to prevent data leakage.
+    # PCA is affected by scales, so we standardize features first.
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),  # Preprocessing step
+            ("pca", PCA(n_components=2)),  # Dimensionality reduction step
+        ]
+    )
 
-    # Step 3: Apply PCA
-    # Reduce to 2 components for visualization, but analyze all
-    pca = PCA(n_components=2)  # Keep 2 components
-    X_pca = pca.fit_transform(X_scaled)
+    # Step 3: Fit the pipeline and apply PCA
+    X_pca = pipeline.fit_transform(X)
 
     print("PCA Results:")
     print(f"Original dimensions: {X.shape[1]}")
     print(f"Reduced dimensions: {X_pca.shape[1]}")
+    pca = pipeline.named_steps["pca"]
     print(f"Explained variance ratio: {pca.explained_variance_ratio_}")
     print(f"Cumulative explained variance: {np.cumsum(pca.explained_variance_ratio_)}")
     print()
 
     # Step 4: Analyze explained variance
     # Fit PCA with all components to see variance explained
+    scaler = pipeline.named_steps["scaler"]
+    X_scaled = scaler.transform(X)
     pca_full = PCA()
     pca_full.fit(X_scaled)
 
@@ -69,11 +76,6 @@ def main():
     plt.title("PCA: First Two Components")
     plt.colorbar(scatter, ticks=[0, 1, 2], label="Species")
     plt.clim(-0.5, 2.5)  # Set colorbar limits
-
-    # Add species names to colorbar
-    cbar = plt.colorbar(scatter)
-    cbar.set_ticks([0, 1, 2])
-    cbar.set_ticklabels(iris.target_names)
 
     # Subplot 2: Explained variance plot
     plt.subplot(1, 2, 2)

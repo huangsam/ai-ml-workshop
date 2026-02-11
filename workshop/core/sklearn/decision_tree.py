@@ -13,6 +13,7 @@ import seaborn as sns
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
@@ -40,32 +41,44 @@ def main():
     print(f"Test set shape: {X_test.shape}")  # Data used to evaluate the model
     print()
 
-    # Step 3: Hyperparameter tuning
-    # Decision Trees can overfit if not tuned, so we search for optimal parameters
-    # RandomizedSearchCV tries random combinations for efficiency
+    # Step 3: Define Pipeline and Hyperparameter Grid
+    # Using a Pipeline is best practice for consistency, even though Decision Trees don't require scaling.
+    # Trees are scale-invariant, but Pipelines make the code more maintainable and extensible.
+    pipeline = Pipeline(
+        [
+            ("dt", DecisionTreeClassifier(random_state=42)),  # Model step
+        ]
+    )
+
+    # Parameter grid for the pipeline steps
+    # Note the double underscore notation: 'step_name__parameter_name'
     param_grid = {
-        "max_depth": [None, 5, 10, 20, 30],  # Maximum depth of the tree; None means unlimited
-        "min_samples_split": [2, 5, 10, 20],  # Minimum number of samples required to split an internal node
-        "min_samples_leaf": [1, 2, 4, 8],  # Minimum number of samples required to be at a leaf node
-        "criterion": ["gini", "entropy"],  # Function to measure the quality of a split
+        "dt__max_depth": [None, 5, 10, 20, 30],  # Maximum depth of the tree; None means unlimited
+        "dt__min_samples_split": [2, 5, 10, 20],  # Minimum number of samples required to split an internal node
+        "dt__min_samples_leaf": [1, 2, 4, 8],  # Minimum number of samples required to be at a leaf node
+        "dt__criterion": ["gini", "entropy"],  # Function to measure the quality of a split
     }
 
-    search = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    # GridSearchCV will now cross-validate the entire pipeline
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
     search.fit(X_train, y_train)  # Fit the search on training data with cross-validation
 
-    # Best model from hyperparameter search
-    model = search.best_estimator_
+    # Best model (it's a fitted pipeline)
+    best_pipeline = search.best_estimator_
     print("Best hyperparameters found:")
     print(search.best_params_)  # Print the optimal parameters
     print()
 
     print("Model trained successfully!")
-    print(f"Tree depth: {model.get_depth()}")  # Depth of the trained tree
-    print(f"Number of leaves: {model.get_n_leaves()}")  # Number of leaf nodes
+    # Access the Decision Tree model inside the pipeline
+    final_model = best_pipeline.named_steps["dt"]
+    print(f"Tree depth: {final_model.get_depth()}")  # Depth of the trained tree
+    print(f"Number of leaves: {final_model.get_n_leaves()}")  # Number of leaf nodes
     print()
 
     # Step 4: Make predictions on the test set
-    y_pred = model.predict(X_test)  # Predict class labels for test data
+    # The pipeline automatically applies any preprocessing (if added) to the test data
+    y_pred = best_pipeline.predict(X_test)  # Predict class labels for test data
 
     # Step 5: Evaluate the model
     # Accuracy measures overall correctness
@@ -95,7 +108,7 @@ def main():
     print("Confusion matrix plot saved as 'decision_tree_confusion_matrix.png'")
 
     # Feature importance shows which features were most useful
-    feature_importance = pd.DataFrame({"feature": X.columns, "importance": model.feature_importances_}).sort_values("importance", ascending=False)
+    feature_importance = pd.DataFrame({"feature": X.columns, "importance": final_model.feature_importances_}).sort_values("importance", ascending=False)
 
     print("Top 5 Most Important Features:")
     print(feature_importance.head())  # Features ranked by importance
@@ -103,7 +116,7 @@ def main():
 
     # Visualize the decision tree structure
     plt.figure(figsize=(20, 10))
-    plot_tree(model, feature_names=X.columns, class_names=cancer.target_names, filled=True, rounded=True, fontsize=10)
+    plot_tree(final_model, feature_names=X.columns, class_names=cancer.target_names, filled=True, rounded=True, fontsize=10)
     plt.title("Decision Tree Visualization")
     plt.savefig("decision_tree_visualization.png", dpi=300, bbox_inches="tight")
     print("Decision tree visualization saved as 'decision_tree_visualization.png'")

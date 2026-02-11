@@ -1,8 +1,16 @@
+import random
 from typing import Any
 
+import numpy as np
 import torch
-from datasets import Dataset, DatasetDict, load_dataset
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from datasets import DatasetDict, load_dataset
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from tqdm import tqdm
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    DataCollatorWithPadding,
+)
 
 from workshop.utils import get_device
 
@@ -11,6 +19,18 @@ MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use
 MAX_LENGTH = 128  # Max length for tokenization
 BATCH_SIZE = 16  # Batch size for training
 DEVICE = "cpu"  # Default to CPU; Mac M3 will often auto-accelerate PyTorch
+SEED = 42
+
+
+def set_seed(seed: int):
+    """
+    Set random seeds for reproducibility.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def load_data(dataset_name="imdb") -> DatasetDict:
@@ -20,16 +40,23 @@ def load_data(dataset_name="imdb") -> DatasetDict:
     print(f"Loading dataset: {dataset_name}...")
     # Load the train and test split for the chosen dataset
     dataset: DatasetDict = load_dataset(dataset_name)
-    return dataset
+
+    # For demonstration purposes, use a smaller subset to speed up training
+    # IMDB is large (25k train, 25k test), so let's use 2k for this workshop
+    print("Subsampling dataset for workshop speed...")
+    small_train_dataset = dataset["train"].shuffle(seed=SEED).select(range(2000))
+    small_test_dataset = dataset["test"].shuffle(seed=SEED).select(range(500))
+
+    return DatasetDict({"train": small_train_dataset, "test": small_test_dataset})
 
 
 def preprocess_function(examples, tokenizer: AutoTokenizer):
     """
     Tokenization function to preprocess the text data.
     """
+    # We truncate here, but padding will be handled dynamically by the DataCollator
     return tokenizer(
         examples["text"],
-        padding="max_length",
         truncation=True,
         max_length=MAX_LENGTH,
     )
@@ -56,15 +83,17 @@ def train_model(
         Average training loss from the last epoch
     """
     model.train()  # Set model to training mode
+
     for epoch in range(epochs):
         total_loss: float = 0.0
-        num_batches: int = len(train_loader)
-        # Iterate over batches from the training DataLoader
-        for batch_idx, batch in enumerate(train_loader):
+        # Use tqdm for a nice progress bar
+        progress_bar = tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}")
+
+        for batch in progress_bar:
             # Batch items are already torch tensors; move to device
             input_ids: torch.Tensor = batch["input_ids"].to(device)
             attention_mask: torch.Tensor = batch["attention_mask"].to(device)
-            labels: torch.Tensor = batch["label"].to(device)
+            labels: torch.Tensor = batch["labels"].to(device)
 
             # Forward pass: compute model outputs and loss
             outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -76,18 +105,18 @@ def train_model(
 
             total_loss += loss.item()  # Accumulate batch loss
 
-            # Print progress every 100 batches
-            if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == num_batches:
-                print(f"Epoch {epoch + 1} | Batch {batch_idx + 1}/{num_batches} | Loss: {loss.item():.4f}")
-        avg_loss: float = total_loss / num_batches  # Average loss for the epoch
-        print(f"Epoch {epoch + 1}/{epochs} - Training loss: {avg_loss:.4f}")
+            # Update progress bar
+            progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+
+        avg_loss: float = total_loss / len(train_loader)  # Average loss for the epoch
+        print(f"Epoch {epoch + 1}/{epochs} - Average Loss: {avg_loss:.4f}")
 
     return avg_loss
 
 
-def evaluate_model(model: AutoModelForSequenceClassification, test_loader: torch.utils.data.DataLoader, device: str) -> float:
+def evaluate_model(model: AutoModelForSequenceClassification, test_loader: torch.utils.data.DataLoader, device: str) -> dict:
     """
-    Evaluate the model on test data.
+    Evaluate the model on test data using sklearn metrics.
 
     Args:
         model: The BERT model for sequence classification
@@ -95,31 +124,42 @@ def evaluate_model(model: AutoModelForSequenceClassification, test_loader: torch
         device: Device to run evaluation on
 
     Returns:
-        Test accuracy
+        Dictionary of metrics (accuracy, precision, recall, f1)
     """
     model.eval()  # Set model to evaluation mode (disables dropout, etc.)
-    correct: int = 0
-    total: int = 0
+
+    all_preds = []
+    all_labels = []
+
     # Disable gradient calculation for evaluation (faster, less memory)
     with torch.no_grad():
-        for batch in test_loader:
+        for batch in tqdm(test_loader, desc="Evaluating"):
             # Batch items are already torch tensors; move to device
             input_ids: torch.Tensor = batch["input_ids"].to(device)
             attention_mask: torch.Tensor = batch["attention_mask"].to(device)
-            labels: torch.Tensor = batch["label"].to(device)
-            # Forward pass (no labels needed for prediction)
+            labels: torch.Tensor = batch["labels"].to(device)
+
+            # Forward pass (no labels needed for prediction, but we pass them for consistency if needed)
             outputs: Any = model(input_ids=input_ids, attention_mask=attention_mask)
             preds: torch.Tensor = torch.argmax(outputs.logits, dim=1)  # Get predicted class
-            correct += (preds == labels).sum().item()  # Count correct predictions
-            total += labels.size(0)  # Count total samples
-    accuracy: float = correct / total if total > 0 else 0  # Compute accuracy
-    return accuracy
+
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+
+    # Compute metrics using sklearn
+    accuracy = accuracy_score(all_labels, all_preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average="binary")
+
+    return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
 
 
 def main():
     """
     Main entry point for the text classification project.
     """
+    # 0. Set seed for reproducibility
+    set_seed(SEED)
+
     # 1. Check for Mac Metal Performance Shaders (MPS) for M-series acceleration
     # This is an important step to leverage your M3 Max chip
     global DEVICE
@@ -136,11 +176,18 @@ def main():
     tokenizer: AutoTokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     # Tokenize datasets
+    # Note: We don't pad here anymore! DataCollator will do it dynamically.
     tokenized_datasets: DatasetDict = raw_datasets.map(
         lambda x: preprocess_function(x, tokenizer),
         batched=True,
-        remove_columns=["text"],
     )
+    # We need to remove the text column as the model doesn't accept it
+    tokenized_datasets = tokenized_datasets.remove_columns(["text"])
+
+    # Rename 'label' to 'labels' as expected by Hugging Face models
+    if "label" in tokenized_datasets["train"].column_names:
+        tokenized_datasets = tokenized_datasets.rename_column("label", "labels")
+
     print("Data tokenization complete.")
     print(tokenized_datasets)
 
@@ -153,10 +200,12 @@ def main():
     # 4. Prepare DataLoaders
     from torch.utils.data import DataLoader
 
-    train_dataset: Dataset = tokenized_datasets["train"].with_format("torch")
-    test_dataset: Dataset = tokenized_datasets["test"].with_format("torch")
-    train_loader: DataLoader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader: DataLoader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
+    # DataCollatorWithPadding improves efficiency by padding to the longest sequence IN THE BATCH
+    # rather than the longest sequence in the whole dataset or MAX_LENGTH
+    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+    train_loader: DataLoader = DataLoader(tokenized_datasets["train"], batch_size=BATCH_SIZE, shuffle=True, collate_fn=data_collator)
+    test_loader: DataLoader = DataLoader(tokenized_datasets["test"], batch_size=BATCH_SIZE, collate_fn=data_collator)
 
     # 5. Optimizer
     optimizer: torch.optim.AdamW = torch.optim.AdamW(model.parameters(), lr=2e-5)
@@ -167,8 +216,12 @@ def main():
     print(f"Final Training Loss: {final_train_loss:.4f}")
 
     # 7. Evaluation
-    test_accuracy = evaluate_model(model, test_loader, DEVICE)
-    print(f"Test Accuracy: {test_accuracy:.4f}")
+    metrics = evaluate_model(model, test_loader, DEVICE)
+    print("\nModel Evaluation:")
+    print(f"Accuracy:  {metrics['accuracy']:.4f}")
+    print(f"Precision: {metrics['precision']:.4f}")
+    print(f"Recall:    {metrics['recall']:.4f}")
+    print(f"F1 Score:  {metrics['f1']:.4f}")
 
     # 8. Prediction demo
     print("\n" + "=" * 50)
@@ -181,7 +234,7 @@ def main():
     model.eval()
     with torch.no_grad():
         for text in sample_texts:
-            inputs = tokenizer(text, return_tensors="pt", padding="max_length", truncation=True, max_length=MAX_LENGTH)
+            inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=MAX_LENGTH)
             inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
             outputs = model(**inputs)
             prediction = torch.argmax(outputs.logits, dim=1).item()

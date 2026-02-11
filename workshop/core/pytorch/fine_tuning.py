@@ -9,12 +9,17 @@ Model: DistilBERT with LoRA adapters
 Key concepts: LoRA, PEFT, parameter efficiency, adapter-based fine-tuning
 """
 
+import random
+import textwrap
+
+import numpy as np
 import torch
 import torch.nn as nn
-from datasets import Dataset, load_dataset
+from datasets import DatasetDict, load_dataset
 from peft import LoraConfig, TaskType, get_peft_model
 from torch.utils.data import DataLoader
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, get_linear_schedule_with_warmup
+from tqdm import tqdm
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding, get_linear_schedule_with_warmup
 
 from workshop.utils import get_device
 
@@ -25,6 +30,7 @@ BATCH_SIZE = 32
 NUM_EPOCHS = 3
 LEARNING_RATE = 1e-4
 DEVICE = "cpu"  # Will check for MPS acceleration
+SEED = 42
 
 # LoRA Configuration
 LORA_R = 8  # Rank of LoRA update matrices (lower = fewer parameters)
@@ -33,7 +39,18 @@ LORA_DROPOUT = 0.05  # Dropout in LoRA layers
 TARGET_MODULES = ["q_lin", "v_lin"]  # DistilBERT attention modules (query, value)
 
 
-def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> tuple[Dataset, Dataset]:
+def set_seed(seed: int):
+    """
+    Set random seeds for reproducibility.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> DatasetDict:
     """
     Load and prepare a dataset for fine-tuning.
 
@@ -42,7 +59,7 @@ def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> tuple[D
         subset_size: Number of samples to use (for faster training)
 
     Returns:
-        Tuple of (train_dataset, test_dataset)
+        DatasetDict containing train/test splits
     """
     print(f"Loading dataset: {dataset_name}...")
 
@@ -51,8 +68,8 @@ def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> tuple[D
 
     # Use subset for faster training
     if subset_size < len(dataset["train"]):
-        train_dataset = dataset["train"].select(range(subset_size))
-        test_dataset = dataset["test"].select(range(min(subset_size // 4, len(dataset["test"]))))
+        train_dataset = dataset["train"].shuffle(seed=SEED).select(range(subset_size))
+        test_dataset = dataset["test"].shuffle(seed=SEED).select(range(min(subset_size // 4, len(dataset["test"]))))
     else:
         train_dataset = dataset["train"]
         test_dataset = dataset["test"]
@@ -60,16 +77,15 @@ def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> tuple[D
     print(f"Train samples: {len(train_dataset)}")
     print(f"Test samples: {len(test_dataset)}")
 
-    return train_dataset, test_dataset
+    return DatasetDict({"train": train_dataset, "test": test_dataset})
 
 
-def preprocess_data(train_dataset: Dataset, test_dataset: Dataset, tokenizer: AutoTokenizer, max_length: int = 128) -> tuple[DataLoader, DataLoader]:
+def preprocess_data(dataset_dict: DatasetDict, tokenizer: AutoTokenizer, max_length: int = 128) -> tuple[DataLoader, DataLoader]:
     """
     Preprocess and tokenize the data.
 
     Args:
-        train_dataset: Training dataset
-        test_dataset: Test dataset
+        dataset_dict: DatasetDict containing splits
         tokenizer: Hugging Face tokenizer
         max_length: Maximum sequence length
 
@@ -82,22 +98,26 @@ def preprocess_data(train_dataset: Dataset, test_dataset: Dataset, tokenizer: Au
         """Tokenize text data."""
         # Handle dataset column names (varies by dataset)
         text_column = "text" if "text" in examples.keys() else "content"
-        return tokenizer(examples[text_column], padding="max_length", truncation=True, max_length=max_length)
+        # Truncate here, allow DataCollator to pad
+        return tokenizer(examples[text_column], truncation=True, max_length=max_length)
 
-    # Tokenize datasets
-    train_dataset = train_dataset.map(tokenize_function, batched=True, desc="Tokenizing train")
-    test_dataset = test_dataset.map(tokenize_function, batched=True, desc="Tokenizing test")
+    # Tokenize datasets using .map() on the DatasetDict
+    tokenized_datasets = dataset_dict.map(tokenize_function, batched=True, desc="Tokenizing")
 
-    # Set format for PyTorch
-    train_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "label"])
-    test_dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "label"])
+    # Rename label to labels if needed
+    if "label" in tokenized_datasets["train"].column_names:
+        tokenized_datasets = tokenized_datasets.rename_column("label", "labels")
+
+    # Set format to remove unused columns but keep tensors
+    columns_to_keep = ["input_ids", "attention_mask", "labels"]
+    tokenized_datasets.set_format(type="torch", columns=columns_to_keep)
+
+    # Use DataCollatorWithPadding for dynamic padding (efficiency)
+    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-
-    print(f"Train batches: {len(train_loader)}")
-    print(f"Test batches: {len(test_loader)}")
+    train_loader = DataLoader(tokenized_datasets["train"], batch_size=BATCH_SIZE, shuffle=True, collate_fn=data_collator)
+    test_loader = DataLoader(tokenized_datasets["test"], batch_size=BATCH_SIZE, shuffle=False, collate_fn=data_collator)
 
     return train_loader, test_loader
 
@@ -177,11 +197,13 @@ def train_epoch(
     correct = 0
     total = 0
 
-    for batch_idx, batch in enumerate(train_loader):
+    progress_bar = tqdm(train_loader, desc="Training")
+
+    for batch in progress_bar:
         # Move batch to device
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
-        labels = batch["label"].to(device)
+        labels = batch["labels"].to(device)
 
         # Forward pass
         outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -195,11 +217,10 @@ def train_epoch(
         # Track metrics
         total_loss += loss.item()
         predictions = outputs.logits.argmax(dim=1)
-        correct += (predictions == labels).sum().item()
+        correct += torch.sum(predictions == labels).item()
         total += labels.size(0)
 
-        if (batch_idx + 1) % 50 == 0:
-            print(f"Batch {batch_idx + 1} | Loss: {loss.item():.4f}")
+        progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
 
     accuracy = 100.0 * correct / total
     avg_loss = total_loss / len(train_loader)
@@ -224,18 +245,20 @@ def evaluate(model: nn.Module, test_loader: DataLoader, device: str) -> tuple[fl
     correct = 0
     total = 0
 
+    progress_bar = tqdm(test_loader, desc="Evaluating")
+
     with torch.no_grad():
-        for batch in test_loader:
+        for batch in progress_bar:
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
-            labels = batch["label"].to(device)
+            labels = batch["labels"].to(device)
 
             outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
             loss = outputs.loss
 
             total_loss += loss.item()
             predictions = outputs.logits.argmax(dim=1)
-            correct += (predictions == labels).sum().item()
+            correct += torch.sum(predictions == labels).item()
             total += labels.size(0)
 
     accuracy = 100.0 * correct / total
@@ -252,6 +275,9 @@ def main() -> None:
     print("Parameter-Efficient Fine-Tuning with LoRA")
     print("=" * 60)
 
+    # 0. Set seed
+    set_seed(SEED)
+
     # 1. Device setup
     global DEVICE
     DEVICE = get_device()
@@ -261,17 +287,17 @@ def main() -> None:
         print("Using CPU for computation.")
 
     # 2. Load data
-    train_dataset, test_dataset = load_data(dataset_name="ag_news", subset_size=1000)
+    dataset_dict = load_data(dataset_name="ag_news", subset_size=1000)
 
     # 3. Tokenizer
     print(f"Loading tokenizer: {MODEL_NAME}...")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     # 4. Prepare data loaders
-    train_loader, test_loader = preprocess_data(train_dataset, test_dataset, tokenizer)
+    train_loader, test_loader = preprocess_data(dataset_dict, tokenizer)
 
     # 5. Setup LoRA model
-    num_labels = train_dataset.features["label"].num_classes
+    num_labels = 4  # AG News has 4 classes
     model = setup_lora_model(MODEL_NAME, num_labels)
     model.to(DEVICE)
 
@@ -325,11 +351,14 @@ def main() -> None:
     model.eval()
     with torch.no_grad():
         for text in sample_texts:
+            # Type hint helps linter understand text is str
+            text: str = text
             inputs = tokenizer(text, return_tensors="pt", padding="max_length", truncation=True, max_length=128)
             inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
             outputs = model(**inputs)
             prediction = torch.argmax(outputs.logits, dim=1).item()
-            print(f'Text: "{text[:60]}..."')
+            short_text = textwrap.shorten(text, width=60, placeholder="...")
+            print(f'Text: "{short_text}"')
             print(f"Category: {label_names[prediction]}\n")
 
     print("Key Benefits of LoRA:")

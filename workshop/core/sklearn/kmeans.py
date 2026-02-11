@@ -12,6 +12,7 @@ from sklearn.cluster import KMeans
 from sklearn.datasets import load_iris
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
@@ -28,14 +29,19 @@ def main():
     print(f"Species: {iris.target_names}")
     print()
 
-    # Step 2: Preprocess the data
-    # Clustering is sensitive to scales, so standardize features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    # Step 2: Define Pipeline and Hyperparameter Grid
+    # Using a Pipeline is best practice to prevent data leakage during cross-validation.
+    # Clustering is sensitive to scales, so standardize features.
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),  # Preprocessing step
+            ("kmeans", KMeans(random_state=42)),  # Model step
+        ]
+    )
 
-    # Step 3: Hyperparameter tuning for k (number of clusters)
-    # Use silhouette score to evaluate clustering quality
-    param_grid = {"n_clusters": [2, 3, 4, 5, 6]}
+    # Parameter grid for the pipeline steps
+    # Note the double underscore notation: 'step_name__parameter_name'
+    param_grid = {"kmeans__n_clusters": [2, 3, 4, 5, 6]}
 
     # Custom scorer for silhouette score
     def silhouette_scorer(estimator, X):
@@ -44,26 +50,30 @@ def main():
             return silhouette_score(X, labels)
         return -1  # Invalid for single cluster
 
-    search = GridSearchCV(KMeans(random_state=42), param_grid, cv=3, scoring=silhouette_scorer)
-    search.fit(X_scaled)
+    # GridSearchCV will now cross-validate the entire pipeline
+    search = GridSearchCV(pipeline, param_grid, cv=3, scoring=silhouette_scorer)
+    search.fit(X)
 
-    # Best model
-    model = search.best_estimator_
+    # Best model (it's a fitted pipeline)
+    best_pipeline = search.best_estimator_
     print("Best hyperparameters found:")
     print(search.best_params_)
     print()
 
     # Step 4: Perform clustering
-    labels = model.fit_predict(X_scaled)  # Assign clusters
-    centroids = model.cluster_centers_  # Cluster centers
+    # Access the KMeans model inside the pipeline
+    final_model = best_pipeline.named_steps["kmeans"]
+    labels = final_model.fit_predict(best_pipeline.named_steps["scaler"].transform(X))  # Assign clusters
+    centroids = final_model.cluster_centers_  # Cluster centers
 
     print("Clustering Results:")
-    print(f"Number of clusters: {model.n_clusters}")
+    print(f"Number of clusters: {final_model.n_clusters}")
     print(f"Cluster centers (scaled):\n{centroids}")
     print(f"Cluster assignments: {np.bincount(labels)}")  # Count per cluster
     print()
 
     # Step 5: Evaluate clustering quality
+    X_scaled = best_pipeline.named_steps["scaler"].transform(X)
     silhouette_avg = silhouette_score(X_scaled, labels)
     print("Clustering Evaluation:")
     print(f"Silhouette Score: {silhouette_avg:.4f}")  # Higher is better (closer to 1)
@@ -83,6 +93,7 @@ def main():
 
     # Subplot 1: Clusters
     plt.subplot(1, 2, 1)
+    X_scaled = best_pipeline.named_steps["scaler"].transform(X)  # Get scaled features
     scatter = plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=labels, cmap="viridis", alpha=0.7)
     plt.scatter(centroids[:, 0], centroids[:, 1], c="red", marker="x", s=200, linewidth=3, label="Centroids")
     plt.xlabel("Sepal Length (scaled)")

@@ -12,6 +12,7 @@ import seaborn as sns
 from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
@@ -36,38 +37,46 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Step 3: Preprocess the data
-    # SVM is sensitive to feature scales, so standardization is crucial
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    # Step 3: Define Pipeline and Hyperparameter Grid
+    # Using a Pipeline is best practice to prevent data leakage during cross-validation.
+    # SVM is sensitive to feature scales, so standardization is crucial.
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),  # Preprocessing step
+            ("svm", SVC(random_state=42)),  # Model step
+        ]
+    )
 
-    # Step 4: Hyperparameter tuning
-    # SVM parameters control the margin, kernel, and regularization
+    # Parameter grid for the pipeline steps
+    # Note the double underscore notation: 'step_name__parameter_name'
     param_grid = {
-        "C": [0.1, 1, 10, 100],  # Regularization parameter; smaller values specify stronger regularization
-        "gamma": ["scale", "auto", 0.01, 0.1, 1],  # Kernel coefficient for 'rbf', 'poly', and 'sigmoid'
-        "kernel": ["linear", "rbf", "poly"],  # Specifies the kernel type to be used in the algorithm
+        "svm__C": [0.1, 1, 10, 100],  # Regularization parameter; smaller values specify stronger regularization
+        "svm__gamma": ["scale", "auto", 0.01, 0.1, 1],  # Kernel coefficient for 'rbf', 'poly', and 'sigmoid'
+        "svm__kernel": ["linear", "rbf", "poly"],  # Specifies the kernel type to be used in the algorithm
     }
 
-    search = RandomizedSearchCV(SVC(random_state=42), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
-    search.fit(X_train_scaled, y_train)
+    # GridSearchCV will now cross-validate the entire pipeline
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train, y_train)
 
-    # Best model
-    model = search.best_estimator_
+    # Best model (it's a fitted pipeline ready for prediction)
+    best_pipeline = search.best_estimator_
     print("Best hyperparameters found:")
     print(search.best_params_)
     print()
 
     print("Model trained successfully!")
-    print(f"Kernel: {model.kernel}")  # Type of kernel used
-    print(f"C (regularization): {model.C}")  # Regularization strength
-    print(f"Gamma: {model.gamma}")  # Kernel parameter
-    print(f"Number of support vectors: {model.n_support_}")  # Key data points
+    # Access the SVM model inside the pipeline
+    final_model = best_pipeline.named_steps["svm"]
+    print(f"Kernel: {final_model.kernel}")  # Type of kernel used
+    print(f"C (regularization): {final_model.C}")  # Regularization strength
+    print(f"Gamma: {final_model.gamma}")  # Kernel parameter
+    print(f"Number of support vectors: {final_model.n_support_}")  # Key data points
     print()
 
     # Step 5: Make predictions
-    y_pred = model.predict(X_test_scaled)  # Class predictions
+    # The pipeline automatically applies the scaler (fitted on train) to the test data
+    y_pred = best_pipeline.predict(X_test)  # Class predictions
 
     # Step 6: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
@@ -97,9 +106,12 @@ def main():
     # Compare kernels using the best C and gamma found
     kernels = ["linear", "poly", "rbf", "sigmoid"]
     accuracies = []
+    scaler = best_pipeline.named_steps["scaler"]
+    X_train_scaled = scaler.transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
 
     for kernel in kernels:
-        svm_temp = SVC(kernel=kernel, C=model.C, gamma=model.gamma, random_state=42)
+        svm_temp = SVC(kernel=kernel, C=final_model.C, gamma=final_model.gamma, random_state=42)
         svm_temp.fit(X_train_scaled, y_train)
         y_pred_temp = svm_temp.predict(X_test_scaled)
         accuracies.append(accuracy_score(y_test, y_pred_temp))

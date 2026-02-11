@@ -13,6 +13,7 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
@@ -39,36 +40,43 @@ def main():
     print(f"Test set shape: {X_test.shape}")
     print()
 
-    # Step 3: Preprocess the data
-    # Scaling features is important for logistic regression to converge faster
-    scaler = StandardScaler()  # Standardizes features to mean=0, std=1
-    X_train_scaled = scaler.fit_transform(X_train)  # Fit on train, transform train
-    X_test_scaled = scaler.transform(X_test)  # Transform test (no fitting)
+    # Step 3: Define Pipeline and Hyperparameter Grid
+    # Using a Pipeline is best practice to prevent data leakage during cross-validation.
+    # The scaler is fitted ONLY on the training fold within the CV loop.
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),  # Preprocessing step
+            ("classifier", LogisticRegression(random_state=42, max_iter=1000)),  # Model step
+        ]
+    )
 
-    # Step 4: Hyperparameter tuning
-    # Logistic regression uses regularization to prevent overfitting
-    # Note: Using default penalty (L2) to avoid deprecation warnings
+    # Parameter grid for the pipeline steps
+    # Note the double underscore notation: 'step_name__parameter_name'
     param_grid = {
-        "C": [0.01, 0.1, 1, 10, 100],  # Inverse of regularization strength; smaller values specify stronger regularization
-        "solver": ["lbfgs", "liblinear"],  # Algorithm to use in the optimization problem
+        "classifier__C": [0.01, 0.1, 1, 10, 100],  # Inverse of regularization strength; smaller values specify stronger regularization
+        "classifier__solver": ["lbfgs", "liblinear"],  # Algorithm to use in the optimization problem
     }
 
-    search = RandomizedSearchCV(LogisticRegression(random_state=42, max_iter=1000), param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
-    search.fit(X_train_scaled, y_train)  # Search for best params
+    # GridSearchCV will now cross-validate the entire pipeline
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search.fit(X_train, y_train)  # Search for best params
 
-    # Best model
-    model = search.best_estimator_
+    # Best model (it's a fitted pipeline ready for prediction)
+    best_pipeline = search.best_estimator_
     print("Best hyperparameters found:")
     print(search.best_params_)
     print()
 
     print("Model trained successfully!")
-    print(f"Coefficients shape: {model.coef_.shape}")  # Weights for each feature
-    print(f"Intercept: {model.intercept_}")  # Bias term
+    # Access the logistic regression model inside the pipeline to view coefficients
+    final_model = best_pipeline.named_steps["classifier"]
+    print(f"Coefficients shape: {final_model.coef_.shape}")  # Weights for each feature
+    print(f"Intercept: {final_model.intercept_}")  # Bias term
     print()
 
     # Step 5: Make predictions
-    y_pred = model.predict(X_test_scaled)  # Class predictions
+    # The pipeline automatically applies the scaler (fitted on train) to the test data
+    y_pred = best_pipeline.predict(X_test)  # Class predictions
 
     # Step 6: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)  # Fraction of correct predictions
@@ -96,7 +104,7 @@ def main():
 
     # Step 8: Feature importance
     # Absolute coefficients indicate feature influence
-    feature_importance = pd.DataFrame({"feature": X.columns, "importance": np.abs(model.coef_[0])}).sort_values("importance", ascending=False)
+    feature_importance = pd.DataFrame({"feature": X.columns, "importance": np.abs(final_model.coef_[0])}).sort_values("importance", ascending=False)
 
     print("Top 5 Most Important Features:")
     print(feature_importance.head())
