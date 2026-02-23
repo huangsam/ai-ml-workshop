@@ -13,9 +13,8 @@ This document summarizes the key takeaways, architecture patterns, and implement
 ### Implementation Guides
 - **[Scikit-Learn](docs/sklearn.md)**: Classical ML algorithms and model selection.
 - **[PyTorch Deep Learning](docs/pytorch.md)**: Neural networks (CNNs, Transformers) and PEFT/LoRA fine-tuning.
-- **[Data Pipelines](docs/data_pipelines.md)**: Distributed processing with Flink, Beam, and Spark.
-- **[Media Analysis](docs/media_analysis.md)**: Feature extraction for image and video.
-- **[RAG & LLMs](docs/rag.md)**: Retrieval-Augmented Generation and vector stores.
+- **[Integrations](docs/integrations.md)**: Data pipelines and media analysis external tools.
+- **[RAG & LLMs](LESSONS.md#agentic-systems--rag)**: Retrieval-Augmented Generation and agentic systems.
 
 ---
 
@@ -79,4 +78,4 @@ Focuses on combining retrieval with generative models to build intelligent agent
 
 ## Related Documentation
 - [README.md](README.md): High-level project overview and setup.
-- [docs/future_focus.md](docs/future_focus.md): Roadmap for future explorations.
+- [docs/integrations.md](docs/integrations.md): Data engineering and media analysis tools.

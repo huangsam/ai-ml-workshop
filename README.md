@@ -50,13 +50,13 @@ uv run workshop numpy backpropagation
 
 ### Core Workshop Projects (Code in this Repo)
 
-- **Project 1: Custom Text Classifier**: PyTorch & BERT fundamentals.
-- **Projects 2-3: AI Agents & RAG**: Semantic search and code review agents. **[LESSONS.md](LESSONS.md)**
-- **Project 4: Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/sklearn.md](docs/sklearn.md)**
-- **Project 5: NumPy Fundamentals**: ML concepts from scratch. **[docs/numpy.md](docs/numpy.md)**
-- **Project 6: PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/pytorch.md](docs/pytorch.md)**
-- **Project 7: PEFT/LoRA Fine-Tuning**: Efficient LLM adaptation. **[docs/pytorch.md](docs/pytorch.md)**
-- **Bonus: Backpropagation & Theory**: Chain rule and math foundations. **[docs/ml_theory.md](docs/ml_theory.md)**
+- **Custom Text Classifier**: PyTorch & BERT fundamentals.
+- **AI Agents & RAG**: Semantic search and code review agents. **[LESSONS.md](LESSONS.md)**
+- **Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/sklearn.md](docs/sklearn.md)**
+- **NumPy Fundamentals**: ML concepts from scratch. **[docs/numpy.md](docs/numpy.md)**
+- **PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/pytorch.md](docs/pytorch.md)**
+- **PEFT/LoRA Fine-Tuning**: Efficient LLM adaptation. **[docs/pytorch.md](docs/pytorch.md)**
+- **Backpropagation & Theory**: Chain rule and math foundations. **[docs/ml_theory.md](docs/ml_theory.md)**
 
 ### Related Integrations (External Repos)
 Documentation for how external data engineering and media analysis tools bridge to this workshop. **[See docs/integrations.md](docs/integrations.md)**
