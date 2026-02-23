@@ -58,6 +58,15 @@ Adapting large pre-trained models on consumer hardware:
 - **Cross-Validation**: Use `GridSearchCV` to optimize hyperparameters without overfitting.
 - **Metrics**: Accuracy is rarely enough; monitor Precision/Recall for imbalanced classes and MSE/MAE for regression.
 
+### Key Takeaways
+- **Classical ML**: SVM and Random Forests remain strong baselines for tabular data.
+- **Deep Learning**: Transformers' attention mechanism is transformative for long-range dependencies.
+- **Fine-tuning**: LoRA can reduce trainable parameters by over 98% with minimal performance loss.
+
+### Production Considerations
+- **Latency vs. Accuracy**: Local models (e.g., Ollama) offer privacy and low cost but may trade off reasoning speed and accuracy.
+- **Observability**: Track retrieval hits/misses and LLM token usage to optimize for both quality and cost.
+
 ### Deployment & Scale
 - **Experiment Tracking**: Use Weights & Biases (W&B) or MLflow to track hyperparameters and artifacts.
 - **Model Optimization**: For inference, use 4-bit/8-bit quantization and FlashAttention to reduce latency.

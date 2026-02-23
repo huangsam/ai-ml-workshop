@@ -82,6 +82,10 @@ Uses eigenvalue decomposition to project data onto principal components. Focuses
 Uses finite differences: $\partial J/\partial \theta \approx \frac{J(\theta + \epsilon) - J(\theta - \epsilon)}{2\epsilon}$.
 Essential for debugging custom gradient implementations by comparing analytical results with numerical approximations.
 
+### Key Takeaways
+- **Linear Algebra**: Dimensionality reduction (PCA) is powered by eigenvalues/vectors.
+- **Optimization**: SGD + momentum is the workhorse of deep learning.
+
 ---
 
 ## Connection to Modern Frameworks

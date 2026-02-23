@@ -50,8 +50,8 @@ uv run workshop numpy backpropagation        # Backpropagation
 
 ### Core Workshop Projects (Code in this Repo)
 
-- **Custom Text Classifier**: PyTorch & BERT fundamentals.
-- **AI Agents & RAG**: Semantic search and code review agents. **[LESSONS.md](LESSONS.md)**
+- **Custom Text Classifier**: PyTorch & BERT fundamentals. **[docs/frameworks.md](docs/frameworks.md)**
+- **AI Agents & RAG**: Semantic search and code review agents. **[docs/integrations.md](docs/integrations.md)**
 - **Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/frameworks.md](docs/frameworks.md)**
 - **NumPy Fundamentals**: ML concepts from scratch. **[docs/fundamentals.md](docs/fundamentals.md)**
 - **PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/frameworks.md](docs/frameworks.md)**
@@ -59,4 +59,5 @@ uv run workshop numpy backpropagation        # Backpropagation
 - **Backpropagation & Theory**: Chain rule and math foundations. **[docs/fundamentals.md](docs/fundamentals.md)**
 
 ### Related Integrations (External Repos)
+
 Documentation for how external data engineering and media analysis tools bridge to this workshop. **[See docs/integrations.md](docs/integrations.md)**

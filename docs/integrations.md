@@ -8,11 +8,20 @@ This document summarizes how external systems and repositories connect to the AI
 
 Retrieval-Augmented Generation (RAG) bridges LLMs with domain-specific knowledge. These insights focus on building reliable, context-aware agents.
 
-### Core Techniques
-- **Hybrid Retrieval**: Combining dense embeddings (semantic) with sparse search (keyword/BM25) via **Reciprocal Rank Fusion (RRF)**.
-- **Reranking**: Using cross-encoders to refine the top results from the initial retriever for higher precision.
-- **Chunking**: Balancing semantic continuity and retrieval granularity. Small chunks lose context; large chunks dilute signals.
-- **Agent Loops (ReAct)**: Enabling LLMs to reason and act iteratively using tools (e.g., via LangGraph).
+### Implementation Insights
+- **Hybrid Retrieval**: Combining dense embeddings with sparse search (BM25) via **Reciprocal Rank Fusion (RRF)** significantly improves document relevance.
+- **Chunking Strategy**: Small chunks lose context, while large chunks dilute signals. Overlapping chunks help preserve continuity.
+- **Agent Loops**: Multi-step reasoning (e.g., LangGraph) provides better control for complex tasks like code review than simple linear chains.
+- **Evaluation**: Using "LLM-as-judge" allows for automated scoring of faithfulness, relevance, and correctness.
+
+### Architecture Patterns
+- **RAG Pipeline**: `Query → Hybrid Retrieval (Dense + Sparse) → RRF Ranking → Context Assembly → LLM Generation`
+- **Agentic Loop**: `Query → Tool Selection → Tool Execution → Observation → Reasoning → Iterative Refinement`
+
+### RAG Success Factors
+1. **Retrieval > LLM**: A better retriever often has a higher impact on quality than a more powerful LLM.
+2. **Context Matters Tuning**: Chunk size and $k$ (number of retrieved docs) are critical for performance and cost.
+3. **Hybrid Search**: Always use hybrid search if the domain has specific terminology (e.g., code, medical).
 
 ### External Repositories (RAG)
 - **[huangsam/ragchain](https://github.com/huangsam/ragchain)**: Full RAG application demonstrating hybrid retrieval and observability.
