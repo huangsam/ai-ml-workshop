@@ -6,14 +6,10 @@ This document summarizes the key takeaways, architecture patterns, and implement
 
 ## Quick Navigation
 
-### Core Concepts
-- **[ML Theory](docs/ml_theory.md)**: Optimization, regularization, and backpropagation foundations.
-- **[NumPy Fundamentals](docs/numpy.md)**: Linear algebra and building ML from scratch.
-
 ### Implementation Guides
-- **[Scikit-Learn](docs/sklearn.md)**: Classical ML algorithms and model selection.
-- **[PyTorch Deep Learning](docs/pytorch.md)**: Neural networks (CNNs, Transformers) and PEFT/LoRA fine-tuning.
-- **[Integrations](docs/integrations.md)**: Data pipelines and media analysis external tools.
+- **[Fundamentals](docs/fundamentals.md)**: Math theory and NumPy scratch implementations.
+- **[Frameworks](docs/frameworks.md)**: Classical ML (Scikit-Learn) and Deep Learning (PyTorch).
+- **[Integrations](docs/integrations.md)**: RAG, Data Pipelines, and Media Analysis.
 - **[RAG & LLMs](LESSONS.md#agentic-systems--rag)**: Retrieval-Augmented Generation and agentic systems.
 
 ---

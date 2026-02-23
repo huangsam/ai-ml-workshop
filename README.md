@@ -32,18 +32,18 @@ uv run workshop pytorch time-series          # LSTM forecasting
 uv run workshop pytorch tabular              # MLP with embeddings
 
 # Scikit-learn examples
-uv run workshop sklearn linear-regression
-uv run workshop sklearn logistic-regression
-uv run workshop sklearn knn
-uv run workshop sklearn decision-tree
-uv run workshop sklearn svm
-uv run workshop sklearn random-forest
-uv run workshop sklearn kmeans
-uv run workshop sklearn pca
+uv run workshop sklearn linear-regression    # Linear Regression
+uv run workshop sklearn logistic-regression  # Logistic Regression
+uv run workshop sklearn knn                  # K-Nearest Neighbors
+uv run workshop sklearn decision-tree        # Decision Tree
+uv run workshop sklearn svm                  # Support Vector Machine
+uv run workshop sklearn random-forest        # Random Forest
+uv run workshop sklearn kmeans               # K-Means Clustering
+uv run workshop sklearn pca                  # Principal Component Analysis
 
 # NumPy examples
-uv run workshop numpy fundamentals
-uv run workshop numpy backpropagation
+uv run workshop numpy fundamentals           # Fundamentals
+uv run workshop numpy backpropagation        # Backpropagation
 ```
 
 ## Learnings & Progress
@@ -52,14 +52,11 @@ uv run workshop numpy backpropagation
 
 - **Custom Text Classifier**: PyTorch & BERT fundamentals.
 - **AI Agents & RAG**: Semantic search and code review agents. **[LESSONS.md](LESSONS.md)**
-- **Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/sklearn.md](docs/sklearn.md)**
-- **NumPy Fundamentals**: ML concepts from scratch. **[docs/numpy.md](docs/numpy.md)**
-- **PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/pytorch.md](docs/pytorch.md)**
-- **PEFT/LoRA Fine-Tuning**: Efficient LLM adaptation. **[docs/pytorch.md](docs/pytorch.md)**
-- **Backpropagation & Theory**: Chain rule and math foundations. **[docs/ml_theory.md](docs/ml_theory.md)**
+- **Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/frameworks.md](docs/frameworks.md)**
+- **NumPy Fundamentals**: ML concepts from scratch. **[docs/fundamentals.md](docs/fundamentals.md)**
+- **PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/frameworks.md](docs/frameworks.md)**
+- **PEFT/LoRA Fine-Tuning**: Efficient LLM adaptation. **[docs/frameworks.md](docs/frameworks.md)**
+- **Backpropagation & Theory**: Chain rule and math foundations. **[docs/fundamentals.md](docs/fundamentals.md)**
 
 ### Related Integrations (External Repos)
 Documentation for how external data engineering and media analysis tools bridge to this workshop. **[See docs/integrations.md](docs/integrations.md)**
-
-- **Data Pipelines**: Distributed processing with Flink, Beam, and Spark.
-- **Media Analysis**: Feature extraction with Vidicant (OpenCV) and xcode-trial (Apple Vision).

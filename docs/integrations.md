@@ -1,6 +1,22 @@
-# External Integrations
+# External Integrations: RAG, Pipelines & Analysis
 
-This document summarizes how external tools and projects bridge to the AI/ML workshop core. These tools serve as scalable feature extractors and data processors for the ML models in this repository.
+This document summarizes how external systems and repositories connect to the AI/ML workshop core. These tools handle data at scale and extract features for the models in this repository.
+
+---
+
+## Agentic Systems & RAG
+
+Retrieval-Augmented Generation (RAG) bridges LLMs with domain-specific knowledge. These insights focus on building reliable, context-aware agents.
+
+### Core Techniques
+- **Hybrid Retrieval**: Combining dense embeddings (semantic) with sparse search (keyword/BM25) via **Reciprocal Rank Fusion (RRF)**.
+- **Reranking**: Using cross-encoders to refine the top results from the initial retriever for higher precision.
+- **Chunking**: Balancing semantic continuity and retrieval granularity. Small chunks lose context; large chunks dilute signals.
+- **Agent Loops (ReAct)**: Enabling LLMs to reason and act iteratively using tools (e.g., via LangGraph).
+
+### External Repositories (RAG)
+- **[huangsam/ragchain](https://github.com/huangsam/ragchain)**: Full RAG application demonstrating hybrid retrieval and observability.
+- **[huangsam/codebot](https://github.com/huangsam/codebot)**: Agentic system for automated code review using function calling and tool integration.
 
 ---
 
@@ -9,35 +25,24 @@ This document summarizes how external tools and projects bridge to the AI/ML wor
 Large-scale ML requires robust data ingestion and transformation. These projects explore distributed processing frameworks.
 
 ### Repositories
-- **[huangsam/flink-trial](https://github.com/huangsam/flink-trial)**: Streaming pipelines with event-time processing and state management using Apache Flink.
-- **[huangsam/beam-trial](https://github.com/huangsam/beam-trial)**: Unified batch and streaming data processing with Apache Beam.
+- **[huangsam/flink-trial](https://github.com/huangsam/flink-trial)**: Low-latency streaming pipelines with Apache Flink.
+- **[huangsam/beam-trial](https://github.com/huangsam/beam-trial)**: Unified batch and streaming processing with Apache Beam.
 - **[huangsam/spark-trial](https://github.com/huangsam/spark-trial)**: Distributed analytics and ML preprocessing using PySpark.
-
-### Key Learnings
-- **Flink**: Best for low-latency streaming and complex event processing.
-- **Spark**: Industry standard for large-scale batch ETL and historical data analysis.
-- **Beam**: Offers portability across different runners (GCP Dataflow, Flink, Spark).
-- **ML Connectivity**: Use these for feature engineering (aggregation, normalization) before feeding data into Scikit-Learn or PyTorch models.
 
 ---
 
 ## Media Analysis & Computer Vision
 
-Specialized tools for extracting structured features from raw image and video content.
+Specialized tools for converting raw pixels/frames into structured features (JSON/Python objects) for neural networks.
 
-### Projects
-#### 1. Vidicant (Generic Cross-Platform)
-- **Repo**: [huangsam/vidicant](https://github.com/huangsam/vidicant)
-- **Stack**: C++ & OpenCV with Python bindings via `pybind11`.
-- **Focus**: Consistent analysis (brightness, colors, motion) across Windows, macOS, and Linux.
+### Repositories
+- **[huangsam/vidicant](https://github.com/huangsam/vidicant)**: C++/OpenCV based analysis (brightness, motion) with Python bindings.
+- **[huangsam/xcode-trial](https://github.com/huangsam/xcode-trial)**: Swift/Native Apple frameworks optimized for performance on Apple Silicon.
 
-#### 2. xcode-trial (Apple-Specific)
-- **Repo**: [huangsam/xcode-trial](https://github.com/huangsam/xcode-trial)
-- **Stack**: Swift & Native Apple Frameworks (Vision, AVFoundation).
-- **Focus**: High-performance multimodal analysis optimized for Apple silicon.
+---
 
-### ML Pipeline Integration
-Both tools serve as **feature extractors**. They convert raw pixels/frames into structured JSON or Python objects that can be directly consumed by the neural networks in `workshop/core/pytorch/`.
+## Evaluation & Observability
 
-Example workflow:
-`Raw Video → xcode-trial (Feature Extraction) → Structured JSON → PyTorch LSTM (Time Series forecasting)`
+- **LLM-as-Judge**: Using powerful models to score RAG outputs for faithfulness and relevance.
+- **Distance Metrics**: Using Cosine similarity or L2 distance in vector databases (Chroma, FAISS) to measure document relevance.
+- **Pipeline Workflow**: `Raw Data → External Analysis (Feature Extraction) → Structured Storage → Workshop Model (Inference)`.
