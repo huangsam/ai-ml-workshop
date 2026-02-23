@@ -200,9 +200,19 @@ This project demonstrates efficient adaptation of large language models without 
 - LoRA enables practitioners to fine-tune billion-parameter models on consumer hardware
 
 
-### Best Practices
-- **Rank selection**: Start with r=8-16; increase for complex tasks
-- **Target modules**: Focus on attention layers; include MLP layers for generation tasks
-- **Learning rate**: Use 1e-4 to 5e-4 (higher than full fine-tuning)
-- **Dataset size**: Effective with 100-1000 samples; benefits from quality over quantity
-- **Evaluation**: Monitor both adapter performance and generalization to new tasks
+## Best Practices & Production
+
+### Parameter-Efficient Fine-Tuning (PEFT)
+- **Rank selection**: Start with r=8-16; increase for complex tasks.
+- **Target modules**: Focus on attention layers; include MLP layers for generation tasks.
+- **Learning rate**: Use 1e-4 to 5e-4 (higher than full fine-tuning).
+- **Dataset size**: Effective with 100-1000 samples; benefits from quality over quantity.
+
+### Experiment Tracking & Observability
+- **Tools**: Weights & Biases (W&B), MLflow.
+- **Goal**: Track metrics, hyperparameters, and model versions to ensure reproducibility.
+- **Monitoring**: Track prediction confidence and input statistics to detect data drift.
+
+### Deployment at Scale
+- **Inference Servers**: vLLM, Text Generation Inference (TGI), Triton.
+- **Optimizations**: Use quantization (4-bit/8-bit) and FlashAttention for faster inference on limited hardware.

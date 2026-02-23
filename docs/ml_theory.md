@@ -210,6 +210,9 @@ $$\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
 - Per-parameter adaptive learning rates
 - Works well across diverse problems with limited tuning
 
+### Alignment Theory
+- **DPO (Direct Preference Optimization)** and **RLHF (Reinforcement Learning from Human Feedback)** are used to align generative models with human preferences and safety guidelines.
+
 ### Learning Rate Scheduling
 Reduce learning rate over time:
 
