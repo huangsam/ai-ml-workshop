@@ -24,26 +24,26 @@ This workshop uses a CLI interface to run examples. After installation, you can 
 
 ```bash
 # PyTorch examples
-uv run workshop pytorch fine-tuning          # PEFT/LoRA fine-tuning
-uv run workshop pytorch image-classification # ResNet-18 on CIFAR-10
-uv run workshop pytorch text-classification  # BERT on IMDb
-uv run workshop pytorch question-answering   # BERT on SQuAD
-uv run workshop pytorch time-series          # LSTM forecasting
-uv run workshop pytorch tabular              # MLP with embeddings
+uv run workshop pytorch fine-tuning            # PEFT/LoRA fine-tuning
+uv run workshop pytorch image-classification   # ResNet-18 on CIFAR-10
+uv run workshop pytorch text-classification    # BERT on IMDb
+uv run workshop pytorch question-answering     # BERT on SQuAD
+uv run workshop pytorch time-series            # LSTM forecasting
+uv run workshop pytorch tabular-classification # MLP with embeddings
 
 # Scikit-learn examples
-uv run workshop sklearn linear-regression    # Linear Regression
-uv run workshop sklearn logistic-regression  # Logistic Regression
-uv run workshop sklearn knn                  # K-Nearest Neighbors
-uv run workshop sklearn decision-tree        # Decision Tree
-uv run workshop sklearn svm                  # Support Vector Machine
-uv run workshop sklearn random-forest        # Random Forest
-uv run workshop sklearn kmeans               # K-Means Clustering
-uv run workshop sklearn pca                  # Principal Component Analysis
+uv run workshop sklearn linear-regression      # Linear Regression
+uv run workshop sklearn logistic-regression    # Logistic Regression
+uv run workshop sklearn knn                    # K-Nearest Neighbors
+uv run workshop sklearn decision-tree          # Decision Tree
+uv run workshop sklearn svm                    # Support Vector Machine
+uv run workshop sklearn random-forest          # Random Forest
+uv run workshop sklearn kmeans                 # K-Means Clustering
+uv run workshop sklearn pca                    # Principal Component Analysis
 
 # NumPy examples
-uv run workshop numpy fundamentals           # Fundamentals
-uv run workshop numpy backpropagation        # Backpropagation
+uv run workshop numpy fundamentals             # Fundamentals
+uv run workshop numpy backpropagation          # Backpropagation
 ```
 
 ## Learnings & Progress
