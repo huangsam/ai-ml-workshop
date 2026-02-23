@@ -52,7 +52,7 @@ uv run workshop numpy backpropagation
 PyTorch is more intuitive for ML on macOS, with native MPS acceleration. Hugging Face automates datasets, tokenizers, and classifiers, but understanding BERT internals is valuable. Covered tokenization, training, and evaluation; prediction should be straightforward to add.
 
 ### Projects 2-3: AI Agents & RAG Applications
-Developed semantic search engines and code review agents using LangChain, LlamaIndex, and LangGraph. Implemented RAG with hybrid retrieval (BM25 + semantic search), optimized chunking strategies, and evaluated using LLM-as-judge metrics. **[Full details in AGENTS.md](AGENTS.md)**
+Developed semantic search engines and code review agents using LangChain, LlamaIndex, and LangGraph. Implemented RAG with hybrid retrieval (BM25 + semantic search), optimized chunking strategies, and evaluated using LLM-as-judge metrics. **[Full details in LESSONS.md](LESSONS.md)**
 
 ### Project 4: Sklearn Machine Learning Algorithms
 Implemented 8 classical ML algorithms across supervised learning (linear/logistic regression, decision trees, random forest, KNN, SVM) and unsupervised learning (K-means clustering, PCA). Built complete examples with hyperparameter tuning, cross-validation, and evaluation metrics. **[Full details in docs/sklearn.md](docs/sklearn.md#project-4-classical-ml-algorithms)**
