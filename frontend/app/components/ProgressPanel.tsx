@@ -137,7 +137,7 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
         </div>
         <div className="w-full bg-gray-800/50 rounded-full h-3 overflow-hidden shadow-inner">
           <div
-            className={`h-3 rounded-full transition-all duration-500 ease-out relative overflow-hidden ${
+            className={`h-3 rounded-full transition-[width] duration-300 ease-out relative overflow-hidden ${
               status === "FAILED"
                 ? "bg-gradient-to-r from-red-600 to-orange-600"
                 : status === "COMPLETED"
@@ -149,7 +149,7 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
             style={{ width: `${Math.min(100, percentage)}%` }}
           >
             {status === "RUNNING" && (
-              <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent bg-[size:200%_100%] animate-[shimmer_2s_infinite] z-0" />
             )}
           </div>
         </div>
@@ -159,17 +159,20 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
       {allStages.length > 0 && (
         <div>
           <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Training Pipeline</p>
-          <ol className="flex items-center justify-between gap-3 overflow-x-auto pb-4 custom-scrollbar">
+          <ol className="flex items-center justify-between w-full overflow-x-auto pb-4 custom-scrollbar">
             {allStages.map((s, idx) => {
               const isPast = currentStageIdx > idx;
               const isCurrent = currentStageIdx === idx;
 
               return (
-                <li key={s} className="flex flex-col items-center gap-2 min-w-[80px] relative">
+                <li
+                  key={s}
+                  className="flex flex-col items-center gap-2 flex-1 min-w-[80px] relative"
+                >
                   {/* Connector line (before the dot) */}
                   {idx < allStages.length - 1 && (
                     <div
-                      className={`absolute top-2 left-1/2 w-[calc(100%+12px)] h-0.5 -translate-y-1/2 transition-colors duration-300 ${
+                      className={`absolute top-2 left-1/2 w-full h-0.5 -translate-y-1/2 transition-colors duration-300 z-0 ${
                         isPast ? "bg-green-500" : isCurrent ? "bg-indigo-500" : "bg-gray-800"
                       }`}
                     />
