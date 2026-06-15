@@ -22,31 +22,17 @@ uv pip install -e .
 
 ### Running Examples
 
-This workshop uses a CLI interface to run examples. After installation, you can run examples using:
+The workshop includes a CLI interface to run individual machine learning models and tutorials. See [USERGUIDE.md](file:///Users/samhuang/Playground/practice/ai-ml-workshop/USERGUIDE.md) for the complete list of CLI commands:
 
 ```bash
-# PyTorch examples
-uv run workshop pytorch fine-tuning            # PEFT/LoRA fine-tuning
-uv run workshop pytorch image-classification   # ResNet-18 on CIFAR-10
-uv run workshop pytorch text-classification    # BERT on IMDb
-uv run workshop pytorch question-answering     # BERT on SQuAD
-uv run workshop pytorch time-series            # LSTM forecasting
-uv run workshop pytorch tabular-classification # MLP with embeddings
+# Example: Run PEFT/LoRA fine-tuning
+uv run workshop pytorch fine-tuning
 
-# Scikit-learn examples
-uv run workshop sklearn linear-regression      # Linear Regression
-uv run workshop sklearn logistic-regression    # Logistic Regression
-uv run workshop sklearn knn                    # K-Nearest Neighbors
-uv run workshop sklearn decision-tree          # Decision Tree
-uv run workshop sklearn svm                    # Support Vector Machine
-uv run workshop sklearn random-forest          # Random Forest
-uv run workshop sklearn kmeans                 # K-Means Clustering
-uv run workshop sklearn pca                    # Principal Component Analysis
-
-# NumPy examples
-uv run workshop numpy fundamentals             # Fundamentals
-uv run workshop numpy backpropagation          # Backpropagation
+# Example: Run Linear Regression
+uv run workshop sklearn linear-regression
 ```
+
+For detailed instructions on running all PyTorch, Scikit-learn, and NumPy tutorials, refer to the [User Guide](file:///Users/samhuang/Playground/practice/ai-ml-workshop/USERGUIDE.md).
 
 ### Running via Web Dashboard (Full-Stack)
 
@@ -55,17 +41,13 @@ You can also run, configure, and monitor all workshop tasks using the real-time 
 1. **Start the FastAPI Backend**:
 
    ```bash
-   # In the root directory
    uv run uvicorn backend.main:app --reload --port 8000
    ```
 
 2. **Start the Next.js Frontend**:
 
    ```bash
-   # Install dependencies (from the root directory)
    npm install --prefix frontend
-
-   # Start the frontend dev server
    npm run dev --prefix frontend
    ```
 
@@ -73,16 +55,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to access th
 
 ## Learnings & Progress
 
-### Core Workshop Projects (Code in this Repo)
+Our learning modules and accomplishments are organized into three primary areas:
 
-- **Custom Text Classifier**: PyTorch & BERT fundamentals. **[docs/frameworks.md](docs/frameworks.md)**
-- **AI Agents & RAG**: Semantic search and code review agents. **[docs/integrations.md](docs/integrations.md)**
-- **Scikit-Learn Algorithms**: 8 classical ML algorithm implementations. **[docs/frameworks.md](docs/frameworks.md)**
-- **NumPy Fundamentals**: ML concepts from scratch. **[docs/fundamentals.md](docs/fundamentals.md)**
-- **PyTorch Deep Learning**: CNNs, RNNs, and Transformers. **[docs/frameworks.md](docs/frameworks.md)**
-- **PEFT/LoRA Fine-Tuning**: Efficient LLM adaptation. **[docs/frameworks.md](docs/frameworks.md)**
-- **Backpropagation & Theory**: Chain rule and math foundations. **[docs/fundamentals.md](docs/fundamentals.md)**
-
-### Related Integrations (External Repos)
-
-Documentation for how external data engineering and media analysis tools bridge to this workshop. **[See docs/integrations.md](docs/integrations.md)**
+*   **[Fundamentals](docs/fundamentals.md)**: ML theory, backpropagation, and fundamental array operations from scratch using NumPy.
+*   **[Frameworks](docs/frameworks.md)**: Scikit-learn (classical ML algorithms) and PyTorch (deep learning models, custom text classifiers, and PEFT/LoRA fine-tuning).
+*   **[Integrations](docs/integrations.md)**: RAG systems, AI agents (semantic search and code review), and documentation on bridges to external data tools.
