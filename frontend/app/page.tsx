@@ -31,12 +31,46 @@ export default function Home() {
       .catch(() => setError("Could not reach the ML Workshop API. Is the backend running?"));
   }, []);
 
-  // Clean up EventSource on unmount
+  // Listen to hash changes for browser back/forward navigation and deep-linking
   useEffect(() => {
-    return () => {
-      esRef.current?.close();
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) {
+        if (selectedTask !== null) {
+          handleTaskSelect(null);
+        }
+        return;
+      }
+      const [module, taskName] = hash.split("/");
+      if (module && taskName) {
+        if (selectedTask?.module === module && selectedTask?.task === taskName) {
+          return;
+        }
+        const found = tasks.find((t) => t.module === module && t.task === taskName);
+        if (found) {
+          esRef.current?.close();
+          setSelectedTask(found);
+          setJobState(null);
+          setCurrentJobId(null);
+          setIsRunning(false);
+          setError(null);
+        } else {
+          handleTaskSelect(null);
+        }
+      } else {
+        handleTaskSelect(null);
+      }
     };
-  }, []);
+
+    if (tasks.length > 0) {
+      handleHashChange();
+    }
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [tasks, selectedTask]);
 
   function handleTaskSelect(task: Task | null) {
     esRef.current?.close();
@@ -45,6 +79,15 @@ export default function Home() {
     setCurrentJobId(null);
     setIsRunning(false);
     setError(null);
+
+    const targetHash = task ? `#${task.module}/${task.task}` : "";
+    if (window.location.hash !== targetHash) {
+      if (targetHash) {
+        window.location.hash = targetHash;
+      } else {
+        window.history.pushState(null, "", window.location.pathname + window.location.search);
+      }
+    }
   }
 
   async function handleRun(config: Record<string, number>) {
