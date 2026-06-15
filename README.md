@@ -57,6 +57,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to access th
 
 Our learning modules and accomplishments are organized into three primary areas:
 
-*   **[Fundamentals](docs/fundamentals.md)**: ML theory, backpropagation, and fundamental array operations from scratch using NumPy.
-*   **[Frameworks](docs/frameworks.md)**: Scikit-learn (classical ML algorithms) and PyTorch (deep learning models, custom text classifiers, and PEFT/LoRA fine-tuning).
-*   **[Integrations](docs/integrations.md)**: RAG systems, AI agents (semantic search and code review), and documentation on bridges to external data tools.
+- **[Fundamentals](docs/fundamentals.md)**: ML theory, backpropagation, and fundamental array operations from scratch using NumPy.
+- **[Frameworks](docs/frameworks.md)**: Scikit-learn (classical ML algorithms) and PyTorch (deep learning models, custom text classifiers, and PEFT/LoRA fine-tuning).
+- **[Integrations](docs/integrations.md)**: RAG systems, AI agents (semantic search and code review), and documentation on bridges to external data tools.
