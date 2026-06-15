@@ -38,7 +38,7 @@ export default function Home() {
     };
   }, []);
 
-  function handleTaskSelect(task: Task) {
+  function handleTaskSelect(task: Task | null) {
     esRef.current?.close();
     setSelectedTask(task);
     setJobState(null);
@@ -151,18 +151,6 @@ export default function Home() {
                 understanding of NumPy, scikit-learn, PyTorch, and more through interactive
                 workshops.
               </p>
-
-              <div className="flex flex-wrap justify-center gap-4 pt-4">
-                <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-full text-sm font-medium backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
-                  📊 Real-time Metrics Visualization
-                </div>
-                <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-full text-sm font-medium backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
-                  🚀 Interactive Hyperparameter Tuning
-                </div>
-                <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-full text-sm font-medium backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
-                  🎯 Multiple ML Frameworks
-                </div>
-              </div>
             </div>
 
             {/* Feature Cards */}
@@ -170,6 +158,7 @@ export default function Home() {
               {[
                 {
                   title: "NumPy Fundamentals",
+                  module: "numpy",
                   description:
                     "Build neural networks from scratch using only NumPy. Understand backpropagation, gradient descent, and matrix operations at a deep level.",
                   icon: (
@@ -186,6 +175,7 @@ export default function Home() {
                 },
                 {
                   title: "Classical ML",
+                  module: "sklearn",
                   description:
                     "Master scikit-learn with algorithms like SVM, Random Forest, XGBoost, and K-Means. Learn feature engineering, model evaluation, and hyperparameter tuning.",
                   icon: (
@@ -202,6 +192,7 @@ export default function Home() {
                 },
                 {
                   title: "Deep Learning with PyTorch",
+                  module: "pytorch",
                   description:
                     "Build and train neural networks for image classification, text processing, time series forecasting, and question answering.",
                   icon: (
@@ -216,22 +207,38 @@ export default function Home() {
                   ),
                   gradient: "from-purple-500 to-pink-500",
                 },
-              ].map((card, idx) => (
-                <div
-                  key={idx}
-                  className="group glass-panel rounded-xl p-6 hover:scale-[1.02] transition-transform duration-300 transform-gpu will-change-transform cursor-default"
-                >
+              ].map((card, idx) => {
+                const targetTask = tasks.find((t) => t.module === card.module);
+                return (
                   <div
-                    className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-4 shadow-lg`}
+                    key={idx}
+                    onClick={() => targetTask && handleTaskSelect(targetTask)}
+                    className="group glass-panel rounded-xl p-6 hover:scale-[1.02] active:scale-[0.99] transition-all duration-300 transform-gpu will-change-transform cursor-pointer border border-white/5 hover:border-indigo-500/30 shadow-lg hover:shadow-indigo-500/5 flex flex-col justify-between"
                   >
-                    {card.icon}
+                    <div>
+                      <div
+                        className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-4 shadow-lg`}
+                      >
+                        {card.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                        {card.description}
+                      </p>
+                    </div>
+                    {targetTask && (
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors mt-auto">
+                        <span>Explore Tasks</span>
+                        <span className="transform group-hover:translate-x-1 transition-transform">
+                          →
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
-                    {card.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{card.description}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Shimmering Accent Ring */}
@@ -240,10 +247,68 @@ export default function Home() {
               <div className="absolute inset-4 border border-purple-500/20 rounded-full animate-[spin_15s_linear_infinite_reverse] transform-gpu will-change-transform" />
               <div className="absolute inset-8 w-48 h-48 md:w-64 md:h-64 bg-gradient-to-b from-indigo-900/30 to-transparent rounded-full blur-xl" />
 
-              <div className="text-center z-10">
-                <p className="text-6xl mb-2">🚀</p>
-                <p className="text-gray-300 font-medium">Ready to start?</p>
-                <p className="text-sm text-gray-500 mt-1">Select a task from the sidebar</p>
+              <div className="text-center z-10 flex flex-col items-center">
+                <svg
+                  className="w-16 h-16 mb-4 animate-float text-indigo-400 filter drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <linearGradient id="rocketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#818CF8" />
+                      <stop offset="50%" stopColor="#A78BFA" />
+                      <stop offset="100%" stopColor="#F472B6" />
+                    </linearGradient>
+                    <linearGradient id="fireGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#F59E0B" />
+                      <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {/* Flame */}
+                  <path
+                    d="M12 17.5C11.5 19 10 21.5 10 21.5C10 21.5 12 20.5 12 19.5C12 20.5 14 21.5 14 21.5C14 21.5 12.5 19 12 17.5Z"
+                    fill="url(#fireGrad)"
+                  />
+                  <path
+                    d="M12 18C11.8 19 11 20.5 11 20.5C11 20.5 12 20 12 19.3C12 20 13 20.5 13 20.5C13 20.5 12.2 19 12 18Z"
+                    fill="#FCD34D"
+                  />
+                  {/* Rocket wings */}
+                  <path
+                    d="M7 14.5L4.5 17C4.2 17.3 4 17.8 4 18.2V20L7.5 18L7 14.5Z"
+                    fill="#4F46E5"
+                    opacity="0.8"
+                  />
+                  <path
+                    d="M17 14.5L19.5 17C19.8 17.3 20 17.8 20 18.2V20L16.5 18L17 14.5Z"
+                    fill="#7C3AED"
+                    opacity="0.8"
+                  />
+                  {/* Rocket main body */}
+                  <path
+                    d="M12 2C12 2 7 6 7 13C7 16 9.5 18 12 18C14.5 18 17 16 17 13C17 6 12 2 12 2Z"
+                    fill="url(#rocketGrad)"
+                  />
+                  {/* Window */}
+                  <circle cx="12" cy="10" r="2.5" fill="#0f172a" stroke="#ffffff" strokeWidth="1" />
+                  <circle cx="11.5" cy="9.5" r="0.8" fill="#ffffff" />
+                  {/* Fine lines/details */}
+                  <path d="M12 2V5" stroke="#ffffff" strokeWidth="0.8" opacity="0.6" />
+                </svg>
+                <p className="text-gray-200 font-semibold text-lg">Ready to start?</p>
+                <p className="text-xs text-gray-500 mt-1">Select a task from the sidebar or</p>
+                <button
+                  onClick={() => {
+                    if (tasks.length > 0) {
+                      const randomIdx = Math.floor(Math.random() * tasks.length);
+                      handleTaskSelect(tasks[randomIdx]);
+                    }
+                  }}
+                  className="mt-3 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white rounded-full transition-all duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-[0.97] cursor-pointer"
+                >
+                  🎲 Surprise Me!
+                </button>
               </div>
             </div>
           </div>
