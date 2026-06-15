@@ -22,13 +22,31 @@ export default function Home() {
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const esRef = useRef<EventSource | null>(null);
 
   // Load task catalogue on mount
   useEffect(() => {
     fetchTasks()
-      .then(setTasks)
-      .catch(() => setError("Could not reach the ML Workshop API. Is the backend running?"));
+      .then((data) => {
+        setTasks(data);
+        // Resolve hash immediately on mount to prevent homepage flashing
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+          const [module, taskName] = hash.split("/");
+          if (module && taskName) {
+            const found = data.find((t) => t.module === module && t.task === taskName);
+            if (found) {
+              setSelectedTask(found);
+            }
+          }
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Could not reach the ML Workshop API. Is the backend running?");
+        setIsLoading(false);
+      });
   }, []);
 
   // Listen to hash changes for browser back/forward navigation and deep-linking
@@ -176,7 +194,15 @@ export default function Home() {
           </div>
         )}
 
-        {!selectedTask ? (
+        {isLoading ? (
+          <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center">
+            {/* Premium Loading Spinner */}
+            <div className="relative w-12 h-12 animate-pulse">
+              <div className="absolute inset-0 border-2 border-indigo-500/20 rounded-full" />
+              <div className="absolute inset-0 border-t-2 border-indigo-500 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.4)]" />
+            </div>
+          </div>
+        ) : !selectedTask ? (
           /* Premium Landing Page Hero */
           <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center space-y-12 animate-fade-in-up">
             {/* Header */}
