@@ -206,16 +206,15 @@ export default function Home() {
           /* Premium Landing Page Hero */
           <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center space-y-12 animate-fade-in-up">
             {/* Header */}
-            <div className="text-center space-y-6 max-w-4xl mx-auto px-4">
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-2">
-                Master Machine Learning
-                <br />
-                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <div className="text-center space-y-6 max-w-5xl mx-auto px-4">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-4 text-balance leading-tight">
+                Master Machine Learning{" "}
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent md:whitespace-nowrap">
                   Through Hands-On Practice
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed text-balance">
                 Configure hyperparameters, watch training in real-time, and deepen your
                 understanding of NumPy, scikit-learn, PyTorch, and more through interactive
                 workshops.
@@ -293,7 +292,7 @@ export default function Home() {
                       <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
                         {card.title}
                       </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                      <p className="text-gray-400 text-sm leading-relaxed mb-4 text-balance">
                         {card.description}
                       </p>
                     </div>
