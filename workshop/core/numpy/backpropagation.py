@@ -224,39 +224,71 @@ def synthetic_xor_data(num_samples: int = 100) -> tuple[np.ndarray, np.ndarray]:
     return X[indices], y[indices]
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
     """
     Main demonstration of backpropagation.
+
+    Args:
+        hook: Optional ProgressHook implementation for structured progress reporting.
+              Defaults to NoOpProgressHook (silent) when not provided.
     """
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_samples = int(config.get("num_samples", 50))
+    hidden_size = int(config.get("hidden_size", 4))
+    num_epochs = int(config.get("num_epochs", 100))
+    learning_rate = float(config.get("learning_rate", 0.1))
+
+    if hook is None:
+        hook = NoOpProgressHook()
+
     print("=" * 70)
     print("Backpropagation from Scratch")
     print("=" * 70)
 
     # 1. Generate data
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Generation", 5)
     print("\n1. Generating XOR dataset...")
-    X, y = synthetic_xor_data(num_samples=50)
+    X, y = synthetic_xor_data(num_samples=num_samples)
     print(f"   Dataset shape: {X.shape}")
     print(f"   Labels shape: {y.shape}")
 
     # 2. Create network
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Initialization", 10)
     print("\n2. Creating neural network...")
-    net = SimpleNeuralNetwork(input_size=2, hidden_size=4, output_size=1)
+    net = SimpleNeuralNetwork(input_size=2, hidden_size=hidden_size, output_size=1)
     print(f"   W1 shape: {net.W1.shape}")
     print(f"   W2 shape: {net.W2.shape}")
 
     # 3. Training
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 15)
     print("\n3. Training with backpropagation...")
-    num_epochs = 100
+    # num_epochs from config
     losses = []
-    learning_rate = 0.1
+    # learning_rate from config
 
     for epoch in range(num_epochs):
+        if hook.is_cancelled():
+            return
         # Forward pass
         net.forward(X)
 
         # Backward pass (computes analytical gradients)
         gradients, loss = net.backward(y, learning_rate=learning_rate)
         losses.append(loss)
+
+        training_pct = 15 + (epoch + 1) / num_epochs * 70
+        if hook.is_cancelled():
+            return
+        hook.update_stage("Training", training_pct)
+        hook.update_metrics({"epoch": epoch + 1, "loss": float(loss)})
 
         if (epoch + 1) % 20 == 0:
             # Compute numerical gradients for first batch (verification)
@@ -287,12 +319,19 @@ def main() -> None:
                 print(f"   Epoch {epoch + 1}/{num_epochs} - Loss: {loss:.6f}")
 
     # 4. Final evaluation
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
     print("\n5. Final Evaluation...")
     final_pred = net.forward(X)
     accuracy = np.mean((final_pred > 0.5) == y)
     print(f"   Final accuracy: {accuracy:.2%}")
+    hook.update_metrics({"accuracy": float(accuracy)})
 
     # 5. Visualization
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Visualization", 95)
     print("\n6. Generating visualization...")
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -360,6 +399,9 @@ def main() -> None:
     print("=" * 70)
     print("Training complete! 🎉")
     print("=" * 70)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

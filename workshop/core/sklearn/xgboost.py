@@ -15,7 +15,19 @@ from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    test_size = float(config.get("test_size", 0.2))
+    n_estimators = int(config.get("n_estimators", 100))
+    learning_rate = float(config.get("learning_rate", 0.1))
+    max_depth = int(config.get("max_depth", 6))
+    cv_folds = int(config.get("cv_folds", 5))
+    n_iter = int(config.get("n_iter", 20))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # Same Breast Cancer dataset as other examples
     cancer = load_breast_cancer()
@@ -28,9 +40,12 @@ def main():
     print(f"Dataset shape: {X.shape}")
     print(f"Class distribution: {y.value_counts().to_dict()}")
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Split the data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
@@ -41,24 +56,27 @@ def main():
     # Gradient boosting trees are scale-invariant, but Pipelines make the code more maintainable and extensible.
     pipeline = Pipeline(
         [
-            ("xgb", XGBClassifier(random_state=42, eval_metric="logloss")),  # Model step
+            ("xgb", XGBClassifier(random_state=42, eval_metric="logloss", n_jobs=1)),  # Model step
         ]
     )
 
     # Parameter grid for the pipeline steps
     # Note the double underscore notation: 'step_name__parameter_name'
     param_grid = {
-        "xgb__n_estimators": [50, 100, 200, 300],  # Number of boosting rounds
-        "xgb__max_depth": [3, 6, 9, 12],  # Maximum depth of each tree
-        "xgb__learning_rate": [0.01, 0.1, 0.2, 0.3],  # Step size shrinkage
-        "xgb__subsample": [0.6, 0.8, 1.0],  # Subsample ratio of training instances
-        "xgb__colsample_bytree": [0.6, 0.8, 1.0],  # Subsample ratio of columns when constructing each tree
-        "xgb__gamma": [0, 0.1, 0.2, 0.3],  # Minimum loss reduction required to make a further partition
+        "xgb__n_estimators": [n_estimators],
+        "xgb__max_depth": [max_depth],
+        "xgb__learning_rate": [learning_rate],
+        "xgb__subsample": [0.6, 0.8, 1.0],
+        "xgb__colsample_bytree": [0.6, 0.8, 1.0],
+        "xgb__gamma": [0, 0.1, 0.2, 0.3],
     }
 
     # GridSearchCV will now cross-validate the entire pipeline
-    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=n_iter, cv=cv_folds, random_state=42, verbose=1)
     search.fit(X_train, y_train)  # Tune parameters
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     # Best model (it's a fitted pipeline)
     best_pipeline = search.best_estimator_
@@ -81,6 +99,10 @@ def main():
 
     # Step 5: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
+    hook.update_metrics({"accuracy": float(accuracy)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")
     print()
@@ -121,6 +143,9 @@ def main():
     plt.gca().invert_yaxis()  # Highest at top
     plt.savefig("xgboost_feature_importance.png", dpi=300, bbox_inches="tight")
     print("Feature importance plot saved as 'xgboost_feature_importance.png'")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

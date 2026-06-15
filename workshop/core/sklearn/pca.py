@@ -15,7 +15,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    n_components = int(config.get("n_components", 2))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # Iris dataset: 4 features, we'll reduce to 2 or 3 principal components
     iris = load_iris()
@@ -27,6 +34,9 @@ def main():
     print(f"Dataset shape: {X.shape}")
     print(f"Species: {iris.target_names}")
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Define Pipeline
     # Using a Pipeline is best practice to prevent data leakage.
@@ -34,12 +44,15 @@ def main():
     pipeline = Pipeline(
         [
             ("scaler", StandardScaler()),  # Preprocessing step
-            ("pca", PCA(n_components=2)),  # Dimensionality reduction step
+            ("pca", PCA(n_components=n_components)),  # Dimensionality reduction step
         ]
     )
 
     # Step 3: Fit the pipeline and apply PCA
     X_pca = pipeline.fit_transform(X)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Dimensionality Reduction", 50)
 
     print("PCA Results:")
     print(f"Original dimensions: {X.shape[1]}")
@@ -59,6 +72,10 @@ def main():
     explained_variance = pca_full.explained_variance_ratio_
     cumulative_variance = np.cumsum(explained_variance)
 
+    hook.update_metrics({"explained_variance_ratio_sum": float(np.sum(pca.explained_variance_ratio_))})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Explained Variance Analysis:")
     for i, (var, cum_var) in enumerate(zip(explained_variance, cumulative_variance), 1):
         print(f"PC{i}: {var:.4f} ({cum_var:.4f} cumulative)")
@@ -125,6 +142,9 @@ def main():
     plt.grid(True)
     plt.savefig("pca_reconstruction_error.png", dpi=300, bbox_inches="tight")
     print("Reconstruction error plot saved as 'pca_reconstruction_error.png'")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

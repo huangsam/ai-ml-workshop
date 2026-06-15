@@ -1,0 +1,5 @@
+# Ruff configuration for backend
+line-length = 160
+
+[lint]
+extend-select = ["I", "UP"]

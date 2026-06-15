@@ -16,7 +16,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    n_clusters = int(config.get("n_clusters", 3))
+    max_iter = int(config.get("max_iter", 300))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # Iris dataset: measurements of sepal/petal lengths/widths for 3 flower species
     iris = load_iris()
@@ -28,6 +36,9 @@ def main():
     print(f"Dataset shape: {X.shape}")
     print(f"Species: {iris.target_names}")
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Define Pipeline and Hyperparameter Grid
     # Using a Pipeline is best practice to prevent data leakage during cross-validation.
@@ -35,13 +46,13 @@ def main():
     pipeline = Pipeline(
         [
             ("scaler", StandardScaler()),  # Preprocessing step
-            ("kmeans", KMeans(random_state=42)),  # Model step
+            ("kmeans", KMeans(n_clusters=n_clusters, max_iter=max_iter, random_state=42)),  # Model step
         ]
     )
 
     # Parameter grid for the pipeline steps
     # Note the double underscore notation: 'step_name__parameter_name'
-    param_grid = {"kmeans__n_clusters": [2, 3, 4, 5, 6]}
+    param_grid = {"kmeans__n_clusters": [n_clusters]}
 
     # Custom scorer for silhouette score
     def silhouette_scorer(estimator, X):
@@ -65,6 +76,9 @@ def main():
     final_model = best_pipeline.named_steps["kmeans"]
     labels = final_model.fit_predict(best_pipeline.named_steps["scaler"].transform(X))  # Assign clusters
     centroids = final_model.cluster_centers_  # Cluster centers
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     print("Clustering Results:")
     print(f"Number of clusters: {final_model.n_clusters}")
@@ -75,6 +89,10 @@ def main():
     # Step 5: Evaluate clustering quality
     X_scaled = best_pipeline.named_steps["scaler"].transform(X)
     silhouette_avg = silhouette_score(X_scaled, labels)
+    hook.update_metrics({"silhouette_score": float(silhouette_avg)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Clustering Evaluation:")
     print(f"Silhouette Score: {silhouette_avg:.4f}")  # Higher is better (closer to 1)
     print("(Values > 0.5 indicate reasonable clustering)")
@@ -131,6 +149,9 @@ def main():
     plt.grid(True)
     plt.savefig("kmeans_elbow_plot.png", dpi=300, bbox_inches="tight")
     print("Elbow plot saved as 'kmeans_elbow_plot.png'")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

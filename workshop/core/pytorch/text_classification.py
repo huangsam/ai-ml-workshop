@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import random
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
@@ -14,11 +16,19 @@ from transformers import (
 
 from workshop.utils import get_device
 
+if TYPE_CHECKING:
+    from workshop.utils.hooks import ProgressHook
+
 # --- 1. CONFIGURATION CONSTANTS ---
+# Pre-trained base transformer model name
 MODEL_NAME = "bert-base-uncased"  # The Hugging Face model to use
+# Maximum sequence length for input tokenization
 MAX_LENGTH = 128  # Max length for tokenization
+# Default training and evaluation batch size
 BATCH_SIZE = 16  # Batch size for training
+# Fallback compute device, checked dynamically at runtime
 DEVICE = "cpu"  # Default to CPU; Mac M3 will often auto-accelerate PyTorch
+# Random seed for reproducibility
 SEED = 42
 
 
@@ -33,7 +43,7 @@ def set_seed(seed: int):
         torch.cuda.manual_seed_all(seed)
 
 
-def load_data(dataset_name="imdb") -> DatasetDict:
+def load_data(dataset_name="stanfordnlp/imdb") -> DatasetDict:
     """
     Loads and prepares the dataset from the Hugging Face Hub.
     """
@@ -68,6 +78,7 @@ def train_model(
     optimizer: torch.optim.AdamW,
     device: str,
     epochs: int,
+    hook: ProgressHook | None = None,
 ) -> float:
     """
     Train the model for the specified number of epochs.
@@ -83,6 +94,7 @@ def train_model(
         Average training loss from the last epoch
     """
     model.train()  # Set model to training mode
+    avg_loss: float = 0.0
 
     for epoch in range(epochs):
         total_loss: float = 0.0
@@ -108,8 +120,13 @@ def train_model(
             # Update progress bar
             progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
 
-        avg_loss: float = total_loss / len(train_loader)  # Average loss for the epoch
+        avg_loss = total_loss / len(train_loader)  # Average loss for the epoch
         print(f"Epoch {epoch + 1}/{epochs} - Average Loss: {avg_loss:.4f}")
+        if hook is not None:
+            hook.update_metrics({"epoch": epoch + 1, "loss": float(avg_loss)})
+            if hook.is_cancelled():
+                return avg_loss
+            hook.update_stage("Training", 25 + ((epoch + 1) / epochs) * 60)
 
     return avg_loss
 
@@ -153,7 +170,16 @@ def evaluate_model(model: AutoModelForSequenceClassification, test_loader: torch
     return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_epochs = int(config.get("num_epochs", 2))
+    learning_rate = float(config.get("learning_rate", 2e-5))
+    batch_size = int(config.get("batch_size", BATCH_SIZE))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for the text classification project.
     """
@@ -190,6 +216,9 @@ def main():
 
     print("Data tokenization complete.")
     print(tokenized_datasets)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # 3. Model Loading (to ensure environment works)
     model: AutoModelForSequenceClassification = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=2)
@@ -204,19 +233,31 @@ def main():
     # rather than the longest sequence in the whole dataset or MAX_LENGTH
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
-    train_loader: DataLoader = DataLoader(tokenized_datasets["train"], batch_size=BATCH_SIZE, shuffle=True, collate_fn=data_collator)
-    test_loader: DataLoader = DataLoader(tokenized_datasets["test"], batch_size=BATCH_SIZE, collate_fn=data_collator)
+    train_loader: DataLoader = DataLoader(tokenized_datasets["train"], batch_size=batch_size, shuffle=True, collate_fn=data_collator)
+    test_loader: DataLoader = DataLoader(tokenized_datasets["test"], batch_size=batch_size, collate_fn=data_collator)
 
     # 5. Optimizer
-    optimizer: torch.optim.AdamW = torch.optim.AdamW(model.parameters(), lr=2e-5)
+    optimizer: torch.optim.AdamW = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Setup", 20)
 
     # 6. Training
-    EPOCHS: int = 2
-    final_train_loss = train_model(model, train_loader, optimizer, DEVICE, EPOCHS)
+    EPOCHS: int = num_epochs
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 25)
+    final_train_loss = train_model(model, train_loader, optimizer, DEVICE, EPOCHS, hook=hook)
+    if hook.is_cancelled():
+        return
     print(f"Final Training Loss: {final_train_loss:.4f}")
 
     # 7. Evaluation
     metrics = evaluate_model(model, test_loader, DEVICE)
+    hook.update_metrics({key: float(value) for key, value in metrics.items()})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
     print("\nModel Evaluation:")
     print(f"Accuracy:  {metrics['accuracy']:.4f}")
     print(f"Precision: {metrics['precision']:.4f}")
@@ -241,6 +282,9 @@ def main():
             label = "Positive" if prediction == 1 else "Negative"
             print(f'Text: "{text[:50]}..."')
             print(f"Prediction: {label}\n")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

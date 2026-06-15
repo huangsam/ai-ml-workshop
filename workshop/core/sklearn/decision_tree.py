@@ -17,7 +17,16 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    test_size = float(config.get("test_size", 0.2))
+    cv_folds = int(config.get("cv_folds", 5))
+    n_iter = int(config.get("n_iter", 20))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # The Breast Cancer dataset is a classic binary classification problem
     # where we predict if a tumor is malignant (1) or benign (0)
@@ -31,11 +40,14 @@ def main():
     print(f"Dataset shape: {X.shape}")  # Total samples and features
     print(f"Class distribution: {y.value_counts().to_dict()}")  # Count of each class
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Split the data into training and testing sets
     # We use 80% for training and 20% for testing to evaluate model performance
     # Stratified split ensures balanced class distribution in both sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")  # Data used to train the model
     print(f"Test set shape: {X_test.shape}")  # Data used to evaluate the model
@@ -60,8 +72,11 @@ def main():
     }
 
     # GridSearchCV will now cross-validate the entire pipeline
-    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=n_iter, cv=cv_folds, random_state=42, verbose=1)
     search.fit(X_train, y_train)  # Fit the search on training data with cross-validation
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     # Best model (it's a fitted pipeline)
     best_pipeline = search.best_estimator_
@@ -83,6 +98,10 @@ def main():
     # Step 5: Evaluate the model
     # Accuracy measures overall correctness
     accuracy = accuracy_score(y_test, y_pred)
+    hook.update_metrics({"accuracy": float(accuracy)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")  # Percentage of correct predictions
     print()
@@ -120,6 +139,9 @@ def main():
     plt.title("Decision Tree Visualization")
     plt.savefig("decision_tree_visualization.png", dpi=300, bbox_inches="tight")
     print("Decision tree visualization saved as 'decision_tree_visualization.png'")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

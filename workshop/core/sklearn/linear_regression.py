@@ -21,7 +21,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    test_size = float(config.get("test_size", 0.2))
+    cv_folds = int(config.get("cv_folds", 5))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # California Housing dataset contains features like median income, house age, etc.
     # Target is median house value in $100,000s
@@ -34,11 +42,14 @@ def main():
     print(f"Target: {y.name} (Median house value in $100,000's)")
     print(f"Dataset shape: {X.shape}")  # Number of samples and features
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Split the data into training and testing sets
     # Training set: used to train the model
     # Testing set: used to evaluate performance on unseen data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
@@ -59,8 +70,11 @@ def main():
     param_grid = {"regressor__fit_intercept": [True, False]}
 
     # GridSearchCV will now cross-validate the entire pipeline
-    search = GridSearchCV(pipeline, param_grid, cv=5, scoring="neg_mean_squared_error")
+    search = GridSearchCV(pipeline, param_grid, cv=cv_folds, scoring="neg_mean_squared_error")
     search.fit(X_train, y_train)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     # Best model (it's a fitted pipeline ready for prediction)
     best_pipeline = search.best_estimator_
@@ -84,6 +98,10 @@ def main():
     mse = mean_squared_error(y_test, y_pred)
     # R² Score: proportion of variance explained (1.0 is perfect)
     r2 = r2_score(y_test, y_pred)
+    hook.update_metrics({"mse": float(mse), "r2": float(r2)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
 
     print("Model Evaluation:")
     print(f"Mean Squared Error: {mse:.2f}")  # Lower is better
@@ -115,6 +133,9 @@ def main():
     plt.grid(True)
     plt.savefig("linear_regression_results.png", dpi=300, bbox_inches="tight")
     print("Plot saved as 'linear_regression_results.png'")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

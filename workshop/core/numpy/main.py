@@ -17,7 +17,14 @@ Each section includes mathematical explanations and practical examples.
 import numpy as np
 
 
-def main():
+def main(hook=None, config=None):
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+
+    if hook is None:
+        hook = NoOpProgressHook()
+
     print("ML Fundamentals with NumPy")
     print("=" * 40)
     print("Demonstrating core mathematical concepts for machine learning")
@@ -26,6 +33,9 @@ def main():
     # ========================================================================
     # 1. VECTOR OPERATIONS
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Vector Operations", 10)
     print("1. VECTOR OPERATIONS")
     print("-" * 30)
     print("Vectors are fundamental data structures in ML:")
@@ -69,6 +79,9 @@ def main():
     # ========================================================================
     # 2. MATRIX OPERATIONS
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Matrix Operations", 25)
     print("2. MATRIX OPERATIONS")
     print("-" * 30)
     print("Matrices represent datasets and linear transformations:")
@@ -113,6 +126,9 @@ def main():
     # ========================================================================
     # 3. LINEAR ALGEBRA FOR ML
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Linear Algebra", 45)
     print("3. LINEAR ALGEBRA FOR ML")
     print("-" * 30)
     print("Advanced linear algebra concepts used in ML:")
@@ -148,6 +164,9 @@ def main():
     # ========================================================================
     # 4. LINEAR REGRESSION FROM SCRATCH
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Linear Regression", 60)
     print("4. LINEAR REGRESSION FROM SCRATCH")
     print("-" * 30)
     print("Linear regression finds the best straight line to fit data:")
@@ -245,6 +264,9 @@ def main():
     # ========================================================================
     # 5. COST FUNCTION VISUALIZATION
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Cost Function Visualization", 80)
     print("5. COST FUNCTION VISUALIZATION")
     print("-" * 35)
     print("Mean Squared Error (MSE) cost function:")
@@ -303,6 +325,9 @@ def main():
     # ========================================================================
     # 6. FEATURE SCALING
     # ========================================================================
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Feature Scaling", 90)
     print("6. FEATURE SCALING")
     print("-" * 20)
     print("Feature scaling ensures all features contribute equally to the model:")
@@ -374,6 +399,9 @@ def main():
     print("- Min-Max Scaling: When you need bounded ranges, for neural networks")
     print("- Both preserve relationships between data points")
     print("- Always fit scaler on training data, apply to test data")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

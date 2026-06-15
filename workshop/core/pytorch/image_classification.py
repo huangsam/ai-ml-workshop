@@ -17,15 +17,21 @@ from torch.utils.data import DataLoader
 from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
+# Default batch size for training and testing
 BATCH_SIZE = 64  # Batch size for training and testing
+# Default number of training epochs
 NUM_EPOCHS = 5  # Number of training epochs
+# Default learning rate for optimizer
 LEARNING_RATE = 0.001  # Learning rate for optimizer
+# Fallback compute device, checked dynamically at runtime
 DEVICE = "cpu"  # Default to CPU; will check for MPS acceleration
+# Number of target classes in CIFAR-10
 NUM_CLASSES = 10  # CIFAR-10 has 10 classes
+# Input image dimension (width/height in pixels)
 IMAGE_SIZE = 32  # CIFAR-10 images are 32x32
 
 
-def get_data_loaders() -> tuple[DataLoader, DataLoader]:
+def get_data_loaders(batch_size: int = BATCH_SIZE) -> tuple[DataLoader, DataLoader]:
     """
     Creates and returns train/test DataLoaders for CIFAR-10 dataset.
 
@@ -57,8 +63,8 @@ def get_data_loaders() -> tuple[DataLoader, DataLoader]:
     test_dataset = torchvision.datasets.CIFAR10(root="./data", train=False, download=True, transform=test_transform)
 
     # Create DataLoaders
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
 
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Test dataset size: {len(test_dataset)}")
@@ -87,7 +93,7 @@ def create_model() -> nn.Module:
     return model
 
 
-def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, criterion: nn.Module, device: str) -> None:
+def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, criterion: nn.Module, device: str) -> tuple[float, float]:
     """
     Trains the model for one epoch.
 
@@ -97,6 +103,10 @@ def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.opt
         optimizer: Optimizer for updating weights
         criterion: Loss function
         device: Device to run on ('cpu' or 'mps')
+
+    Returns:
+        A tuple of (epoch_loss, epoch_acc) where epoch_loss is the mean loss
+        over all batches and epoch_acc is the fraction of correct predictions.
     """
     model.train()  # Set model to training mode
     running_loss = 0.0
@@ -130,6 +140,7 @@ def train_model(model: nn.Module, train_loader: DataLoader, optimizer: torch.opt
     epoch_loss = running_loss / len(train_loader)
     epoch_acc = 100.0 * correct / total
     print(f"Training - Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.2f}%")
+    return epoch_loss, epoch_acc
 
 
 def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Module, device: str) -> tuple[float, float]:
@@ -168,7 +179,16 @@ def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Modu
     return avg_loss, accuracy
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_epochs = int(config.get("num_epochs", NUM_EPOCHS))
+    learning_rate = float(config.get("learning_rate", LEARNING_RATE))
+    batch_size = int(config.get("batch_size", BATCH_SIZE))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for the image classification project.
     """
@@ -184,7 +204,10 @@ def main() -> None:
         print("Using CPU for computation.")
 
     # 2. Load data
-    train_loader, test_loader = get_data_loaders()
+    train_loader, test_loader = get_data_loaders(batch_size=batch_size)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # 3. Create model
     model = create_model()
@@ -192,25 +215,47 @@ def main() -> None:
 
     # 4. Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()  # Standard loss for multi-class classification
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"Trainable parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Setup", 20)
 
     # 5. Training loop
     print("\nStarting training...")
-    for epoch in range(NUM_EPOCHS):
-        print(f"\nEpoch {epoch + 1}/{NUM_EPOCHS}")
-        train_model(model, train_loader, optimizer, criterion, DEVICE)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 25)
+    for epoch in range(num_epochs):
+        print(f"\nEpoch {epoch + 1}/{num_epochs}")
+        train_loss, train_acc = train_model(model, train_loader, optimizer, criterion, DEVICE)
 
         # Evaluate after each epoch
         test_loss, test_acc = evaluate_model(model, test_loader, criterion, DEVICE)
-        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Test Loss: {test_loss:.4f}, Accuracy: {test_acc:.2f}%")
+        print(f"Epoch {epoch + 1}/{num_epochs} - Test Loss: {test_loss:.4f}, Accuracy: {test_acc:.2f}%")
+        hook.update_metrics(
+            {
+                "epoch": epoch + 1,
+                "loss": float(train_loss),
+                "train_accuracy": float(train_acc),
+                "test_loss": float(test_loss),
+                "accuracy": float(test_acc),
+            }
+        )
+        if hook.is_cancelled():
+            return
+        hook.update_stage("Training", 25 + ((epoch + 1) / num_epochs) * 60)
 
     # 6. Final evaluation
     print("\nFinal Evaluation:")
     final_loss, final_acc = evaluate_model(model, test_loader, criterion, DEVICE)
     print(f"Final Test Loss: {final_loss:.4f}, Final Accuracy: {final_acc:.2f}%")
+    hook.update_metrics({"final_loss": float(final_loss), "final_accuracy": float(final_acc)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
 
     # 7. Prediction demo
     print("\n" + "=" * 50)
@@ -232,6 +277,9 @@ def main() -> None:
             print(f"  {status} Actual: {actual:12} | Predicted: {predicted}")
 
     print("\nTraining complete! 🎉")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

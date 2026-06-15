@@ -18,13 +18,21 @@ from torch.utils.data import DataLoader, Dataset
 from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
+# Default historical sequence length (lookback window in hours)
 SEQUENCE_LENGTH = 24  # Look back 24 hours
+# Default future prediction horizon (forecasting window in hours)
 PREDICTION_HORIZON = 6  # Predict next 6 hours
+# Default batch size for training and testing
 BATCH_SIZE = 32
+# Default number of training epochs
 NUM_EPOCHS = 10
+# Default learning rate for optimizer
 LEARNING_RATE = 0.001
+# Hidden state vector dimensionality in LSTM layers
 HIDDEN_SIZE = 64  # LSTM hidden units
+# Number of recurrent LSTM layers
 NUM_LAYERS = 2  # LSTM layers
+# Fallback compute device, checked dynamically at runtime
 DEVICE = "cpu"  # Default to CPU; will check for MPS acceleration
 
 
@@ -153,7 +161,7 @@ def generate_weather_data(num_samples: int = 10000) -> pd.DataFrame:
     return df
 
 
-def prepare_data(df: pd.DataFrame) -> tuple[DataLoader, DataLoader, MinMaxScaler]:
+def prepare_data(df: pd.DataFrame, sequence_length: int = SEQUENCE_LENGTH, batch_size: int = BATCH_SIZE) -> tuple[DataLoader, DataLoader, MinMaxScaler]:
     """
     Prepare data for training and testing.
 
@@ -178,12 +186,12 @@ def prepare_data(df: pd.DataFrame) -> tuple[DataLoader, DataLoader, MinMaxScaler
     test_data = scaled_features[train_size:]
 
     # Create datasets
-    train_dataset = WeatherDataset(train_data, SEQUENCE_LENGTH, PREDICTION_HORIZON)
-    test_dataset = WeatherDataset(test_data, SEQUENCE_LENGTH, PREDICTION_HORIZON)
+    train_dataset = WeatherDataset(train_data, sequence_length, PREDICTION_HORIZON)
+    test_dataset = WeatherDataset(test_data, sequence_length, PREDICTION_HORIZON)
 
     # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     print(f"Train samples: {len(train_dataset)}")
     print(f"Test samples: {len(test_dataset)}")
@@ -255,7 +263,17 @@ def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Modu
     return total_loss / len(test_loader)
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_epochs = int(config.get("num_epochs", NUM_EPOCHS))
+    learning_rate = float(config.get("learning_rate", LEARNING_RATE))
+    batch_size = int(config.get("batch_size", BATCH_SIZE))
+    sequence_length = int(config.get("sequence_length", SEQUENCE_LENGTH))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for the time series forecasting project.
     """
@@ -272,7 +290,10 @@ def main() -> None:
 
     # 2. Generate and prepare data
     weather_df = generate_weather_data()
-    train_loader, test_loader, scaler = prepare_data(weather_df)
+    train_loader, test_loader, scaler = prepare_data(weather_df, sequence_length=sequence_length, batch_size=batch_size)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Generation", 10)
 
     # 3. Create model
     input_size = weather_df.shape[1]  # Number of features (temp, humidity, wind)
@@ -283,20 +304,30 @@ def main() -> None:
 
     print(f"Model: LSTM with {NUM_LAYERS} layers, {HIDDEN_SIZE} hidden units")
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Setup", 20)
 
     # 4. Define loss and optimizer
     criterion = nn.MSELoss()  # Mean Squared Error for regression
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # 5. Training loop
     print("\nStarting training...")
     best_loss = float("inf")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 25)
 
-    for epoch in range(NUM_EPOCHS):
+    for epoch in range(num_epochs):
         train_loss = train_model(model, train_loader, optimizer, criterion, DEVICE)
         test_loss = evaluate_model(model, test_loader, criterion, DEVICE)
 
-        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}")
+        print(f"Epoch {epoch + 1}/{num_epochs} - Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}")
+        hook.update_metrics({"epoch": epoch + 1, "loss": float(train_loss), "test_loss": float(test_loss)})
+        if hook.is_cancelled():
+            return
+        hook.update_stage("Training", 25 + ((epoch + 1) / num_epochs) * 60)
         if test_loss < best_loss:
             best_loss = test_loss
             # Could save model here: torch.save(model.state_dict(), 'best_model.pth')
@@ -304,6 +335,10 @@ def main() -> None:
     # 6. Final evaluation
     print("\nFinal Results:")
     print(f"Best Test Loss: {best_loss:.4f}")
+    hook.update_metrics({"best_test_loss": float(best_loss)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
 
     # 7. Prediction demo
     print("\n" + "=" * 50)
@@ -331,6 +366,9 @@ def main() -> None:
     print("Note: This is a basic LSTM implementation. For production use,")
     print("consider techniques like teacher forcing, attention mechanisms,")
     print("and proper validation with walk-forward validation.")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

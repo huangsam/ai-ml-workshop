@@ -17,7 +17,16 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    test_size = float(config.get("test_size", 0.2))
+    cv_folds = int(config.get("cv_folds", 5))
+    n_iter = int(config.get("n_iter", 20))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     cancer = load_breast_cancer()
     X = pd.DataFrame(cancer.data, columns=cancer.feature_names)
@@ -29,9 +38,12 @@ def main():
     print(f"Dataset shape: {X.shape}")
     print(f"Class distribution: {y.value_counts().to_dict()}")
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Split the data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
@@ -57,8 +69,11 @@ def main():
     }
 
     # GridSearchCV will now cross-validate the entire pipeline
-    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=n_iter, cv=cv_folds, random_state=42, verbose=1)
     search.fit(X_train, y_train)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     # Best model (it's a fitted pipeline ready for prediction)
     best_pipeline = search.best_estimator_
@@ -80,6 +95,10 @@ def main():
 
     # Step 6: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
+    hook.update_metrics({"accuracy": float(accuracy)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")
     print()
@@ -130,6 +149,9 @@ def main():
     best_k = k_values[np.argmax(accuracies)]
     best_accuracy = max(accuracies)
     print(f"\nBest k value: {best_k} with accuracy: {best_accuracy:.4f}")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

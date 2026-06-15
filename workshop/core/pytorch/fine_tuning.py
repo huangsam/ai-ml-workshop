@@ -24,18 +24,29 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer, Data
 from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
+# Pre-trained base model name
 MODEL_NAME = "distilbert-base-uncased"  # Lightweight baseline
+# PEFT Task type for sequence classification
 TASK_TYPE = TaskType.SEQ_CLS  # Sequence classification
+# Default batch size for training
 BATCH_SIZE = 32
+# Default number of epochs for fine-tuning
 NUM_EPOCHS = 3
+# Default learning rate for training
 LEARNING_RATE = 1e-4
+# Fallback compute device, checked dynamically at runtime
 DEVICE = "cpu"  # Will check for MPS acceleration
+# Random seed for reproducibility
 SEED = 42
 
 # LoRA Configuration
+# Rank parameter for low-rank adapter matrices
 LORA_R = 8  # Rank of LoRA update matrices (lower = fewer parameters)
+# Scaling parameter for low-rank adapter matrices
 LORA_ALPHA = 16  # LoRA scaling factor
+# Dropout probability in low-rank layers
 LORA_DROPOUT = 0.05  # Dropout in LoRA layers
+# Target neural modules in transformers model to inject LoRA weights
 TARGET_MODULES = ["q_lin", "v_lin"]  # DistilBERT attention modules (query, value)
 
 
@@ -80,7 +91,7 @@ def load_data(dataset_name: str = "ag_news", subset_size: int = 1000) -> Dataset
     return DatasetDict({"train": train_dataset, "test": test_dataset})
 
 
-def preprocess_data(dataset_dict: DatasetDict, tokenizer: AutoTokenizer, max_length: int = 128) -> tuple[DataLoader, DataLoader]:
+def preprocess_data(dataset_dict: DatasetDict, tokenizer: AutoTokenizer, max_length: int = 128, batch_size: int = BATCH_SIZE) -> tuple[DataLoader, DataLoader]:
     """
     Preprocess and tokenize the data.
 
@@ -116,13 +127,13 @@ def preprocess_data(dataset_dict: DatasetDict, tokenizer: AutoTokenizer, max_len
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     # Create data loaders
-    train_loader = DataLoader(tokenized_datasets["train"], batch_size=BATCH_SIZE, shuffle=True, collate_fn=data_collator)
-    test_loader = DataLoader(tokenized_datasets["test"], batch_size=BATCH_SIZE, shuffle=False, collate_fn=data_collator)
+    train_loader = DataLoader(tokenized_datasets["train"], batch_size=batch_size, shuffle=True, collate_fn=data_collator)
+    test_loader = DataLoader(tokenized_datasets["test"], batch_size=batch_size, shuffle=False, collate_fn=data_collator)
 
     return train_loader, test_loader
 
 
-def setup_lora_model(model_name: str, num_labels: int) -> nn.Module:
+def setup_lora_model(model_name: str, num_labels: int, lora_r: int = LORA_R, lora_alpha: int = LORA_ALPHA) -> nn.Module:
     """
     Load a pre-trained model and apply LoRA adapters.
 
@@ -144,8 +155,8 @@ def setup_lora_model(model_name: str, num_labels: int) -> nn.Module:
 
     # Configure LoRA
     lora_config = LoraConfig(
-        r=LORA_R,
-        lora_alpha=LORA_ALPHA,
+        r=lora_r,
+        lora_alpha=lora_alpha,
         target_modules=TARGET_MODULES,
         lora_dropout=LORA_DROPOUT,
         bias="none",
@@ -267,7 +278,18 @@ def evaluate(model: nn.Module, test_loader: DataLoader, device: str) -> tuple[fl
     return avg_loss, accuracy
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_epochs = int(config.get("num_epochs", NUM_EPOCHS))
+    learning_rate = float(config.get("learning_rate", LEARNING_RATE))
+    batch_size = int(config.get("batch_size", BATCH_SIZE))
+    lora_r = int(config.get("lora_r", LORA_R))
+    lora_alpha = int(config.get("lora_alpha", LORA_ALPHA))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for fine-tuning with LoRA.
     """
@@ -287,23 +309,29 @@ def main() -> None:
         print("Using CPU for computation.")
 
     # 2. Load data
-    dataset_dict = load_data(dataset_name="ag_news", subset_size=1000)
+    dataset_dict = load_data(dataset_name="fancyzhx/ag_news", subset_size=1000)
 
     # 3. Tokenizer
     print(f"Loading tokenizer: {MODEL_NAME}...")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Loading", 10)
 
     # 4. Prepare data loaders
-    train_loader, test_loader = preprocess_data(dataset_dict, tokenizer)
+    train_loader, test_loader = preprocess_data(dataset_dict, tokenizer, batch_size=batch_size)
 
     # 5. Setup LoRA model
     num_labels = 4  # AG News has 4 classes
-    model = setup_lora_model(MODEL_NAME, num_labels)
+    model = setup_lora_model(MODEL_NAME, num_labels, lora_r=lora_r, lora_alpha=lora_alpha)
     model.to(DEVICE)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("LoRA Configuration", 20)
 
     # 6. Setup training
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-    total_steps = len(train_loader) * NUM_EPOCHS
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    total_steps = len(train_loader) * num_epochs
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
 
     # 7. Training loop
@@ -312,9 +340,14 @@ def main() -> None:
     print("=" * 60)
 
     best_accuracy = 0.0
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 25)
 
-    for epoch in range(NUM_EPOCHS):
-        print(f"\nEpoch {epoch + 1}/{NUM_EPOCHS}")
+    for epoch in range(num_epochs):
+        if hook.is_cancelled():
+            return
+        print(f"\nEpoch {epoch + 1}/{num_epochs}")
         print("-" * 40)
 
         # Train
@@ -326,6 +359,18 @@ def main() -> None:
 
         print(f"Training - Loss: {train_loss:.4f}, Accuracy: {train_acc:.2f}%")
         print(f"Testing  - Loss: {test_loss:.4f}, Accuracy: {test_acc:.2f}%")
+        hook.update_metrics(
+            {
+                "epoch": epoch + 1,
+                "loss": float(train_loss),
+                "train_accuracy": float(train_acc),
+                "test_loss": float(test_loss),
+                "accuracy": float(test_acc),
+            }
+        )
+        if hook.is_cancelled():
+            return
+        hook.update_stage("Training", 25 + ((epoch + 1) / num_epochs) * 60)
 
         if test_acc > best_accuracy:
             best_accuracy = test_acc
@@ -336,6 +381,10 @@ def main() -> None:
     print("Training complete! 🎉")
     print("=" * 60)
     print(f"Best Test Accuracy: {best_accuracy:.2f}%")
+    hook.update_metrics({"best_accuracy": float(best_accuracy)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
 
     # 9. Prediction demo
     print("\n" + "=" * 60)
@@ -370,6 +419,9 @@ def main() -> None:
     print("  1. Save LoRA adapters: model.save_pretrained('my_lora_adapters')")
     print("  2. Load adapters in inference: model = PeftModel.from_pretrained(model, 'my_lora_adapters')")
     print("  3. Merge for deployment: model.merge_and_unload()")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

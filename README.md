@@ -7,6 +7,7 @@ This covers practical experience with PyTorch, TensorFlow, Hugging Face, LangCha
 ## Getting Started
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -20,6 +21,7 @@ uv pip install -e .
 ```
 
 ### Running Examples
+
 This workshop uses a CLI interface to run examples. After installation, you can run examples using:
 
 ```bash
@@ -45,6 +47,29 @@ uv run workshop sklearn pca                    # Principal Component Analysis
 uv run workshop numpy fundamentals             # Fundamentals
 uv run workshop numpy backpropagation          # Backpropagation
 ```
+
+### Running via Web Dashboard (Full-Stack)
+
+You can also run, configure, and monitor all workshop tasks using the real-time web dashboard:
+
+1. **Start the FastAPI Backend**:
+
+   ```bash
+   # In the root directory
+   uv run uvicorn backend.main:app --reload --port 8000
+   ```
+
+2. **Start the Next.js Frontend**:
+
+   ```bash
+   # Install dependencies (from the root directory)
+   npm install --prefix frontend
+
+   # Start the frontend dev server
+   npm run dev --prefix frontend
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to access the dashboard.
 
 ## Learnings & Progress
 

@@ -20,7 +20,16 @@ from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 
 
-def main():
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    test_size = float(config.get("test_size", 0.2))
+    cv_folds = int(config.get("cv_folds", 5))
+    n_iter = int(config.get("n_iter", 20))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     # Step 1: Load and prepare the dataset
     # Same Breast Cancer dataset as other examples
     cancer = load_breast_cancer()
@@ -33,9 +42,12 @@ def main():
     print(f"Dataset shape: {X.shape}")
     print(f"Class distribution: {y.value_counts().to_dict()}")
     print()
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # Step 2: Split the data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
 
     print(f"Training set shape: {X_train.shape}")
     print(f"Test set shape: {X_test.shape}")
@@ -60,8 +72,11 @@ def main():
         "clf__bootstrap": [True, False],  # Whether bootstrap samples are used when building trees
     }
 
-    search = RandomizedSearchCV(pipeline, param_grid, n_iter=20, cv=5, random_state=42, verbose=1)
+    search = RandomizedSearchCV(pipeline, param_grid, n_iter=n_iter, cv=cv_folds, random_state=42, verbose=1)
     search.fit(X_train, y_train)  # Tune parameters
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 50)
 
     # Best model (it's a fitted pipeline)
     best_pipeline = search.best_estimator_
@@ -82,6 +97,10 @@ def main():
 
     # Step 5: Evaluate the model
     accuracy = accuracy_score(y_test, y_pred)
+    hook.update_metrics({"accuracy": float(accuracy)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 85)
     print("Model Evaluation:")
     print(f"Accuracy: {accuracy:.4f}")
     print()
@@ -123,6 +142,10 @@ def main():
         plt.gca().invert_yaxis()  # Highest at top
         plt.savefig("random_forest_feature_importance.png", dpi=300, bbox_inches="tight")
         print("Feature importance plot saved as 'random_forest_feature_importance.png'")
+
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

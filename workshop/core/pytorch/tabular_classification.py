@@ -19,10 +19,15 @@ from torch.utils.data import DataLoader, Dataset
 from workshop.utils import get_device
 
 # --- 1. CONFIGURATION CONSTANTS ---
+# Default batch size for training and testing
 BATCH_SIZE = 32
+# Default number of training epochs
 NUM_EPOCHS = 20
+# Default learning rate for optimizer
 LEARNING_RATE = 0.001
+# Fallback compute device, checked dynamically at runtime
 DEVICE = "cpu"  # Default to CPU; will check for MPS acceleration
+# Embedding dimension size for categorical features
 EMBEDDING_DIM = 8  # Embedding dimension for categorical features
 
 
@@ -223,7 +228,7 @@ def preprocess_data(
     return (features_train, features_test), (targets_train, targets_test), encoders
 
 
-def create_data_loaders(features: tuple[dict, dict], targets: tuple[torch.Tensor, torch.Tensor]) -> tuple[DataLoader, DataLoader]:
+def create_data_loaders(features: tuple[dict, dict], targets: tuple[torch.Tensor, torch.Tensor], batch_size: int = BATCH_SIZE) -> tuple[DataLoader, DataLoader]:
     """
     Create DataLoaders for training and testing.
 
@@ -240,8 +245,8 @@ def create_data_loaders(features: tuple[dict, dict], targets: tuple[torch.Tensor
     # Note: For simplicity, we're only using numerical features in the dataset
     # In a full implementation, you'd need a custom collate_fn to handle the dict structure
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     return train_loader, test_loader
 
@@ -331,7 +336,16 @@ def evaluate_model(model: nn.Module, test_loader: DataLoader, criterion: nn.Modu
     return avg_loss, accuracy
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    num_epochs = int(config.get("num_epochs", NUM_EPOCHS))
+    learning_rate = float(config.get("learning_rate", LEARNING_RATE))
+    batch_size = int(config.get("batch_size", BATCH_SIZE))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for the tabular classification project.
     """
@@ -349,6 +363,9 @@ def main() -> None:
     # 2. Load and preprocess data
     df = load_titanic_data()
     features, targets, encoders = preprocess_data(df)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Loading", 10)
 
     # For this simplified version, we'll only use numerical features
     # A full implementation would handle categorical embeddings properly
@@ -363,27 +380,38 @@ def main() -> None:
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
 
     # 4. Create data loaders (simplified version)
-    train_loader, test_loader = create_data_loaders(features, targets)
+    train_loader, test_loader = create_data_loaders(features, targets, batch_size=batch_size)
 
     # 5. Define loss and optimizer
     criterion = nn.BCELoss()  # Binary Cross Entropy for binary classification
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # 6. Training loop
     print("\nStarting training...")
     best_acc = 0.0
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Training", 15)
 
-    for epoch in range(NUM_EPOCHS):
+    for epoch in range(num_epochs):
         train_loss, train_acc = train_model(model, train_loader, optimizer, criterion, DEVICE)
         test_loss, test_acc = evaluate_model(model, test_loader, criterion, DEVICE)
 
-        print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Train Loss: {train_loss:.4f}, Test Acc: {test_acc:.2f}%")
+        print(f"Epoch {epoch + 1}/{num_epochs} - Train Loss: {train_loss:.4f}, Test Acc: {test_acc:.2f}%")
+        hook.update_metrics({"epoch": epoch + 1, "loss": float(train_loss), "accuracy": float(test_acc)})
+        if hook.is_cancelled():
+            return
+        hook.update_stage("Model Training", 15 + ((epoch + 1) / num_epochs) * 70)
         if test_acc > best_acc:
             best_acc = test_acc
 
     # 7. Final evaluation
     print("Final Results:")
     print(f"Best Test Accuracy: {best_acc:.2f}%")
+    hook.update_metrics({"best_accuracy": float(best_acc)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
 
     # 8. Prediction demo
     print("\n" + "=" * 50)
@@ -409,6 +437,9 @@ def main() -> None:
     print("\nTraining complete! 🎉")
     print("Note: This is a simplified implementation focusing on numerical features.")
     print("For full tabular learning, implement proper categorical embeddings.")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":

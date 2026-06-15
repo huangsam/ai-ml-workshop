@@ -22,7 +22,7 @@ BATCH_SIZE = 8  # Smaller batch size due to longer sequences
 DEVICE = "cpu"  # Default to CPU; will check for MPS acceleration
 
 
-def load_data(dataset_name: str = "squad") -> DatasetDict:
+def load_data(dataset_name: str = "rajpurkar/squad") -> DatasetDict:
     """
     Loads and prepares the SQuAD dataset from the Hugging Face Hub.
 
@@ -37,7 +37,7 @@ def load_data(dataset_name: str = "squad") -> DatasetDict:
     return dataset
 
 
-def preprocess_function(examples: dict[str, list], tokenizer: AutoTokenizer) -> dict[str, list]:
+def preprocess_function(examples: dict[str, list], tokenizer: AutoTokenizer, max_length: int = MAX_LENGTH) -> dict[str, list]:
     """
     Tokenization function to preprocess question-answering data.
 
@@ -56,7 +56,7 @@ def preprocess_function(examples: dict[str, list], tokenizer: AutoTokenizer) -> 
     inputs = tokenizer(
         questions,
         contexts,
-        max_length=MAX_LENGTH,
+        max_length=max_length,
         truncation="only_second",  # Truncate context, not question
         stride=DOC_STRIDE,
         return_overflowing_tokens=True,  # Handle long contexts with sliding window
@@ -143,7 +143,15 @@ def compute_metrics(eval_pred: tuple[torch.Tensor, torch.Tensor]) -> dict[str, f
     }
 
 
-def main() -> None:
+def main(hook=None, config=None) -> None:
+    from workshop.utils.hooks import NoOpProgressHook
+
+    config = config or {}
+    max_length = int(config.get("max_length", 384))
+    num_samples = int(config.get("num_samples", 5))
+    if hook is None:
+        hook = NoOpProgressHook()
+
     """
     Main entry point for the question answering project.
     """
@@ -163,8 +171,8 @@ def main() -> None:
     tokenizer: AutoTokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     # Take a small subset for demonstration
-    small_train_dataset = raw_datasets["train"].select(range(1000))
-    small_eval_dataset = raw_datasets["validation"].select(range(200))
+    small_train_dataset = raw_datasets["train"].select(range(num_samples))
+    small_eval_dataset = raw_datasets["validation"].select(range(max(2, num_samples // 2)))
 
     print(f"Training samples: {len(small_train_dataset)}")
     print(f"Validation samples: {len(small_eval_dataset)}")
@@ -172,12 +180,12 @@ def main() -> None:
     # 3. Preprocess data
     print("\nPreprocessing data...")
     tokenized_train = small_train_dataset.map(
-        lambda x: preprocess_function(x, tokenizer),
+        lambda x: preprocess_function(x, tokenizer, max_length=max_length),
         batched=True,
         remove_columns=small_train_dataset.column_names,
     )
     tokenized_eval = small_eval_dataset.map(
-        lambda x: preprocess_function(x, tokenizer),
+        lambda x: preprocess_function(x, tokenizer, max_length=max_length),
         batched=True,
         remove_columns=small_eval_dataset.column_names,
     )
@@ -187,6 +195,9 @@ def main() -> None:
     # 4. Create model
     model: AutoModelForQuestionAnswering = AutoModelForQuestionAnswering.from_pretrained(MODEL_NAME)
     model.to(DEVICE)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Model Loading", 10)
 
     # 5. Create data collator and dataloaders
     data_collator = DefaultDataCollator()
@@ -195,13 +206,19 @@ def main() -> None:
 
     train_loader = DataLoader(tokenized_train, batch_size=BATCH_SIZE, shuffle=True, collate_fn=data_collator)
     eval_loader = DataLoader(tokenized_eval, batch_size=BATCH_SIZE, collate_fn=data_collator)
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Data Processing", 20)
 
     # 6. Optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
 
     # 7. Training loop
     print("\nStarting training...")
-    NUM_EPOCHS = 2
+    NUM_EPOCHS = 1
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Training", 50)
 
     for epoch in range(NUM_EPOCHS):
         model.train()
@@ -224,6 +241,7 @@ def main() -> None:
 
         avg_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{NUM_EPOCHS} - Training loss: {avg_loss:.4f}")
+        hook.update_metrics({"epoch": epoch + 1, "loss": float(avg_loss)})
 
     # 8. Evaluation
     print("\nEvaluating model...")
@@ -240,6 +258,10 @@ def main() -> None:
             num_batches += 1
 
     avg_eval_loss = eval_loss / num_batches
+    hook.update_metrics({"validation_loss": float(avg_eval_loss)})
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Evaluation", 90)
     print(f"Validation loss: {avg_eval_loss:.4f}")
 
     # 9. Prediction demo
@@ -255,7 +277,7 @@ def main() -> None:
     model.eval()
     with torch.no_grad():
         for question in sample_questions:
-            inputs = tokenizer(question, sample_context, return_tensors="pt", max_length=MAX_LENGTH, truncation=True, padding="max_length")
+            inputs = tokenizer(question, sample_context, return_tensors="pt", max_length=max_length, truncation=True, padding="max_length")
             inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
             outputs = model(**inputs)
             start_idx = torch.argmax(outputs.start_logits)
@@ -267,6 +289,9 @@ def main() -> None:
 
     print("Training complete! 🎉")
     print("Note: For full QA evaluation, use proper F1/Exact Match metrics.")
+    if hook.is_cancelled():
+        return
+    hook.update_stage("Complete", 100)
 
 
 if __name__ == "__main__":
