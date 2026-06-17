@@ -14,14 +14,14 @@ os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import asyncio
+import io
 import json
+import threading
 import traceback
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 
-import io
-import threading
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -122,6 +122,11 @@ _TASK_STAGES_MAP = {
     ("pytorch", "time_series_forecasting"): ["Data Generation", "Model Setup", "Training", "Evaluation", "Complete"],
     ("pytorch", "fine_tuning"): ["Model Loading", "LoRA Configuration", "Training", "Evaluation", "Complete"],
     ("pytorch", "question_answering"): ["Model Loading", "Data Processing", "Training", "Evaluation", "Complete"],
+    ("numpy", "q_learning"): ["Environment Setup", "Agent Training", "Policy Evaluation", "Visualization", "Complete"],
+    ("numpy", "attention"): ["Vector Embeddings", "Attention Computation", "Optimization", "Weights Extraction", "Visualization", "Complete"],
+    ("pytorch", "cnn"): ["Data Ingestion", "Model Initialization", "Training", "Testing", "Filter Extraction", "Complete"],
+    ("pytorch", "gan"): ["Distribution Setup", "Model Initialization", "Adversarial Training", "Sampling", "Visualization", "Complete"],
+    ("pytorch", "lstm"): ["Text Tokenization", "Model Setup", "Training", "Sampling Text", "Visualization", "Complete"],
 }
 
 # Catalogue mapping incorporating dynamic stages lists

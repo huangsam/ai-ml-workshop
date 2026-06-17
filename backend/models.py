@@ -27,6 +27,21 @@ class NumpyFundamentalsConfig(BaseModel):
     pass
 
 
+class QLearningConfig(BaseModel):
+    epochs: int = Field(default=200, ge=10, le=2000, description="Number of episodes")
+    learning_rate: float = Field(default=0.1, gt=0.0, le=1.0, description="Q-value updates learning rate")
+    discount_factor: float = Field(default=0.9, ge=0.5, le=0.99, description="Discount factor gamma")
+    epsilon: float = Field(default=0.9, ge=0.0, le=1.0, description="Initial exploration rate epsilon")
+    epsilon_decay: float = Field(default=0.98, ge=0.8, le=0.999, description="Epsilon decay rate")
+
+
+class SelfAttentionConfig(BaseModel):
+    epochs: int = Field(default=150, ge=10, le=500, description="Training epochs")
+    learning_rate: float = Field(default=0.05, gt=0.0, le=1.0, description="Gradient descent learning rate")
+    embedding_dim: int = Field(default=16, ge=4, le=128, description="Embedding vector size")
+    sequence_length: int = Field(default=6, ge=2, le=20, description="Sequence length")
+
+
 # ---------------------------------------------------------------------------
 # Scikit-learn tasks
 # ---------------------------------------------------------------------------
@@ -128,6 +143,25 @@ class QuestionAnsweringConfig(BaseModel):
     num_samples: int = Field(default=5, ge=1, le=50)
 
 
+class CNNConfig(BaseModel):
+    epochs: int = Field(default=5, ge=1, le=20, description="Training epochs")
+    batch_size: int = Field(default=32, ge=8, le=256, description="Training batch size")
+    learning_rate: float = Field(default=0.01, gt=0.0, le=1.0, description="Learning rate")
+    filter_count: int = Field(default=8, ge=2, le=64, description="Channels in first conv layer")
+
+
+class GANConfig(BaseModel):
+    epochs: int = Field(default=150, ge=10, le=500, description="Training epochs")
+    latent_dim: int = Field(default=8, ge=2, le=64, description="Generator noise vector size")
+    learning_rate: float = Field(default=0.001, gt=0.0, le=0.1, description="Learning rate")
+
+
+class LSTMConfig(BaseModel):
+    epochs: int = Field(default=10, ge=1, le=100, description="Training epochs")
+    hidden_dim: int = Field(default=64, ge=8, le=512, description="LSTM hidden state dimension")
+    temperature: float = Field(default=0.7, ge=0.1, le=2.0, description="Softmax sampling temperature")
+
+
 # ---------------------------------------------------------------------------
 # Registry: maps (module, task) -> config class
 # ---------------------------------------------------------------------------
@@ -135,6 +169,8 @@ class QuestionAnsweringConfig(BaseModel):
 TASK_CONFIG_MAP: dict[tuple[str, str], type[BaseModel]] = {
     ("numpy", "backpropagation"): BackpropagationConfig,
     ("numpy", "fundamentals"): NumpyFundamentalsConfig,
+    ("numpy", "q_learning"): QLearningConfig,
+    ("numpy", "attention"): SelfAttentionConfig,
     ("sklearn", "linear_regression"): LinearRegressionConfig,
     ("sklearn", "logistic_regression"): LogisticRegressionConfig,
     ("sklearn", "knn"): KNNConfig,
@@ -150,4 +186,7 @@ TASK_CONFIG_MAP: dict[tuple[str, str], type[BaseModel]] = {
     ("pytorch", "time_series_forecasting"): TimeSeriesForecastingConfig,
     ("pytorch", "fine_tuning"): FineTuningConfig,
     ("pytorch", "question_answering"): QuestionAnsweringConfig,
+    ("pytorch", "cnn"): CNNConfig,
+    ("pytorch", "gan"): GANConfig,
+    ("pytorch", "lstm"): LSTMConfig,
 }

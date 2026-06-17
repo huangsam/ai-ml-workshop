@@ -89,6 +89,30 @@ def tabular_classification():
     main(hook=_hook(5))
 
 
+@pytorch.command()
+def cnn():
+    """Run Convolutional Neural Network (CNN) example."""
+    from workshop.core.pytorch.cnn import main
+
+    main(hook=_hook(6))
+
+
+@pytorch.command()
+def gan():
+    """Run Generative Adversarial Network (GAN) example."""
+    from workshop.core.pytorch.gan import main
+
+    main(hook=_hook(6))
+
+
+@pytorch.command()
+def lstm():
+    """Run character-level LSTM text generation example."""
+    from workshop.core.pytorch.lstm import main
+
+    main(hook=_hook(6))
+
+
 @sklearn.command()
 def linear_regression():
     """Run linear regression example."""
@@ -173,6 +197,22 @@ def fundamentals():
 def backpropagation():
     """Run backpropagation from scratch example."""
     from workshop.core.numpy.backpropagation import main
+
+    main(hook=_hook(6))
+
+
+@numpy.command()
+def q_learning():
+    """Run Q-Learning GridWorld maze navigation example."""
+    from workshop.core.numpy.q_learning import main
+
+    main(hook=_hook(5))
+
+
+@numpy.command()
+def attention():
+    """Run single-head self-attention layer example."""
+    from workshop.core.numpy.attention import main
 
     main(hook=_hook(6))
 

@@ -177,6 +177,34 @@ class TestBackendAPI(unittest.TestCase):
         self.assertEqual(response.content, mock_png)
         self.assertEqual(response.headers["content-type"], "image/png")
 
+    def test_new_task_schemas_and_listing(self):
+        # Verify the list tasks includes our new modules
+        list_response = client.get("/tasks")
+        self.assertEqual(list_response.status_code, 200)
+        tasks = list_response.json()
+
+        numpy_tasks = [t["task"] for t in tasks if t["module"] == "numpy"]
+        pytorch_tasks = [t["task"] for t in tasks if t["module"] == "pytorch"]
+
+        self.assertIn("q_learning", numpy_tasks)
+        self.assertIn("attention", numpy_tasks)
+        self.assertIn("cnn", pytorch_tasks)
+        self.assertIn("gan", pytorch_tasks)
+        self.assertIn("lstm", pytorch_tasks)
+
+        # Verify new schemas load correctly
+        for module, task in [
+            ("numpy", "q_learning"),
+            ("numpy", "attention"),
+            ("pytorch", "cnn"),
+            ("pytorch", "gan"),
+            ("pytorch", "lstm"),
+        ]:
+            schema_resp = client.get(f"/tasks/{module}/{task}/schema")
+            self.assertEqual(schema_resp.status_code, 200, f"Failed schema fetch for {module}/{task}")
+            schema = schema_resp.json()
+            self.assertIn("properties", schema)
+
 
 if __name__ == "__main__":
     unittest.main()

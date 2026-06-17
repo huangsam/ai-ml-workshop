@@ -121,9 +121,41 @@ def _pytorch_question_answering(hook: ProgressHook, config: dict[str, Any]) -> N
     main(hook=hook, config=config)
 
 
+def _numpy_q_learning(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.numpy.q_learning import main
+
+    main(hook=hook, config=config)
+
+
+def _numpy_attention(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.numpy.attention import main
+
+    main(hook=hook, config=config)
+
+
+def _pytorch_cnn(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.pytorch.cnn import main
+
+    main(hook=hook, config=config)
+
+
+def _pytorch_gan(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.pytorch.gan import main
+
+    main(hook=hook, config=config)
+
+
+def _pytorch_lstm(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.pytorch.lstm import main
+
+    main(hook=hook, config=config)
+
+
 TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("numpy", "backpropagation"): _numpy_backpropagation,
     ("numpy", "fundamentals"): _numpy_fundamentals,
+    ("numpy", "q_learning"): _numpy_q_learning,
+    ("numpy", "attention"): _numpy_attention,
     ("sklearn", "linear_regression"): _sklearn_linear_regression,
     ("sklearn", "logistic_regression"): _sklearn_logistic_regression,
     ("sklearn", "knn"): _sklearn_knn,
@@ -139,4 +171,7 @@ TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("pytorch", "time_series_forecasting"): _pytorch_time_series_forecasting,
     ("pytorch", "fine_tuning"): _pytorch_fine_tuning,
     ("pytorch", "question_answering"): _pytorch_question_answering,
+    ("pytorch", "cnn"): _pytorch_cnn,
+    ("pytorch", "gan"): _pytorch_gan,
+    ("pytorch", "lstm"): _pytorch_lstm,
 }
