@@ -445,9 +445,8 @@ export default function Home() {
                     jobState={jobState}
                     stages={stages}
                     onCancel={handleCancel}
-                    module={selectedTask.module}
-                    task={selectedTask.task}
                     jobId={currentJobId}
+                    plots={selectedTask.plots}
                   />
                 </div>
               </section>

@@ -130,8 +130,36 @@ _TASK_STAGES_MAP = {
     ("pytorch", "quantization"): ["Baseline Evaluation", "Dynamic Quantization", "Quantized Evaluation", "Metrics Comparison", "Visualization", "Complete"],
 }
 
-# Catalogue mapping incorporating dynamic stages lists
-_TASK_CATALOGUE = [{"module": mod, "task": task, "stages": _TASK_STAGES_MAP.get((mod, task), [])} for (mod, task) in sorted(TASK_RUNNER_MAP.keys())]
+# Dictionary mapping tasks to their expected plot filenames
+_TASK_PLOTS_MAP = {
+    ("numpy", "backpropagation"): ["backpropagation_results.png"],
+    ("numpy", "q_learning"): ["q_learning_grid_path.png", "q_learning_policy_map.png"],
+    ("numpy", "attention"): ["attention_weights_matrix.png"],
+    ("sklearn", "linear_regression"): ["linear_regression_results.png"],
+    ("sklearn", "logistic_regression"): ["logistic_regression_confusion_matrix.png"],
+    ("sklearn", "knn"): ["knn_confusion_matrix.png", "knn_accuracy_vs_k.png"],
+    ("sklearn", "decision_tree"): ["decision_tree_visualization.png", "decision_tree_confusion_matrix.png"],
+    ("sklearn", "svm"): ["svm_confusion_matrix.png", "svm_accuracy_vs_kernel.png"],
+    ("sklearn", "random_forest"): ["random_forest_confusion_matrix.png", "random_forest_feature_importance.png"],
+    ("sklearn", "kmeans"): ["kmeans_clustering_results.png", "kmeans_elbow_plot.png"],
+    ("sklearn", "pca"): ["pca_results.png", "pca_loadings.png", "pca_reconstruction_error.png"],
+    ("sklearn", "xgboost"): ["xgboost_confusion_matrix.png", "xgboost_feature_importance.png"],
+    ("pytorch", "cnn"): ["cnn_feature_activations.png", "cnn_confusion_matrix.png"],
+    ("pytorch", "gan"): ["gan_distribution_scatter.png", "gan_loss_curves.png"],
+    ("pytorch", "lstm"): ["lstm_token_probabilities.png"],
+    ("pytorch", "quantization"): ["quantization_comparison.png"],
+}
+
+# Catalogue mapping incorporating dynamic stages and plots lists
+_TASK_CATALOGUE = [
+    {
+        "module": mod,
+        "task": task,
+        "stages": _TASK_STAGES_MAP.get((mod, task), []),
+        "plots": _TASK_PLOTS_MAP.get((mod, task), []),
+    }
+    for (mod, task) in sorted(TASK_RUNNER_MAP.keys())
+]
 
 
 @app.get("/tasks")
@@ -321,27 +349,8 @@ def get_job_status(job_id: str) -> dict:
     return job
 
 
-# List of allowed plot filenames for safety
-ALLOWED_PLOTS = {
-    "backpropagation_results.png",
-    "decision_tree_confusion_matrix.png",
-    "decision_tree_visualization.png",
-    "kmeans_clustering_results.png",
-    "kmeans_elbow_plot.png",
-    "knn_confusion_matrix.png",
-    "knn_accuracy_vs_k.png",
-    "linear_regression_results.png",
-    "logistic_regression_confusion_matrix.png",
-    "pca_results.png",
-    "pca_loadings.png",
-    "pca_reconstruction_error.png",
-    "random_forest_confusion_matrix.png",
-    "random_forest_feature_importance.png",
-    "svm_confusion_matrix.png",
-    "svm_accuracy_vs_kernel.png",
-    "xgboost_confusion_matrix.png",
-    "xgboost_feature_importance.png",
-}
+# Dynamically generate allowed plot filenames for safety from task plots metadata
+ALLOWED_PLOTS = {plot for plots in _TASK_PLOTS_MAP.values() for plot in plots}
 
 
 @app.get("/plots/{job_id}/{filename}")

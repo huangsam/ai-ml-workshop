@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { JobState, API_BASE } from "../api";
-import { TASK_PLOTS } from "../constants";
 import {
   LineChart,
   Line,
@@ -18,9 +17,8 @@ interface ProgressPanelProps {
   jobState: JobState | null;
   stages: string[];
   onCancel?: () => void;
-  module?: string;
-  task?: string;
   jobId?: string | null;
+  plots: string[];
 }
 
 interface CustomTooltipProps {
@@ -63,13 +61,11 @@ export default function ProgressPanel({
   jobState,
   stages,
   onCancel,
-  module,
-  task,
   jobId,
+  plots,
 }: ProgressPanelProps) {
   // Get available plots for the selected task
-  const plotKey = module && task ? `${module}/${task}` : "";
-  const availablePlots = TASK_PLOTS[plotKey] ?? [];
+  const availablePlots = plots ?? [];
 
   const [activeTab, setActiveTab] = useState<"metrics" | "visualizations">("metrics");
   const [selectedPlot, setSelectedPlot] = useState<string>(availablePlots[0] ?? "");

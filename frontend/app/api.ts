@@ -8,6 +8,7 @@ export interface Task {
   module: string;
   task: string;
   stages: string[];
+  plots: string[];
 }
 
 export interface JobState {
