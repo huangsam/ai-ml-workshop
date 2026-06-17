@@ -60,3 +60,4 @@ Our learning modules and accomplishments are organized into three primary areas:
 - **[Fundamentals](docs/fundamentals.md)**: ML theory, backpropagation, and fundamental array operations from scratch using NumPy.
 - **[Frameworks](docs/frameworks.md)**: Scikit-learn (classical ML algorithms) and PyTorch (deep learning models, custom text classifiers, and PEFT/LoRA fine-tuning).
 - **[Integrations](docs/integrations.md)**: RAG systems, AI agents (semantic search and code review), and documentation on bridges to external data tools.
+- **[Dashboard Architecture](docs/dashboard.md)**: Real-time asynchronous job scheduler, dynamic Pydantic configuration forms, in-memory Matplotlib interception hooks, and Server-Sent Events (SSE) telemetry pipeline.
