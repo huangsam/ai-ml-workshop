@@ -206,7 +206,7 @@ export default function Home() {
           /* Premium Landing Page Hero */
           <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center space-y-12 animate-fade-in-up">
             {/* Header */}
-            <div className="text-center space-y-6 max-w-5xl mx-auto px-4">
+            <div className="text-center space-y-6 max-w-5xl mx-auto px-4 pt-6 md:pt-10">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-4 text-balance leading-tight">
                 Master Machine Learning{" "}
                 <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent md:whitespace-nowrap">
@@ -309,11 +309,10 @@ export default function Home() {
               })}
             </div>
 
-            {/* Shimmering Accent Ring */}
-            <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
-              <div className="absolute inset-0 border-2 border-indigo-500/30 rounded-full animate-[spin_10s_linear_infinite] transform-gpu will-change-transform" />
-              <div className="absolute inset-4 border border-purple-500/20 rounded-full animate-[spin_15s_linear_infinite_reverse] transform-gpu will-change-transform" />
-              <div className="absolute inset-8 w-48 h-48 md:w-64 md:h-64 bg-gradient-to-b from-indigo-900/30 to-transparent rounded-full blur-xl" />
+            {/* Glowing Accent Ring */}
+            <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mt-6 mb-12">
+              <div className="absolute inset-0 border border-indigo-500/20 rounded-full shadow-[0_0_35px_rgba(99,102,241,0.25)] animate-[pulse_4s_ease-in-out_infinite] transform-gpu will-change-transform" />
+              <div className="absolute inset-8 w-48 h-48 md:w-64 md:h-64 bg-gradient-to-b from-indigo-950/30 to-transparent rounded-full blur-xl" />
 
               <div className="text-center z-10 flex flex-col items-center">
                 <svg
