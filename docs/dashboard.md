@@ -94,3 +94,17 @@ If a user realizes a configuration is wrong, they can abort it:
 - Clicking **Cancel Task** sends a request to the backend `POST /cancel/{job_id}`.
 - The backend updates the job registry's cancellation flag.
 - The background thread's loop periodically polls this status using `HTTPProgressHook` and gracefully terminates execution when the cancel signal is detected.
+
+---
+
+## Comparison with Jupyter Notebooks
+
+While Jupyter Notebooks are the standard for ML experimentation, this workshop uses a specialized web-dashboard architecture to address key limitations:
+
+| Architectural Aspect    | Jupyter Notebooks                                                                                                                                                                              | ML Workshop Dashboard                                                                                                                                                               |
+| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Execution Model**     | **Synchronous & Blocking**: Running a cell locks the kernel, preventing you from inspecting variables, running other code, or tracking progress asynchronously without complex custom widgets. | **Asynchronous & Non-Blocking**: FastAPI submits tasks to a `ThreadPoolExecutor`, leaving the async loop free to serve health checks, stream live metrics, and handle cancellation. |
+| **Telemetry & Visuals** | **Pull-based/Post-hoc**: Charts are rendered statically only after a cell finishes. Tracking live loss curves requires printing stdout text loops.                                             | **Push-based/Real-time**: Streams live telemetry via Server-Sent Events (SSE) into responsive front-end charts (Recharts) and dynamic step timelines.                               |
+| **Process Isolation**   | **Multi-process (ZMQ)**: The frontend connects via WebSockets to a web server, which launches code in a separate Python process (Kernel) communicating via ZeroMQ.                             | **Thread-based (FastAPI)**: Web requests and background execution share the same process memory space, enabling lightweight thread-local registry hooks.                            |
+| **Output Capturing**    | **Kernel Redirection**: Redirects standard output and register displays at the kernel engine level.                                                                                            | **Monkey-Patching**: Intercepts library calls (like `plt.savefig`) using thread-local storage to route image bytes in-memory straight to the client session.                        |
+| **Cancellation**        | **Hard Interrupt**: Force-terminates the kernel process, which can crash the session or lose in-memory variables.                                                                              | **Cooperative Cancellation**: Gracefully signals background threads to exit loops safely via state polling.                                                                         |
