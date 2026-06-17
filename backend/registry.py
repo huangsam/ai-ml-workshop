@@ -29,6 +29,7 @@ def create_job(job_id: str) -> dict[str, Any]:
         "stage": "",
         "percentage": 0.0,
         "metrics": [],
+        "plots": {},
         "error": None,
         "created_at": time.time(),
     }
@@ -49,6 +50,8 @@ def get_job(job_id: str) -> dict[str, Any] | None:
             return None
         copied = job.copy()
         copied["metrics"] = list(job["metrics"])
+        if "plots" in copied:
+            del copied["plots"]
         return copied
 
 
@@ -109,3 +112,19 @@ def clean_old_jobs(max_age_seconds: int = 3600) -> None:
         to_remove = [jid for jid, job in _jobs.items() if now - job.get("created_at", 0.0) > max_age_seconds]
         for jid in to_remove:
             del _jobs[jid]
+
+
+def save_job_plot(job_id: str, filename: str, image_bytes: bytes) -> None:
+    """Save plot image bytes to the job registry."""
+    with _lock:
+        if job_id in _jobs:
+            _jobs[job_id]["plots"][filename] = image_bytes
+
+
+def get_job_plot(job_id: str, filename: str) -> bytes | None:
+    """Retrieve plot image bytes from the job registry."""
+    with _lock:
+        job = _jobs.get(job_id)
+        if job and "plots" in job:
+            return job["plots"].get(filename)
+        return None

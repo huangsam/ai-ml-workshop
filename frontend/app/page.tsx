@@ -432,7 +432,14 @@ export default function Home() {
                   Progress & Metrics
                 </h3>
                 <div className="glass-panel rounded-xl p-6">
-                  <ProgressPanel jobState={jobState} stages={stages} onCancel={handleCancel} />
+                  <ProgressPanel
+                    jobState={jobState}
+                    stages={stages}
+                    onCancel={handleCancel}
+                    module={selectedTask.module}
+                    task={selectedTask.task}
+                    jobId={currentJobId}
+                  />
                 </div>
               </section>
             </div>

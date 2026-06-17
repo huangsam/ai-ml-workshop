@@ -1,6 +1,8 @@
 "use client";
 
-import { JobState } from "../api";
+import { useEffect, useState } from "react";
+import { JobState, API_BASE } from "../api";
+import { TASK_PLOTS } from "../constants";
 import {
   LineChart,
   Line,
@@ -16,6 +18,9 @@ interface ProgressPanelProps {
   jobState: JobState | null;
   stages: string[];
   onCancel?: () => void;
+  module?: string;
+  task?: string;
+  jobId?: string | null;
 }
 
 interface CustomTooltipProps {
@@ -54,7 +59,41 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPanelProps) {
+export default function ProgressPanel({
+  jobState,
+  stages,
+  onCancel,
+  module,
+  task,
+  jobId,
+}: ProgressPanelProps) {
+  const [activeTab, setActiveTab] = useState<"metrics" | "visualizations">("metrics");
+  const [selectedPlot, setSelectedPlot] = useState<string>("");
+  const [completionTime, setCompletionTime] = useState<number>(0);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
+
+  // Get available plots for the selected task
+  const plotKey = module && task ? `${module}/${task}` : "";
+  const availablePlots = TASK_PLOTS[plotKey] ?? [];
+
+  // Reset states on task change
+  useEffect(() => {
+    setActiveTab("metrics");
+    if (availablePlots.length > 0) {
+      setSelectedPlot(availablePlots[0]);
+    } else {
+      setSelectedPlot("");
+    }
+  }, [module, task]);
+
+  // Track completion to set cache-busting timestamp
+  const status = jobState?.status;
+  useEffect(() => {
+    if (status === "COMPLETED") {
+      setCompletionTime(Date.now());
+    }
+  }, [status]);
+
   if (!jobState) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400">
@@ -63,7 +102,7 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
     );
   }
 
-  const { status, stage, percentage, metrics, error } = jobState;
+  const { stage, percentage, metrics, error } = jobState;
 
   // Determine which metrics keys exist across all snapshots
   const metricKeys = Array.from(
@@ -155,123 +194,210 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
         </div>
       </div>
 
-      {/* Connected Stepper Timeline */}
-      {allStages.length > 0 && (
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">Training Pipeline</p>
-          <ol className="flex items-center justify-between w-full overflow-x-auto pb-4 custom-scrollbar">
-            {allStages.map((s, idx) => {
-              const isPast = currentStageIdx > idx;
-              const isCurrent = currentStageIdx === idx;
-
-              return (
-                <li
-                  key={s}
-                  className="flex flex-col items-center gap-2 flex-1 min-w-[80px] relative"
-                >
-                  {/* Connector line (before the dot) */}
-                  {idx < allStages.length - 1 && (
-                    <div
-                      className={`absolute top-2 left-1/2 w-full h-0.5 -translate-y-1/2 transition-colors duration-300 z-0 ${
-                        isPast ? "bg-green-500" : isCurrent ? "bg-indigo-500" : "bg-gray-800"
-                      }`}
-                    />
-                  )}
-
-                  {/* Status Dot */}
-                  <div
-                    className={`relative w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 ${
-                      isPast
-                        ? "bg-green-500 border-green-600"
-                        : isCurrent
-                          ? "bg-indigo-500 border-[#0a0a0a] shadow-[0_0_10px_rgba(99,102,241,0.8)] pulse-glow"
-                          : "bg-gray-700 border-gray-600"
-                    }`}
-                  >
-                    {isPast && (
-                      <svg
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-
-                  {/* Stage Label */}
-                  <span
-                    className={`text-[10px] font-medium px-2 py-1 rounded transition-colors duration-300 ${
-                      isPast
-                        ? "bg-green-900/20 text-green-300"
-                        : isCurrent
-                          ? "bg-indigo-900/40 text-white border border-indigo-500/30"
-                          : "text-gray-500"
-                    }`}
-                  >
-                    {s}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
+      {/* Tab Switcher if plots are available for this task */}
+      {availablePlots.length > 0 && (
+        <div className="flex border-b border-white/5 pb-1 gap-5">
+          <button
+            type="button"
+            onClick={() => setActiveTab("metrics")}
+            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer ${
+              activeTab === "metrics"
+                ? "text-indigo-400 border-indigo-500"
+                : "text-gray-400 border-transparent hover:text-gray-200"
+            }`}
+          >
+            📈 Metrics & Timeline
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("visualizations")}
+            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer ${
+              activeTab === "visualizations"
+                ? "text-indigo-400 border-indigo-500"
+                : "text-gray-400 border-transparent hover:text-gray-200"
+            }`}
+          >
+            🎨 Model Visualizations
+          </button>
         </div>
       )}
 
-      {/* Metrics chart */}
-      {chartData.length > 0 && lineKeys.length > 0 && (
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Live Metrics</p>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
-              {/* Custom Grid with subtle styling */}
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#1f2937"
-                vertical={false}
-                opacity={0.3}
-              />
+      {/* Conditional rendering based on active tab */}
+      {activeTab === "metrics" || availablePlots.length === 0 ? (
+        <>
+          {/* Connected Stepper Timeline */}
+          {allStages.length > 0 && (
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">
+                Training Pipeline
+              </p>
+              <ol className="flex items-center justify-between w-full overflow-x-auto py-4 custom-scrollbar">
+                {allStages.map((s, idx) => {
+                  const isPast = currentStageIdx > idx;
+                  const isCurrent = currentStageIdx === idx;
 
-              <XAxis
-                dataKey={xAxisKey}
-                tick={{ fill: "#6B7280", fontSize: 11 }}
-                axisLine={{ stroke: "#374151" }}
-                label={{
-                  value: xAxisKey,
-                  position: "insideBottomRight",
-                  offset: 0,
-                  fill: "#6B7280",
-                  fontSize: 11,
-                }}
-              />
-              <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+                  return (
+                    <li
+                      key={s}
+                      className="flex flex-col items-center gap-2 flex-1 min-w-[80px] relative"
+                    >
+                      {/* Connector line (before the dot) */}
+                      {idx < allStages.length - 1 && (
+                        <div
+                          className={`absolute top-2 left-1/2 w-full h-0.5 -translate-y-1/2 transition-colors duration-300 z-0 ${
+                            isPast ? "bg-green-500" : isCurrent ? "bg-indigo-500" : "bg-gray-800"
+                          }`}
+                        />
+                      )}
 
-              {/* Custom Glassmorphic Tooltip */}
-              <Tooltip content={CustomTooltip} />
+                      {/* Status Dot */}
+                      <div
+                        className={`relative w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 ${
+                          isPast
+                            ? "bg-green-500 border-green-600"
+                            : isCurrent
+                              ? "bg-indigo-500 border-[#0a0a0a] shadow-[0_0_10px_rgba(99,102,241,0.8)] pulse-glow"
+                              : "bg-gray-700 border-gray-600"
+                        }`}
+                      >
+                        {isPast && (
+                          <svg
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={3}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
 
-              <Legend wrapperStyle={{ fontSize: 12, color: "#D1D5DB" }} />
+                      {/* Stage Label */}
+                      <span
+                        className={`text-[10px] font-medium px-2 py-1 rounded transition-colors duration-300 ${
+                          isPast
+                            ? "bg-green-900/20 text-green-300"
+                            : isCurrent
+                              ? "bg-indigo-900/40 text-white border border-indigo-500/30"
+                              : "text-gray-500"
+                        }`}
+                      >
+                        {s}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          )}
 
-              {lineKeys.map((key, i) => {
-                const colors = ["#6366F1", "#10B981", "#F59E0B", "#EF4444"];
-                const color = colors[i % 4];
-
-                return (
-                  <Line
-                    key={key}
-                    type="monotone"
-                    dataKey={key}
-                    stroke={color}
-                    strokeWidth={2.5}
-                    dot={chartData.length < 30 ? { r: 3, strokeWidth: 1 } : false}
-                    activeDot={{ r: 6, fill: color, stroke: "#0a0a0a", strokeWidth: 2 }}
-                    isAnimationActive={false}
+          {/* Metrics chart */}
+          {chartData.length > 0 && lineKeys.length > 0 && (
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">Live Metrics</p>
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={chartData} margin={{ top: 8, right: 24, left: 0, bottom: 8 }}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#1f2937"
+                    vertical={false}
+                    opacity={0.3}
                   />
-                );
-              })}
-            </LineChart>
-          </ResponsiveContainer>
+                  <XAxis
+                    dataKey={xAxisKey}
+                    tick={{ fill: "#6B7280", fontSize: 11 }}
+                    axisLine={{ stroke: "#374151" }}
+                    label={{
+                      value: xAxisKey,
+                      position: "insideBottomRight",
+                      offset: 0,
+                      fill: "#6B7280",
+                      fontSize: 11,
+                    }}
+                  />
+                  <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+                  <Tooltip content={CustomTooltip} />
+                  <Legend wrapperStyle={{ fontSize: 12, color: "#D1D5DB" }} />
+                  {lineKeys.map((key, i) => {
+                    const colors = ["#6366F1", "#10B981", "#F59E0B", "#EF4444"];
+                    const color = colors[i % 4];
+
+                    return (
+                      <Line
+                        key={key}
+                        type="monotone"
+                        dataKey={key}
+                        stroke={color}
+                        strokeWidth={2.5}
+                        dot={chartData.length < 30 ? { r: 3, strokeWidth: 1 } : false}
+                        activeDot={{ r: 6, fill: color, stroke: "#0a0a0a", strokeWidth: 2 }}
+                        isAnimationActive={false}
+                      />
+                    );
+                  })}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </>
+      ) : (
+        /* Visualizations tab */
+        <div className="space-y-4 animate-fade-in">
+          {status !== "COMPLETED" ? (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-400 space-y-4 bg-white/[0.01] rounded-xl border border-white/5">
+              <div className="relative w-8 h-8">
+                <div className="absolute inset-0 border-2 border-indigo-500/20 rounded-full" />
+                <div className="absolute inset-0 border-t-2 border-indigo-500 rounded-full animate-spin" />
+              </div>
+              <p className="text-sm font-medium animate-pulse">
+                Waiting for task completion to generate visualizations...
+              </p>
+            </div>
+          ) : (
+            jobId && (
+              <>
+                {/* Sub-tabs if multiple plots exist */}
+                {availablePlots.length > 1 && (
+                  <div className="flex gap-2">
+                    {availablePlots.map((plot) => {
+                      const cleanName = plot
+                        .replace(".png", "")
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase());
+                      return (
+                        <button
+                          key={plot}
+                          type="button"
+                          onClick={() => setSelectedPlot(plot)}
+                          className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                            selectedPlot === plot
+                              ? "bg-indigo-600/20 border-indigo-500 text-indigo-200"
+                              : "bg-white/[0.02] border-white/5 text-gray-400 hover:text-gray-200 hover:border-white/10"
+                          }`}
+                        >
+                          {cleanName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Plot Image Container */}
+                <div className="relative group rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center p-3 hover:border-indigo-500/20 transition-all duration-300">
+                  <img
+                    src={`${API_BASE}/plots/${jobId}/${selectedPlot}?t=${completionTime}`}
+                    alt={selectedPlot}
+                    onClick={() => setIsZoomed(true)}
+                    className="max-h-[300px] object-contain rounded-lg cursor-zoom-in group-hover:scale-[1.01] transition-transform duration-300 select-none bg-white/[0.02]"
+                  />
+                  <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-semibold text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1.5 pointer-events-none shadow-lg">
+                    <span>🔍 Click to expand</span>
+                  </div>
+                </div>
+              </>
+            )
+          )}
         </div>
       )}
 
@@ -293,6 +419,41 @@ export default function ProgressPanel({ jobState, stages, onCancel }: ProgressPa
       {status === "COMPLETED" && (
         <div className="p-3 bg-green-900/30 border border-green-700 rounded text-sm text-green-300">
           ✓ Task completed successfully.
+        </div>
+      )}
+
+      {/* Lightbox / Zoom Modal */}
+      {isZoomed && jobId && selectedPlot && (
+        <div
+          onClick={() => setIsZoomed(false)}
+          className="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center cursor-zoom-out p-6 animate-fade-in"
+        >
+          <button
+            type="button"
+            onClick={() => setIsZoomed(false)}
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-all cursor-pointer border border-white/10"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <div className="max-w-5xl max-h-[85vh] flex items-center justify-center p-2 rounded-xl border border-white/10 bg-[#0f0f10] shadow-2xl">
+            <img
+              src={`${API_BASE}/plots/${jobId}/${selectedPlot}?t=${completionTime}`}
+              alt={selectedPlot}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg select-none"
+            />
+          </div>
+
+          <p className="text-xs text-gray-400 mt-4 uppercase tracking-widest font-semibold">
+            {selectedPlot.replace(".png", "").replace(/_/g, " ")}
+          </p>
         </div>
       )}
     </div>

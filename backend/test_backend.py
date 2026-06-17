@@ -151,6 +151,32 @@ class TestBackendAPI(unittest.TestCase):
             # Verify the old job is cancelled
             self.assertEqual(registry.get_job(old_job_id)["status"], "CANCELLED")
 
+    def test_get_plot_not_found(self):
+        # Request a valid plot name but for a job that doesn't have it
+        response = client.get("/plots/nonexistent-job/kmeans_clustering_results.png")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_plot_invalid_filename(self):
+        # Request a disallowed file name
+        response = client.get("/plots/some-job/unauthorized_file.txt")
+        self.assertEqual(response.status_code, 400)
+
+        # Test directory traversal prevention
+        response = client.get("/plots/some-job/../../etc/passwd")
+        self.assertIn(response.status_code, (400, 404))
+
+    def test_get_plot_success(self):
+        # Create a job and manually inject a mock plot
+        job_id = "test-plot-job"
+        registry.create_job(job_id)
+        mock_png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR..."
+        registry.save_job_plot(job_id, "kmeans_clustering_results.png", mock_png)
+
+        response = client.get(f"/plots/{job_id}/kmeans_clustering_results.png")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, mock_png)
+        self.assertEqual(response.headers["content-type"], "image/png")
+
 
 if __name__ == "__main__":
     unittest.main()

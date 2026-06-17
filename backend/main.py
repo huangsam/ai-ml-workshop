@@ -20,11 +20,14 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 
+import io
+import threading
 import matplotlib
+import matplotlib.pyplot as plt
 
 matplotlib.use("Agg")
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
@@ -32,6 +35,29 @@ from backend import registry
 from backend.hooks import HTTPProgressHook
 from backend.models import TASK_CONFIG_MAP
 from backend.tasks import TASK_RUNNER_MAP
+
+_thread_local = threading.local()
+_original_savefig = plt.savefig
+
+
+def _patched_savefig(fname, *args, **kwargs):
+    """Monkey-patch plt.savefig to capture plot bytes in-memory for the current background job."""
+    job_id = getattr(_thread_local, "current_job_id", None)
+    if job_id:
+        buf = io.BytesIO()
+        if "format" not in kwargs:
+            kwargs["format"] = "png"
+        plt.gcf().savefig(buf, *args, **kwargs)
+        buf.seek(0)
+        image_bytes = buf.getvalue()
+
+        filename = os.path.basename(str(fname))
+        registry.save_job_plot(job_id, filename, image_bytes)
+    else:
+        _original_savefig(fname, *args, **kwargs)
+
+
+plt.savefig = _patched_savefig
 
 # Bounded thread pool scaled to the number of system cores (leaving at least 1 core for async loop/OS if possible).
 _NUM_CORES = os.cpu_count() or 2
@@ -149,24 +175,28 @@ async def run_task(module: str, task: str, background_tasks: BackgroundTasks, bo
 
 def _run_in_thread(job_id: str, module: str, task: str, config: dict) -> None:
     """Execute the ML task in the background worker thread pool with clean cancellation check."""
-    runner = TASK_RUNNER_MAP[(module, task)]
-    hook = HTTPProgressHook(job_id)
-    registry.update_job(job_id, status="RUNNING")
+    _thread_local.current_job_id = job_id
     try:
-        runner(hook, config)
-        job = registry.get_job(job_id)
-        if job and job.get("status") == "CANCELLED":
-            return
-        registry.update_job(job_id, status="COMPLETED", percentage=100.0)
-    except Exception as exc:
-        job = registry.get_job(job_id)
-        if job and job.get("status") == "CANCELLED":
-            return
-        registry.update_job(
-            job_id,
-            status="FAILED",
-            error=f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}",
-        )
+        runner = TASK_RUNNER_MAP[(module, task)]
+        hook = HTTPProgressHook(job_id)
+        registry.update_job(job_id, status="RUNNING")
+        try:
+            runner(hook, config)
+            job = registry.get_job(job_id)
+            if job and job.get("status") == "CANCELLED":
+                return
+            registry.update_job(job_id, status="COMPLETED", percentage=100.0)
+        except Exception as exc:
+            job = registry.get_job(job_id)
+            if job and job.get("status") == "CANCELLED":
+                return
+            registry.update_job(
+                job_id,
+                status="FAILED",
+                error=f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}",
+            )
+    finally:
+        _thread_local.current_job_id = None
 
 
 @app.post("/cancel/{job_id}")
@@ -283,3 +313,40 @@ def get_job_status(job_id: str) -> dict:
     if job is None:
         raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found.")
     return job
+
+
+# List of allowed plot filenames for safety
+ALLOWED_PLOTS = {
+    "backpropagation_results.png",
+    "decision_tree_confusion_matrix.png",
+    "decision_tree_visualization.png",
+    "kmeans_clustering_results.png",
+    "kmeans_elbow_plot.png",
+    "knn_confusion_matrix.png",
+    "knn_accuracy_vs_k.png",
+    "linear_regression_results.png",
+    "logistic_regression_confusion_matrix.png",
+    "pca_results.png",
+    "pca_loadings.png",
+    "pca_reconstruction_error.png",
+    "random_forest_confusion_matrix.png",
+    "random_forest_feature_importance.png",
+    "svm_confusion_matrix.png",
+    "svm_accuracy_vs_kernel.png",
+    "xgboost_confusion_matrix.png",
+    "xgboost_feature_importance.png",
+}
+
+
+@app.get("/plots/{job_id}/{filename}")
+def get_plot(job_id: str, filename: str):
+    """Retrieve a generated plot image stored in memory for a specific job."""
+    safe_filename = os.path.basename(filename)
+    if safe_filename not in ALLOWED_PLOTS:
+        raise HTTPException(status_code=400, detail="Requested file is not a valid plot name")
+
+    image_bytes = registry.get_job_plot(job_id, safe_filename)
+    if not image_bytes:
+        raise HTTPException(status_code=404, detail=f"Plot file '{safe_filename}' not found for job '{job_id}'.")
+
+    return Response(content=image_bytes, media_type="image/png")

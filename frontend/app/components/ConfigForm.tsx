@@ -21,6 +21,7 @@ interface SchemaProperty {
 
 export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps) {
   const [schema, setSchema] = useState<Record<string, SchemaProperty> | null>(null);
+  const [configValues, setConfigValues] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,6 +31,19 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
         if (!active) return;
         const properties = (data.properties as Record<string, SchemaProperty>) ?? {};
         setSchema(properties);
+
+        // Initialize values with defaults
+        const initialValues: Record<string, number> = {};
+        Object.entries(properties).forEach(([key, prop]) => {
+          if (prop.default !== undefined) {
+            initialValues[key] = prop.default;
+          } else if (prop.minimum !== undefined && prop.maximum !== undefined) {
+            initialValues[key] = (prop.minimum + prop.maximum) / 2;
+          } else {
+            initialValues[key] = 0;
+          }
+        });
+        setConfigValues(initialValues);
       })
       .catch((err) => {
         if (!active) return;
@@ -41,18 +55,71 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
     };
   }, [task]);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const handleValueChange = (key: string, val: number) => {
+    setConfigValues((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const applyPreset = (presetType: "standard" | "quick" | "thorough") => {
     if (!schema) return;
-    const form = e.currentTarget;
-    const config: Record<string, number> = {};
-    Object.keys(schema).forEach((key) => {
-      const el = form.elements.namedItem(key) as HTMLInputElement | null;
-      if (el && el.value !== "") {
-        config[key] = parseFloat(el.value);
+    const newValues: Record<string, number> = {};
+    Object.entries(schema).forEach(([key, prop]) => {
+      const min = prop.minimum ?? 0;
+      const max = prop.maximum ?? 100;
+      const def = prop.default !== undefined ? prop.default : (min + max) / 2;
+      const isInteger = prop.type === "integer";
+
+      if (presetType === "standard") {
+        newValues[key] = def;
+      } else {
+        const name = key.toLowerCase();
+        const isCostly =
+          name.includes("epoch") ||
+          name.includes("iter") ||
+          name.includes("estimator") ||
+          name.includes("sample") ||
+          name.includes("fold") ||
+          name.includes("length");
+
+        if (isCostly) {
+          if (presetType === "quick") {
+            if (prop.minimum !== undefined) {
+              newValues[key] = prop.minimum;
+            } else {
+              newValues[key] = isInteger ? Math.max(1, Math.round(def * 0.2)) : def * 0.2;
+            }
+          } else {
+            if (prop.maximum !== undefined) {
+              newValues[key] = prop.maximum;
+            } else {
+              newValues[key] = isInteger ? Math.round(def * 2.0) : def * 2.0;
+            }
+          }
+        } else {
+          if (name.includes("learning_rate") || name.includes("lr")) {
+            newValues[key] = presetType === "quick" ? Math.min(1.0, def * 2) : def;
+          } else {
+            newValues[key] = def;
+          }
+        }
+      }
+
+      if (isInteger) {
+        newValues[key] = Math.round(newValues[key]);
+      }
+      if (prop.minimum !== undefined) {
+        newValues[key] = Math.max(prop.minimum, newValues[key]);
+      }
+      if (prop.maximum !== undefined) {
+        newValues[key] = Math.min(prop.maximum, newValues[key]);
       }
     });
-    onSubmit(config);
+
+    setConfigValues(newValues);
+  };
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    onSubmit(configValues);
   }
 
   if (error) {
@@ -64,9 +131,51 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
   }
 
   const fields = Object.entries(schema);
+  const showPresets = fields.length > 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {showPresets && (
+        <div className="space-y-2 pb-2.5 border-b border-white/5 mb-4">
+          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block">
+            Execution Presets
+          </span>
+          <div className="flex gap-2.5">
+            {[
+              {
+                id: "standard",
+                label: "Standard",
+                icon: "⚙️",
+                color: "hover:border-blue-500/50 hover:text-blue-300 hover:bg-blue-500/5",
+              },
+              {
+                id: "quick",
+                label: "Quick Run",
+                icon: "⚡",
+                color: "hover:border-amber-500/50 hover:text-amber-300 hover:bg-amber-500/5",
+              },
+              {
+                id: "thorough",
+                label: "Thorough",
+                icon: "🎯",
+                color: "hover:border-emerald-500/50 hover:text-emerald-300 hover:bg-emerald-500/5",
+              },
+            ].map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                disabled={disabled}
+                onClick={() => applyPreset(preset.id as any)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-white/10 bg-white/[0.02] text-xs font-semibold text-gray-300 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${preset.color} disabled:opacity-50 disabled:pointer-events-none`}
+              >
+                <span>{preset.icon}</span>
+                <span>{preset.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {fields.length === 0 ? (
         <p className="text-sm text-gray-400 italic">No configurable parameters for this task.</p>
       ) : (
@@ -76,10 +185,15 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
             const min = prop.minimum;
             const max = prop.maximum;
             const hasRange = min !== undefined && max !== undefined;
+            const val =
+              configValues[key] !== undefined ? configValues[key] : (prop.default ?? min ?? 0);
 
             return (
               <div key={key} className="flex flex-col space-y-2">
-                <label className="block text-xs font-medium text-gray-300" htmlFor={key}>
+                <label
+                  className="block text-xs font-medium text-gray-300 animate-fade-in"
+                  htmlFor={key}
+                >
                   {prop.title ?? key}
                 </label>
 
@@ -93,16 +207,10 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
                       min={min}
                       max={max}
                       step={isInteger ? "1" : "any"}
-                      defaultValue={prop.default !== undefined ? prop.default : (min + max) / 2}
+                      value={val}
                       disabled={disabled}
                       className="flex-1 range-slider-input"
-                      onChange={(e) => {
-                        const slider = e.target;
-                        const numberInput = document.getElementById(key) as HTMLInputElement | null;
-                        if (numberInput) {
-                          numberInput.value = slider.value;
-                        }
-                      }}
+                      onChange={(e) => handleValueChange(key, parseFloat(e.target.value))}
                     />
                     <input
                       id={key}
@@ -111,18 +219,10 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
                       step={isInteger ? "1" : "any"}
                       min={min}
                       max={max}
-                      defaultValue={prop.default !== undefined ? prop.default : (min + max) / 2}
+                      value={val}
                       disabled={disabled}
                       className="w-24 bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50"
-                      onChange={(e) => {
-                        const numberInput = e.target;
-                        const slider = document.getElementById(
-                          `${key}-slider`
-                        ) as HTMLInputElement | null;
-                        if (slider && numberInput.value !== "") {
-                          slider.value = numberInput.value;
-                        }
-                      }}
+                      onChange={(e) => handleValueChange(key, parseFloat(e.target.value) || 0)}
                     />
                   </div>
                 ) : (
@@ -134,9 +234,10 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
                     step={isInteger ? "1" : "any"}
                     min={min !== undefined ? min : undefined}
                     max={max !== undefined ? max : undefined}
-                    defaultValue={prop.default !== undefined ? prop.default : ""}
+                    value={val}
                     disabled={disabled}
                     className="w-full bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50"
+                    onChange={(e) => handleValueChange(key, parseFloat(e.target.value) || 0)}
                   />
                 )}
 
