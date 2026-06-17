@@ -14,6 +14,8 @@ import { TASK_LABELS } from "./constants";
 import Sidebar from "./components/Sidebar";
 import ConfigForm from "./components/ConfigForm";
 import ProgressPanel from "./components/ProgressPanel";
+import { THEORY_DATA } from "./theory";
+import TheoryModal from "./components/TheoryModal";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -23,6 +25,7 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTheoryOpen, setIsTheoryOpen] = useState(false);
   const esRef = useRef<EventSource | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
 
@@ -397,9 +400,30 @@ export default function Home() {
                 <p className="text-xs uppercase tracking-widest text-indigo-400 mb-1 font-semibold">
                   {selectedTask.module}
                 </p>
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent pb-2">
-                  {TASK_LABELS[selectedTask.task] ?? selectedTask.task}
-                </h2>
+                <div
+                  onClick={() => setIsTheoryOpen(true)}
+                  className="inline-flex items-center gap-3 group cursor-pointer select-none"
+                  title="Click to view theory and concept explanation"
+                >
+                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent group-hover:from-white group-hover:to-indigo-300 transition-all duration-300 pb-1">
+                    {TASK_LABELS[selectedTask.task] ?? selectedTask.task}
+                  </h2>
+                  <div className="w-6 h-6 rounded-full bg-white/5 group-hover:bg-indigo-500/15 border border-white/5 group-hover:border-indigo-500/30 flex items-center justify-center text-gray-400 group-hover:text-indigo-400 transition-all duration-300 shadow-sm">
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <section>
@@ -454,6 +478,14 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {selectedTask && (
+        <TheoryModal
+          isOpen={isTheoryOpen}
+          onClose={() => setIsTheoryOpen(false)}
+          content={THEORY_DATA[`${selectedTask.module}/${selectedTask.task}`]}
+        />
+      )}
     </div>
   );
 }
