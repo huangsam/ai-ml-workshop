@@ -191,6 +191,7 @@ class TestBackendAPI(unittest.TestCase):
         self.assertIn("cnn", pytorch_tasks)
         self.assertIn("gan", pytorch_tasks)
         self.assertIn("lstm", pytorch_tasks)
+        self.assertIn("quantization", pytorch_tasks)
 
         # Verify new schemas load correctly
         for module, task in [
@@ -199,6 +200,7 @@ class TestBackendAPI(unittest.TestCase):
             ("pytorch", "cnn"),
             ("pytorch", "gan"),
             ("pytorch", "lstm"),
+            ("pytorch", "quantization"),
         ]:
             schema_resp = client.get(f"/tasks/{module}/{task}/schema")
             self.assertEqual(schema_resp.status_code, 200, f"Failed schema fetch for {module}/{task}")

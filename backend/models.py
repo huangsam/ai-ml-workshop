@@ -162,6 +162,10 @@ class LSTMConfig(BaseModel):
     temperature: float = Field(default=0.7, ge=0.1, le=2.0, description="Softmax sampling temperature")
 
 
+class QuantizationConfig(BaseModel):
+    num_samples: int = Field(default=500, ge=10, le=2000, description="Evaluation samples")
+
+
 # ---------------------------------------------------------------------------
 # Registry: maps (module, task) -> config class
 # ---------------------------------------------------------------------------
@@ -189,4 +193,5 @@ TASK_CONFIG_MAP: dict[tuple[str, str], type[BaseModel]] = {
     ("pytorch", "cnn"): CNNConfig,
     ("pytorch", "gan"): GANConfig,
     ("pytorch", "lstm"): LSTMConfig,
+    ("pytorch", "quantization"): QuantizationConfig,
 }

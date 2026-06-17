@@ -29,6 +29,7 @@ export const TASK_LABELS: Record<string, string> = {
   cnn: "CNN",
   gan: "Generative Adversarial Network",
   lstm: "LSTM Text Generation",
+  quantization: "Model Quantization",
 };
 
 export const TASK_PLOTS: Record<string, string[]> = {
@@ -53,4 +54,5 @@ export const TASK_PLOTS: Record<string, string[]> = {
   "pytorch/cnn": ["cnn_feature_activations.png", "cnn_confusion_matrix.png"],
   "pytorch/gan": ["gan_distribution_scatter.png", "gan_loss_curves.png"],
   "pytorch/lstm": ["lstm_token_probabilities.png"],
+  "pytorch/quantization": ["quantization_comparison.png"],
 };

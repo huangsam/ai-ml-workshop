@@ -127,6 +127,7 @@ _TASK_STAGES_MAP = {
     ("pytorch", "cnn"): ["Data Ingestion", "Model Initialization", "Training", "Testing", "Filter Extraction", "Complete"],
     ("pytorch", "gan"): ["Distribution Setup", "Model Initialization", "Adversarial Training", "Sampling", "Visualization", "Complete"],
     ("pytorch", "lstm"): ["Text Tokenization", "Model Setup", "Training", "Sampling Text", "Visualization", "Complete"],
+    ("pytorch", "quantization"): ["Baseline Evaluation", "Dynamic Quantization", "Quantized Evaluation", "Metrics Comparison", "Visualization", "Complete"],
 }
 
 # Catalogue mapping incorporating dynamic stages lists

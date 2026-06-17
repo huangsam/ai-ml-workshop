@@ -151,6 +151,12 @@ def _pytorch_lstm(hook: ProgressHook, config: dict[str, Any]) -> None:
     main(hook=hook, config=config)
 
 
+def _pytorch_quantization(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.pytorch.quantization import main
+
+    main(hook=hook, config=config)
+
+
 TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("numpy", "backpropagation"): _numpy_backpropagation,
     ("numpy", "fundamentals"): _numpy_fundamentals,
@@ -174,4 +180,5 @@ TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("pytorch", "cnn"): _pytorch_cnn,
     ("pytorch", "gan"): _pytorch_gan,
     ("pytorch", "lstm"): _pytorch_lstm,
+    ("pytorch", "quantization"): _pytorch_quantization,
 }

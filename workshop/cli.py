@@ -113,6 +113,14 @@ def lstm():
     main(hook=_hook(6))
 
 
+@pytorch.command()
+def quantization():
+    """Run PyTorch dynamic quantization example."""
+    from workshop.core.pytorch.quantization import main
+
+    main(hook=_hook(5))
+
+
 @sklearn.command()
 def linear_regression():
     """Run linear regression example."""
