@@ -144,19 +144,19 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
             {[
               {
                 id: "standard",
-                label: "Standard",
+                label: "Base",
                 icon: "⚙️",
                 color: "hover:border-blue-500/50 hover:text-blue-300 hover:bg-blue-500/5",
               },
               {
                 id: "quick",
-                label: "Quick Run",
+                label: "Quick",
                 icon: "⚡",
                 color: "hover:border-amber-500/50 hover:text-amber-300 hover:bg-amber-500/5",
               },
               {
                 id: "thorough",
-                label: "Thorough",
+                label: "Deep",
                 icon: "🎯",
                 color: "hover:border-emerald-500/50 hover:text-emerald-300 hover:bg-emerald-500/5",
               },
