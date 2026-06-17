@@ -165,7 +165,7 @@ export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps
                 key={preset.id}
                 type="button"
                 disabled={disabled}
-                onClick={() => applyPreset(preset.id as any)}
+                onClick={() => applyPreset(preset.id as "standard" | "quick" | "thorough")}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-white/10 bg-white/[0.02] text-xs font-semibold text-gray-300 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${preset.color} disabled:opacity-50 disabled:pointer-events-none`}
               >
                 <span>{preset.icon}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { JobState, API_BASE } from "../api";
 import { TASK_PLOTS } from "../constants";
 import {
@@ -67,32 +67,15 @@ export default function ProgressPanel({
   task,
   jobId,
 }: ProgressPanelProps) {
-  const [activeTab, setActiveTab] = useState<"metrics" | "visualizations">("metrics");
-  const [selectedPlot, setSelectedPlot] = useState<string>("");
-  const [completionTime, setCompletionTime] = useState<number>(0);
-  const [isZoomed, setIsZoomed] = useState<boolean>(false);
-
   // Get available plots for the selected task
   const plotKey = module && task ? `${module}/${task}` : "";
   const availablePlots = TASK_PLOTS[plotKey] ?? [];
 
-  // Reset states on task change
-  useEffect(() => {
-    setActiveTab("metrics");
-    if (availablePlots.length > 0) {
-      setSelectedPlot(availablePlots[0]);
-    } else {
-      setSelectedPlot("");
-    }
-  }, [module, task]);
+  const [activeTab, setActiveTab] = useState<"metrics" | "visualizations">("metrics");
+  const [selectedPlot, setSelectedPlot] = useState<string>(availablePlots[0] ?? "");
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
-  // Track completion to set cache-busting timestamp
   const status = jobState?.status;
-  useEffect(() => {
-    if (status === "COMPLETED") {
-      setCompletionTime(Date.now());
-    }
-  }, [status]);
 
   if (!jobState) {
     return (
@@ -385,8 +368,9 @@ export default function ProgressPanel({
 
                 {/* Plot Image Container */}
                 <div className="relative group rounded-xl overflow-hidden border border-white/5 bg-black/40 flex items-center justify-center p-3 hover:border-indigo-500/20 transition-all duration-300">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`${API_BASE}/plots/${jobId}/${selectedPlot}?t=${completionTime}`}
+                    src={`${API_BASE}/plots/${jobId}/${selectedPlot}`}
                     alt={selectedPlot}
                     onClick={() => setIsZoomed(true)}
                     className="max-h-[300px] object-contain rounded-lg cursor-zoom-in group-hover:scale-[1.01] transition-transform duration-300 select-none bg-white/[0.02]"
@@ -444,8 +428,9 @@ export default function ProgressPanel({
           </button>
 
           <div className="max-w-5xl max-h-[85vh] flex items-center justify-center p-2 rounded-xl border border-white/10 bg-[#0f0f10] shadow-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`${API_BASE}/plots/${jobId}/${selectedPlot}?t=${completionTime}`}
+              src={`${API_BASE}/plots/${jobId}/${selectedPlot}`}
               alt={selectedPlot}
               className="max-w-full max-h-[80vh] object-contain rounded-lg select-none"
             />

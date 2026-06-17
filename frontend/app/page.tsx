@@ -441,6 +441,7 @@ export default function Home() {
                 </h3>
                 <div className="glass-panel rounded-xl p-6">
                   <ProgressPanel
+                    key={`${selectedTask.module}/${selectedTask.task}`}
                     jobState={jobState}
                     stages={stages}
                     onCancel={handleCancel}
