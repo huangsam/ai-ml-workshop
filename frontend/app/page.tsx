@@ -24,6 +24,15 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const esRef = useRef<EventSource | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
+
+  // Scroll back to top when task selection changes (e.g. from Surprise Me or Sidebar)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [selectedTask]);
 
   // Load task catalogue on mount
   useEffect(() => {
@@ -187,7 +196,7 @@ export default function Home() {
 
       <Sidebar tasks={tasks} selected={selectedTask} onSelect={handleTaskSelect} />
 
-      <main className="flex-1 p-8 overflow-y-auto relative z-10">
+      <main ref={mainRef} className="flex-1 p-8 overflow-y-auto relative z-10">
         {error && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300 text-sm backdrop-blur-sm">
             {error}
