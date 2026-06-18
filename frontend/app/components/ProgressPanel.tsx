@@ -210,7 +210,7 @@ export default function ProgressPanel({
               <p className="text-xs text-gray-400 uppercase tracking-widest mb-4">
                 Training Pipeline
               </p>
-              <ol className="flex items-center justify-between w-full overflow-x-auto py-4 custom-scrollbar">
+              <ol className="flex items-start justify-between w-full overflow-x-auto py-4 custom-scrollbar">
                 {allStages.map((s, idx) => {
                   const isPast = currentStageIdx > idx;
                   const isCurrent = currentStageIdx === idx;
@@ -218,7 +218,7 @@ export default function ProgressPanel({
                   return (
                     <li
                       key={s}
-                      className="flex flex-col items-center gap-2 flex-1 min-w-[80px] relative"
+                      className="flex flex-col items-center gap-2 flex-1 min-w-[85px] px-1.5 relative"
                     >
                       {/* Connector line (before the dot) */}
                       {idx < allStages.length - 1 && (
@@ -254,7 +254,7 @@ export default function ProgressPanel({
 
                       {/* Stage Label */}
                       <span
-                        className={`text-[10px] font-medium px-2 py-1 rounded transition-colors duration-300 ${
+                        className={`text-[10px] font-medium px-2 py-1 rounded transition-colors duration-300 min-h-[36px] flex items-center justify-center text-center w-full ${
                           isPast
                             ? "bg-green-900/20 text-green-300"
                             : isCurrent
