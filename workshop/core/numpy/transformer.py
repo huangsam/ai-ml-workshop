@@ -263,6 +263,20 @@ class NumpyTransformerBlock:
         # Total input gradient: residual path + LayerNorm 1 path
         dX = d_X_res1 + d_X_from_ln1
 
+        # Store gradients as instance variables for testing
+        self.dW2 = dW2
+        self.db2 = db2
+        self.dW1 = dW1
+        self.db1 = db1
+        self.dW_O = dW_O
+        self.dW_Q = dW_Q_heads
+        self.dW_K = dW_K_heads
+        self.dW_V = dW_V_heads
+        self.dgamma1 = dgamma1
+        self.dbeta1 = dbeta1
+        self.dgamma2 = dgamma2
+        self.dbeta2 = dbeta2
+
         # Apply SGD Updates to all parameters
         self.W2 -= lr * dW2
         self.b2 -= lr * db2
