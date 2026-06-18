@@ -39,3 +39,8 @@ line-length = 160
 
 [tool.ruff.lint]
 extend-select = ["I", "UP"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*httpx.*",
+]
