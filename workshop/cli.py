@@ -121,6 +121,14 @@ def quantization():
     main(hook=_hook(5))
 
 
+@pytorch.command()
+def rag():
+    """Run Retrieval-Augmented Generation (RAG) example."""
+    from workshop.core.pytorch.rag import main
+
+    main(hook=_hook(8))
+
+
 @sklearn.command()
 def linear_regression():
     """Run linear regression example."""
@@ -221,6 +229,14 @@ def q_learning():
 def attention():
     """Run single-head self-attention layer example."""
     from workshop.core.numpy.attention import main
+
+    main(hook=_hook(6))
+
+
+@numpy.command()
+def transformer():
+    """Run causal Transformer block from scratch example."""
+    from workshop.core.numpy.transformer import main
 
     main(hook=_hook(6))
 

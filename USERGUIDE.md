@@ -40,10 +40,13 @@ uv run workshop pytorch text-classification
 uv run workshop pytorch question-answering
 
 # LSTM forecasting
-uv run workshop pytorch time-series
+uv run workshop pytorch time-series-forecasting
 
 # MLP with embeddings
 uv run workshop pytorch tabular-classification
+
+# Retrieval-Augmented Generation (RAG)
+uv run workshop pytorch rag
 ```
 
 #### Classical ML (Scikit-learn)
@@ -78,7 +81,7 @@ uv run workshop sklearn pca
 
 #### Fundamentals (NumPy)
 
-Learn machine learning and backpropagation from scratch without framework dependencies:
+Learn machine learning, reinforcement learning, and transformers from scratch without framework dependencies:
 
 ```bash
 # Basic array manipulations and operations
@@ -86,6 +89,15 @@ uv run workshop numpy fundamentals
 
 # Manual backpropagation & chain rule computation
 uv run workshop numpy backpropagation
+
+# Q-Learning GridWorld maze navigation
+uv run workshop numpy q-learning
+
+# Single-head self-attention layer
+uv run workshop numpy attention
+
+# Causal Transformer block from scratch
+uv run workshop numpy transformer
 ```
 
 ---

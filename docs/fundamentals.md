@@ -91,6 +91,16 @@ A 2-layer network implementation demonstrating manual backpropagation. Solving X
 
 Uses eigenvalue decomposition to project data onto principal components. Focuses on variance preservation and dimensionality reduction for visualization and noise reduction.
 
+### Transformer Block (Causal Generative)
+
+A single-layer causal Transformer block implemented from scratch in pure NumPy, showcasing:
+- **Sinusoidal Positional Encodings**: Adding trigonometric positional vectors to token embeddings to capture sequence order.
+- **Multi-Head Self-Attention**: Splitting queries, keys, and values into multiple head dimensions to attend to different token relationships.
+- **Causal Masking**: Enforcing the generative direction by masking the attention scores of future tokens with $-\infty$.
+- **Layer Normalization**: Stabilizing layer activations across the hidden features.
+- **Exact Backpropagation**: Manual calculation and updates for all weights, biases, and parameters (including LayerNorm scale/shift).
+- **Autoregressive Text Generation**: Autoregressively generating text character-by-character using predictions from previous steps.
+
 ### Gradient Verification
 
 Uses finite differences: $\partial J/\partial \theta \approx \frac{J(\theta + \epsilon) - J(\theta - \epsilon)}{2\epsilon}$.

@@ -26,6 +26,15 @@ Retrieval-Augmented Generation (RAG) bridges LLMs with domain-specific knowledge
 2. **Context Matters Tuning**: Chunk size and $k$ (number of retrieved docs) are critical for performance and cost.
 3. **Hybrid Search**: Always use hybrid search if the domain has specific terminology (e.g., code, medical).
 
+### Core RAG Learning Module
+
+We have added a locally executable RAG pipeline directly inside the workshop codebase under `workshop/core/pytorch/rag.py`. It showcases:
+- **Sentence Embeddings**: Generating dense vector representations using `sentence-transformers/all-MiniLM-L6-v2` with PyTorch.
+- **Semantic Retrieval**: Computing cosine similarity (dot product of L2-normalized vectors) between a user query and the local document corpus.
+- **Augmentation & Generation**: Comparing text generation outputs of `google/flan-t5-small` in two scenarios:
+  1. *Without Context* (zero-shot baseline, highlighting hallucination of private facts).
+  2. *With Context* (grounded RAG, proving how retrieved context yields precise, factual answers).
+
 ### External Repositories (RAG)
 
 - **[huangsam/ragchain](https://github.com/huangsam/ragchain)**: Full RAG application demonstrating hybrid retrieval and observability.
