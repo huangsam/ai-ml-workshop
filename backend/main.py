@@ -13,6 +13,11 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
+import warnings
+
+# Suppress noisy multiprocessing resource tracker warnings on shutdown (common on macOS)
+warnings.filterwarnings("ignore", category=UserWarning, module="multiprocessing.resource_tracker")
+
 import asyncio
 import json
 import traceback

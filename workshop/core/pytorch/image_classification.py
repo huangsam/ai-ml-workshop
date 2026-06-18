@@ -63,8 +63,8 @@ def get_data_loaders(batch_size: int = BATCH_SIZE) -> tuple[DataLoader, DataLoad
     test_dataset = torchvision.datasets.CIFAR10(root="./data", train=False, download=True, transform=test_transform)
 
     # Create DataLoaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Test dataset size: {len(test_dataset)}")
