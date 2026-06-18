@@ -96,7 +96,7 @@ uv run workshop numpy q-learning
 # Single-head self-attention layer
 uv run workshop numpy attention
 
-# Causal Transformer block from scratch
+# Causal Transformer block
 uv run workshop numpy transformer
 ```
 

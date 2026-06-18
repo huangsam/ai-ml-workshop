@@ -94,6 +94,7 @@ Uses eigenvalue decomposition to project data onto principal components. Focuses
 ### Transformer Block (Causal Generative)
 
 A single-layer causal Transformer block implemented from scratch in pure NumPy, showcasing:
+
 - **Sinusoidal Positional Encodings**: Adding trigonometric positional vectors to token embeddings to capture sequence order.
 - **Multi-Head Self-Attention**: Splitting queries, keys, and values into multiple head dimensions to attend to different token relationships.
 - **Causal Masking**: Enforcing the generative direction by masking the attention scores of future tokens with $-\infty$.

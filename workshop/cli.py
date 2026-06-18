@@ -235,7 +235,7 @@ def attention():
 
 @numpy.command()
 def transformer():
-    """Run causal Transformer block from scratch example."""
+    """Run causal Transformer block example."""
     from workshop.core.numpy.transformer import main
 
     main(hook=_hook(6))

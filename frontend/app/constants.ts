@@ -11,7 +11,7 @@ export const TASK_LABELS: Record<string, string> = {
   fundamentals: "Fundamentals",
   q_learning: "Q-Learning",
   attention: "Self-Attention",
-  transformer: "Transformer from Scratch",
+  transformer: "Transformer",
   linear_regression: "Linear Regression",
   logistic_regression: "Logistic Regression",
   knn: "K-Nearest Neighbors",

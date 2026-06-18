@@ -1,4 +1,4 @@
-"""Transformer block from scratch in NumPy with Multi-Head Attention, LayerNorm, and FFN."""
+"""Transformer block in NumPy with Multi-Head Attention, LayerNorm, and FFN."""
 
 from __future__ import annotations
 
@@ -295,7 +295,7 @@ def get_positional_encoding(seq_len: int, d_model: int) -> np.ndarray:
 
 
 def main(hook=None, config=None):
-    """Entry point for the Transformer from scratch lesson."""
+    """Entry point for the Transformer lesson."""
     from workshop.utils.hooks import NoOpProgressHook
 
     config = config or {}
@@ -308,7 +308,7 @@ def main(hook=None, config=None):
     hidden_dim = int(config.get("hidden_dim", 32))
     seq_len = 8
 
-    print("Causal Transformer Block from Scratch (NumPy)")
+    print("Causal Transformer Block (NumPy)")
     print("=" * 50)
     print(f"Embedding Dim (D): {embedding_dim}")
     print(f"Attention Heads: {num_heads}")

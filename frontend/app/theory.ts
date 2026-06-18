@@ -681,7 +681,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
     ],
   },
   "numpy/transformer": {
-    title: "Transformer Block from Scratch",
+    title: "Transformer",
     overview:
       "Transformers are the core architecture behind modern generative AI (like GPT, Claude, Gemini). This lesson implements a full causal Transformer block from scratch in NumPy, including positional encoding, multi-head causal self-attention, layer normalization, residual connections, and a feed-forward network, trained to predict the next character in a text sequence.",
     concepts: [
