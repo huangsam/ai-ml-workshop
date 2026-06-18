@@ -22,10 +22,13 @@ _lock = threading.Lock()
 _jobs: dict[str, dict[str, Any]] = {}
 
 
-def create_job(job_id: str) -> dict[str, Any]:
+def create_job(job_id: str, module: str, task: str, config: dict[str, Any]) -> dict[str, Any]:
     """Initialise a new job entry and return it."""
     entry: dict[str, Any] = {
         "status": "PENDING",
+        "module": module,
+        "task": task,
+        "config": config,
         "stage": "",
         "percentage": 0.0,
         "metrics": [],
@@ -50,6 +53,8 @@ def get_job(job_id: str) -> dict[str, Any] | None:
             return None
         copied = job.copy()
         copied["metrics"] = list(job["metrics"])
+        if "config" in copied:
+            copied["config"] = dict(job["config"])
         if "plots" in copied:
             del copied["plots"]
         return copied
@@ -128,3 +133,25 @@ def get_job_plot(job_id: str, filename: str) -> bytes | None:
         if job and "plots" in job:
             return job["plots"].get(filename)
         return None
+
+
+def list_jobs(module: str | None = None, task: str | None = None) -> list[dict[str, Any]]:
+    """List all jobs in the registry, optionally filtered by module and task, sorted by created_at desc."""
+    with _lock:
+        items = []
+        for jid, job in _jobs.items():
+            if module and job.get("module") != module:
+                continue
+            if task and job.get("task") != task:
+                continue
+            copied = job.copy()
+            copied["job_id"] = jid
+            copied["metrics"] = list(job["metrics"])
+            if "config" in copied:
+                copied["config"] = dict(job["config"])
+            if "plots" in copied:
+                del copied["plots"]
+            items.append(copied)
+        # Sort descending by created_at
+        items.sort(key=lambda x: x.get("created_at", 0.0), reverse=True)
+        return items

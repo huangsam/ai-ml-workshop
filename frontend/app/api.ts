@@ -73,3 +73,30 @@ export async function cancelJob(jobId: string): Promise<void> {
 export function openEventSource(jobId: string): EventSource {
   return new EventSource(`${API_BASE}/stream/${jobId}`);
 }
+
+export interface JobInfo {
+  job_id: string;
+  status: "PENDING" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED";
+  module: string;
+  task: string;
+  config: Record<string, number>;
+  stage: string;
+  percentage: number;
+  metrics: Record<string, number>[];
+  error: string | null;
+  created_at: number;
+}
+
+export async function fetchJobs(module?: string, task?: string): Promise<JobInfo[]> {
+  let url = `${API_BASE}/jobs`;
+  const params = new URLSearchParams();
+  if (module) params.append("module", module);
+  if (task) params.append("task", task);
+  const queryStr = params.toString();
+  if (queryStr) {
+    url += `?${queryStr}`;
+  }
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch jobs list");
+  return res.json();
+}

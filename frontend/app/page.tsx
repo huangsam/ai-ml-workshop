@@ -26,6 +26,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isTheoryOpen, setIsTheoryOpen] = useState(false);
+  const [loadedConfig, setLoadedConfig] = useState<Record<string, number> | null>(null);
   const esRef = useRef<EventSource | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
 
@@ -109,6 +110,7 @@ export default function Home() {
     setCurrentJobId(null);
     setIsRunning(false);
     setError(null);
+    setLoadedConfig(null);
 
     const targetHash = task ? `#${task.module}/${task.task}` : "";
     if (window.location.hash !== targetHash) {
@@ -393,7 +395,7 @@ export default function Home() {
           </div>
         ) : (
           /* Task Detail View - Split-Screen Layout */
-          <div className="split:grid split:grid-cols-12 split:gap-8 split:items-start animate-fade-in">
+          <div className="grid grid-cols-1 gap-8 split:grid-cols-12 split:items-start animate-fade-in">
             {/* Left Column: Configuration (col-span-5) */}
             <div className="split:col-span-5 space-y-6">
               <div>
@@ -444,6 +446,7 @@ export default function Home() {
                     task={selectedTask}
                     disabled={isRunning}
                     onSubmit={handleRun}
+                    initialValues={loadedConfig}
                   />
                 </div>
               </section>
@@ -471,6 +474,8 @@ export default function Home() {
                     onCancel={handleCancel}
                     jobId={currentJobId}
                     plots={selectedTask.plots}
+                    onLoadConfig={setLoadedConfig}
+                    selectedTask={selectedTask}
                   />
                 </div>
               </section>

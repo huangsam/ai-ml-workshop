@@ -54,7 +54,7 @@ class TestBackendAPI(unittest.TestCase):
 
     def test_sse_event_id_resumption(self):
         job_id = "test-sse-resume-job"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
         # Set to RUNNING first so metrics can be appended
         registry.update_job(job_id, status="RUNNING", stage="Training", percentage=100.0)
         registry.append_metrics(job_id, {"epoch": 1, "loss": 0.8})
@@ -77,7 +77,7 @@ class TestBackendAPI(unittest.TestCase):
 
     def test_cooperative_cancellation(self):
         job_id = "test-cancel-id"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
         registry.update_job(job_id, status="RUNNING")
 
         hook = HTTPProgressHook(job_id)
@@ -90,7 +90,7 @@ class TestBackendAPI(unittest.TestCase):
 
     def test_terminal_status_immutability(self):
         job_id = "test-terminal-immutability-id"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
         registry.update_job(job_id, status="RUNNING")
 
         hook = HTTPProgressHook(job_id)
@@ -111,7 +111,7 @@ class TestBackendAPI(unittest.TestCase):
 
     def test_cancel_route(self):
         job_id = "test-cancel-route-id"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
         registry.update_job(job_id, status="RUNNING")
 
         # Call cancel endpoint
@@ -123,7 +123,7 @@ class TestBackendAPI(unittest.TestCase):
 
     def test_ttl_eviction(self):
         job_id = "old-job-id"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
 
         # Alter creation timestamp to be older than 1 hour (7200 seconds ago)
         registry.update_job(job_id, created_at=time.time() - 7200)
@@ -137,7 +137,7 @@ class TestBackendAPI(unittest.TestCase):
     def test_global_auto_cancellation_on_run(self):
         # Create an existing job and set it to running
         old_job_id = "running-job-id"
-        registry.create_job(old_job_id)
+        registry.create_job(old_job_id, module="numpy", task="backpropagation", config={})
         registry.update_job(old_job_id, status="RUNNING")
 
         def dummy_runner(hook, config):
@@ -168,7 +168,7 @@ class TestBackendAPI(unittest.TestCase):
     def test_get_plot_success(self):
         # Create a job and manually inject a mock plot
         job_id = "test-plot-job"
-        registry.create_job(job_id)
+        registry.create_job(job_id, module="numpy", task="backpropagation", config={})
         mock_png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR..."
         registry.save_job_plot(job_id, "kmeans_clustering_results.png", mock_png)
 
@@ -206,6 +206,29 @@ class TestBackendAPI(unittest.TestCase):
             self.assertEqual(schema_resp.status_code, 200, f"Failed schema fetch for {module}/{task}")
             schema = schema_resp.json()
             self.assertIn("properties", schema)
+
+    def test_list_jobs_route(self):
+        registry.create_job("job-1", module="numpy", task="backpropagation", config={"epochs": 10})
+        # sleep slightly to guarantee order of creation
+        time.sleep(0.005)
+        registry.create_job("job-2", module="sklearn", task="kmeans", config={"n_clusters": 3})
+
+        response = client.get("/jobs")
+        self.assertEqual(response.status_code, 200)
+        jobs = response.json()
+        self.assertEqual(len(jobs), 2)
+
+        self.assertEqual(jobs[0]["job_id"], "job-2")
+        self.assertEqual(jobs[0]["module"], "sklearn")
+        self.assertEqual(jobs[0]["task"], "kmeans")
+        self.assertEqual(jobs[0]["config"], {"n_clusters": 3})
+
+        response_filtered = client.get("/jobs?module=numpy&task=backpropagation")
+        self.assertEqual(response_filtered.status_code, 200)
+        jobs_filtered = response_filtered.json()
+        self.assertEqual(len(jobs_filtered), 1)
+        self.assertEqual(jobs_filtered[0]["job_id"], "job-1")
+        self.assertEqual(jobs_filtered[0]["config"], {"epochs": 10})
 
 
 if __name__ == "__main__":

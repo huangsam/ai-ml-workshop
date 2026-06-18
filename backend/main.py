@@ -170,7 +170,7 @@ async def run_task(module: str, task: str, background_tasks: BackgroundTasks, bo
     registry.cancel_active_jobs()
 
     job_id = str(uuid.uuid4())
-    registry.create_job(job_id)
+    registry.create_job(job_id, module=module, task=task, config=validated_config)
 
     async def _run_job_async():
         loop = asyncio.get_running_loop()
@@ -312,6 +312,12 @@ def _sse(data: dict, id: int | None = None) -> str:
         out += f"id: {id}\n"
     out += "\n"
     return out
+
+
+@app.get("/jobs")
+def list_jobs(module: str | None = None, task: str | None = None) -> list[dict]:
+    """List recent jobs in the registry, optionally filtered by module and task."""
+    return registry.list_jobs(module=module, task=task)
 
 
 @app.get("/jobs/{job_id}")

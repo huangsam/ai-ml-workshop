@@ -7,6 +7,7 @@ interface ConfigFormProps {
   task: Task;
   disabled: boolean;
   onSubmit: (config: Record<string, number>) => void;
+  initialValues?: Record<string, number> | null;
 }
 
 interface SchemaProperty {
@@ -19,10 +20,21 @@ interface SchemaProperty {
   exclusiveMinimum?: number;
 }
 
-export default function ConfigForm({ task, disabled, onSubmit }: ConfigFormProps) {
+export default function ConfigForm({ task, disabled, onSubmit, initialValues }: ConfigFormProps) {
   const [schema, setSchema] = useState<Record<string, SchemaProperty> | null>(null);
   const [configValues, setConfigValues] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
+
+  const [prevInitialValues, setPrevInitialValues] = useState<
+    Record<string, number> | null | undefined
+  >(initialValues);
+
+  if (initialValues !== prevInitialValues) {
+    setPrevInitialValues(initialValues);
+    if (initialValues) {
+      setConfigValues(initialValues);
+    }
+  }
 
   useEffect(() => {
     let active = true;
