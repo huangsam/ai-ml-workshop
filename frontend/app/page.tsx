@@ -6,6 +6,7 @@ import {
   launchJob,
   cancelJob,
   openEventSource,
+  pingServer,
   JobState,
   SsePayload,
   Task,
@@ -27,6 +28,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTheoryOpen, setIsTheoryOpen] = useState(false);
   const [loadedConfig, setLoadedConfig] = useState<Record<string, number> | null>(null);
+  const [apiConnected, setApiConnected] = useState<"connected" | "disconnected" | "checking">(
+    "checking"
+  );
   const esRef = useRef<EventSource | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
 
@@ -38,12 +42,49 @@ export default function Home() {
     }
   }, [selectedTask]);
 
-  // Load task catalogue on mount
+  // Background health check polling loop
   useEffect(() => {
+    let active = true;
+
+    async function checkHealth() {
+      const isAlive = await pingServer();
+      if (!active) return;
+
+      if (isAlive) {
+        setApiConnected("connected");
+        setError((prev) => {
+          if (prev?.includes("Could not reach the ML Workshop API")) {
+            return null;
+          }
+          return prev;
+        });
+      } else {
+        setApiConnected("disconnected");
+        setIsLoading(false);
+        if (tasks.length === 0) {
+          setError("Could not reach the ML Workshop API. Is the backend running?");
+        }
+      }
+    }
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 5000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [tasks.length]);
+
+  // Load task catalogue when API becomes connected
+  useEffect(() => {
+    if (apiConnected !== "connected" || tasks.length > 0) return;
+
+    setIsLoading(true);
     fetchTasks()
       .then((data) => {
         setTasks(data);
-        // Resolve hash immediately on mount to prevent homepage flashing
+        // Resolve hash immediately on mount
         const hash = window.location.hash.slice(1);
         if (hash) {
           const [module, taskName] = hash.split("/");
@@ -55,12 +96,13 @@ export default function Home() {
           }
         }
         setIsLoading(false);
+        setError(null);
       })
       .catch(() => {
         setError("Could not reach the ML Workshop API. Is the backend running?");
         setIsLoading(false);
       });
-  }, []);
+  }, [apiConnected, tasks.length]);
 
   // Listen to hash changes for browser back/forward navigation and deep-linking
   useEffect(() => {
@@ -199,7 +241,12 @@ export default function Home() {
         <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] bg-blue-950/20 rounded-full blur-[80px]" />
       </div>
 
-      <Sidebar tasks={tasks} selected={selectedTask} onSelect={handleTaskSelect} />
+      <Sidebar
+        tasks={tasks}
+        selected={selectedTask}
+        onSelect={handleTaskSelect}
+        apiConnected={apiConnected}
+      />
 
       <main ref={mainRef} className="flex-1 p-8 overflow-y-auto relative z-10">
         {error && (
@@ -476,6 +523,7 @@ export default function Home() {
                     plots={selectedTask.plots}
                     onLoadConfig={setLoadedConfig}
                     selectedTask={selectedTask}
+                    apiConnected={apiConnected}
                   />
                 </div>
               </section>

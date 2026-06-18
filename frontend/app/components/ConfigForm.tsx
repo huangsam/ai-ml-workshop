@@ -23,16 +23,45 @@ interface SchemaProperty {
 export default function ConfigForm({ task, disabled, onSubmit, initialValues }: ConfigFormProps) {
   const [schema, setSchema] = useState<Record<string, SchemaProperty> | null>(null);
   const [configValues, setConfigValues] = useState<Record<string, number>>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string | null>>({});
   const [error, setError] = useState<string | null>(null);
 
   const [prevInitialValues, setPrevInitialValues] = useState<
     Record<string, number> | null | undefined
   >(initialValues);
 
+  const validateField = (key: string, value: number, prop: SchemaProperty): string | null => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return "Value must be a valid number";
+    }
+    if (prop.type === "integer" && value % 1 !== 0) {
+      return "Value must be an integer";
+    }
+    if (prop.minimum !== undefined && value < prop.minimum) {
+      return `Must be ≥ ${prop.minimum}`;
+    }
+    if (prop.maximum !== undefined && value > prop.maximum) {
+      return `Must be ≤ ${prop.maximum}`;
+    }
+    if (prop.exclusiveMinimum !== undefined && value <= prop.exclusiveMinimum) {
+      return `Must be > ${prop.exclusiveMinimum}`;
+    }
+    return null;
+  };
+
   if (initialValues !== prevInitialValues) {
     setPrevInitialValues(initialValues);
     if (initialValues) {
       setConfigValues(initialValues);
+      if (schema) {
+        const newErrors: Record<string, string | null> = { ...validationErrors };
+        Object.entries(schema).forEach(([key, prop]) => {
+          if (initialValues[key] !== undefined) {
+            newErrors[key] = validateField(key, initialValues[key], prop);
+          }
+        });
+        setValidationErrors(newErrors);
+      }
     }
   }
 
@@ -46,16 +75,19 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
 
         // Initialize values with defaults
         const initialValues: Record<string, number> = {};
+        const initialErrors: Record<string, string | null> = {};
         Object.entries(properties).forEach(([key, prop]) => {
+          let val = 0;
           if (prop.default !== undefined) {
-            initialValues[key] = prop.default;
+            val = prop.default;
           } else if (prop.minimum !== undefined && prop.maximum !== undefined) {
-            initialValues[key] = (prop.minimum + prop.maximum) / 2;
-          } else {
-            initialValues[key] = 0;
+            val = (prop.minimum + prop.maximum) / 2;
           }
+          initialValues[key] = val;
+          initialErrors[key] = validateField(key, val, prop);
         });
         setConfigValues(initialValues);
+        setValidationErrors(initialErrors);
       })
       .catch((err) => {
         if (!active) return;
@@ -67,13 +99,17 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
     };
   }, [task]);
 
-  const handleValueChange = (key: string, val: number) => {
-    setConfigValues((prev) => ({ ...prev, [key]: val }));
+  const handleValueChange = (key: string, valStr: string, prop: SchemaProperty) => {
+    const parsed = parseFloat(valStr);
+    setConfigValues((prev) => ({ ...prev, [key]: isNaN(parsed) ? (valStr as any) : parsed }));
+    const err = validateField(key, parsed, prop);
+    setValidationErrors((prev) => ({ ...prev, [key]: err }));
   };
 
   const applyPreset = (presetType: "standard" | "quick" | "thorough") => {
     if (!schema) return;
     const newValues: Record<string, number> = {};
+    const newErrors: Record<string, string | null> = {};
     Object.entries(schema).forEach(([key, prop]) => {
       const min = prop.minimum ?? 0;
       const max = prop.maximum ?? 100;
@@ -124,13 +160,16 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
       if (prop.maximum !== undefined) {
         newValues[key] = Math.min(prop.maximum, newValues[key]);
       }
+      newErrors[key] = validateField(key, newValues[key], prop);
     });
 
     setConfigValues(newValues);
+    setValidationErrors(newErrors);
   };
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (Object.values(validationErrors).some((err) => err !== null)) return;
     onSubmit(configValues);
   }
 
@@ -144,6 +183,7 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
 
   const fields = Object.entries(schema);
   const showPresets = fields.length > 0;
+  const isFormInvalid = Object.values(validationErrors).some((err) => err !== null);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -199,6 +239,7 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
             const hasRange = min !== undefined && max !== undefined;
             const val =
               configValues[key] !== undefined ? configValues[key] : (prop.default ?? min ?? 0);
+            const hasError = !!validationErrors[key];
 
             return (
               <div key={key} className="flex flex-col space-y-2">
@@ -219,10 +260,10 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
                       min={min}
                       max={max}
                       step={isInteger ? "1" : "any"}
-                      value={val}
+                      value={isNaN(val) ? 0 : val}
                       disabled={disabled}
                       className="flex-1 range-slider-input"
-                      onChange={(e) => handleValueChange(key, parseFloat(e.target.value))}
+                      onChange={(e) => handleValueChange(key, e.target.value, prop)}
                     />
                     <input
                       id={key}
@@ -233,8 +274,12 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
                       max={max}
                       value={val}
                       disabled={disabled}
-                      className="w-24 bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-1.5 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50"
-                      onChange={(e) => handleValueChange(key, parseFloat(e.target.value) || 0)}
+                      className={`w-24 bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-1.5 border focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50 ${
+                        hasError
+                          ? "border-red-500/80 focus:ring-red-500/20 focus:border-red-500 text-red-200 bg-red-950/10"
+                          : "border-gray-600 focus:border-indigo-500"
+                      }`}
+                      onChange={(e) => handleValueChange(key, e.target.value, prop)}
                     />
                   </div>
                 ) : (
@@ -248,9 +293,19 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
                     max={max !== undefined ? max : undefined}
                     value={val}
                     disabled={disabled}
-                    className="w-full bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50"
-                    onChange={(e) => handleValueChange(key, parseFloat(e.target.value) || 0)}
+                    className={`w-full bg-gray-700/50 text-gray-100 text-sm rounded px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:opacity-50 ${
+                      hasError
+                        ? "border-red-500/80 focus:ring-red-500/20 focus:border-red-500 text-red-200 bg-red-950/10"
+                        : "border-gray-600 focus:border-indigo-500"
+                    }`}
+                    onChange={(e) => handleValueChange(key, e.target.value, prop)}
                   />
+                )}
+
+                {hasError && (
+                  <span className="text-[10px] text-red-400 font-semibold mt-1 flex items-center gap-1 animate-fade-in">
+                    ⚠️ {validationErrors[key]}
+                  </span>
                 )}
 
                 {prop.description && (
@@ -265,11 +320,11 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
       )}
       <button
         type="submit"
-        disabled={disabled}
+        disabled={disabled || isFormInvalid}
         className={`mt-3 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 text-white text-sm font-medium py-2.5 rounded-lg transition-all duration-300 shadow-lg shadow-indigo-900/20 ${
-          disabled
-            ? "cursor-wait"
-            : "hover:scale-[1.01] hover:shadow-indigo-500/10 active:scale-[0.99]"
+          disabled || isFormInvalid
+            ? "cursor-not-allowed opacity-50"
+            : "hover:scale-[1.01] hover:shadow-indigo-500/10 active:scale-[0.99] cursor-pointer"
         }`}
       >
         {disabled && (

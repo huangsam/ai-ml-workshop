@@ -100,3 +100,16 @@ export async function fetchJobs(module?: string, task?: string): Promise<JobInfo
   if (!res.ok) throw new Error("Failed to fetch jobs list");
   return res.json();
 }
+
+export async function pingServer(): Promise<boolean> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2000);
+  try {
+    const res = await fetch(`${API_BASE}/tasks`, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return res.ok;
+  } catch {
+    clearTimeout(timeoutId);
+    return false;
+  }
+}
