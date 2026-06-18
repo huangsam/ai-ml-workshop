@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { TheoryContent } from "../theory";
+import MathRenderer from "./MathRenderer";
+import "katex/dist/katex.min.css";
 
 interface TheoryModalProps {
   isOpen: boolean;
@@ -130,9 +132,9 @@ export default function TheoryModal({ isOpen, onClose, content }: TheoryModalPro
               <h3 className="text-xs uppercase tracking-widest text-pink-400 font-bold">
                 Mathematical Insights
               </h3>
-              <pre className="p-4 rounded-xl bg-black/45 border border-white/5 text-xs text-gray-300 font-mono overflow-x-auto whitespace-pre leading-relaxed select-all">
-                {content.math}
-              </pre>
+              <div className="p-5 rounded-xl bg-black/45 border border-white/5 text-sm text-gray-200 leading-relaxed overflow-x-auto">
+                <MathRenderer text={content.math} />
+              </div>
             </section>
           )}
 

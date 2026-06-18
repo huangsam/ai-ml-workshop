@@ -28,7 +28,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The sum of the products of the corresponding elements of two sequences of numbers, representing projection and similarity.",
       },
     ],
-    math: "Matrix Multiplication (C = A @ B):\nC[i, j] = sum(k = 0 to N-1, A[i, k] * B[k, j])",
+    math: "Matrix Multiplication ($C = A \\times B$):\n$$C_{i, j} = \\sum_{k=0}^{N-1} A_{i, k} \\cdot B_{k, j}$$",
     whatToObserve: [
       "Observe the difference in execution speed between nested loops and vectorized NumPy operations.",
       "Notice how matrix dimensions must align (inner dimensions must match) for dot products.",
@@ -60,7 +60,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A calculus rule used to compute the derivative of composite functions, enabling step-by-step backpropagation.",
       },
     ],
-    math: "Weight Update Rule:\nW = W - η * (dL / dW)\nwhere:\nη = Learning Rate\ndL/dW = Gradient of the Loss with respect to the weight W",
+    math: "Weight Update Rule:\n$$W \\leftarrow W - \\eta \\cdot \\frac{\\partial L}{\\partial W}$$\nwhere:\n* $\\eta$ = Learning Rate\n* $\\frac{\\partial L}{\\partial W}$ = Gradient of the Loss with respect to weight $W$",
     whatToObserve: [
       "Watch how the training loss decreases steadily over epochs.",
       "Observe the final decision boundary plot: as training progresses, the model separates the binary classes more accurately.",
@@ -91,7 +91,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A lookup table storing Q-values, representing the expected future reward for each state-action pair.",
       },
     ],
-    math: "Q-Value Update (Bellman Equation):\nQ(s, a) = Q(s, a) + α * [ R + γ * max_a' Q(s', a') - Q(s, a) ]\nwhere:\nα = Learning Rate\nγ = Discount Factor (importance of future rewards)\ns' = Next State",
+    math: "Q-Value Update (Bellman Equation):\n$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\left[ R + \\gamma \\max_{a'} Q(s', a') - Q(s, a) \\right]$$\nwhere:\n* $\\alpha$ = Learning Rate\n* $\\gamma$ = Discount Factor (importance of future rewards)\n* $s'$ = Next State",
     whatToObserve: [
       "Observe how the policy map develops arrows pointing toward the goal as training completes.",
       "Notice the path length decreasing as the agent shifts from exploration (random steps) to exploitation (following the Q-table).",
@@ -117,7 +117,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "An activation function that normalizes attention scores into a probability distribution summing to 1.",
       },
     ],
-    math: "Scaled Dot-Product Attention:\nAttention(Q, K, V) = softmax( (Q @ K.T) / sqrt(d_k) ) @ V\nwhere:\nd_k = Dimension of the key vectors",
+    math: "Scaled Dot-Product Attention:\n$$\\text{Attention}(Q, K, V) = \\text{softmax}\\left( \\frac{Q K^T}{\\sqrt{d_k}} \\right) V$$\nwhere:\n* $d_k$ = Dimension of the key/query vectors",
     whatToObserve: [
       "Examine the attention weights matrix heatmap: diagonal entries represent self-focus, while off-diagonals show relations between words.",
       "Notice how changing query dimensions affects attention score magnitudes.",
@@ -143,7 +143,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The vertical distances between the actual data points and the fitted regression line.",
       },
     ],
-    math: "Prediction:\ny_pred = w * x + b\nObjective (Mean Squared Error):\nMSE = (1 / N) * sum( (y_actual - y_pred)^2 )",
+    math: "Prediction:\n$$\\hat{y} = w x + b$$\nObjective (Mean Squared Error):\n$$\\text{MSE} = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$",
     whatToObserve: [
       "Observe the final scatter plot showing how closely the fitted red regression line runs through the noisy data points.",
       "Look at the MSE metric: lower values signify a better line fit.",
@@ -170,7 +170,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The threshold line (typically at probability = 0.5) separating predictions into Class 0 or Class 1.",
       },
     ],
-    math: "Sigmoid Activation:\nσ(z) = 1 / (1 + e^-z)\nwhere:\nz = w * x + b",
+    math: "Sigmoid Activation:\n$$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$\nwhere:\n$$z = w x + b$$",
     whatToObserve: [
       "Examine the confusion matrix: high numbers on the top-left to bottom-right diagonal indicate correct classifications.",
       "Observe how the classification boundary cleanly divides the binary classes.",
@@ -197,7 +197,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "As the number of features grows, distance metrics become less effective because data points appear equidistant.",
       },
     ],
-    math: "Euclidean Distance:\nd(p, q) = sqrt( sum( (p_i - q_i)^2 ) )",
+    math: "Euclidean Distance:\n$$d(p, q) = \\sqrt{\\sum_{i=1}^{d} (p_i - q_i)^2}$$",
     whatToObserve: [
       "Compare accuracy across different values of K in the accuracy vs. K plot.",
       "Notice how a very small K (e.g., K=1) creates complex, jagged decision boundaries, while larger K values create smoother boundaries.",
@@ -224,7 +224,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Cutting back branches of the tree to prevent overfitting and improve generalization.",
       },
     ],
-    math: "Gini Impurity:\nGini = 1 - sum( p_i^2 )\nwhere:\np_i = Probability of an item belonging to class i in the split node",
+    math: "Gini Impurity:\n$$\\text{Gini} = 1 - \\sum_{i=1}^{C} p_i^2$$\nwhere:\n* $p_i$ = Probability of an item belonging to class $i$ in the split node",
     whatToObserve: [
       "Look at the Decision Tree visual diagram: notice how nodes split on features that maximize purity.",
       "Compare training vs. test accuracy: unconstrained trees tend to overfit (100% training accuracy but lower test accuracy).",
@@ -251,7 +251,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Mapping input features into higher-dimensional spaces to make non-linearly separable data linearly separable.",
       },
     ],
-    math: "Linear Decision Hyperplane:\nw * x + b = 0\nMargin Width:\nWidth = 2 / ||w||",
+    math: "Linear Decision Hyperplane:\n$$w \\cdot x + b = 0$$\nMargin Width:\n$$\\text{Width} = \\frac{2}{\\|w\\|}$$",
     whatToObserve: [
       "Observe the support vectors indicated on the SVM decision boundary plot.",
       "Notice how switching from a linear kernel to an RBF (radial basis function) kernel allows the boundary to wrap around complex, non-linear shapes.",
@@ -278,7 +278,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A method of measuring prediction error of bootstrap samples by testing them on trees that did not contain them in training.",
       },
     ],
-    math: "Ensemble Prediction (Majority Vote):\ny_pred = mode( Tree_1(x), Tree_2(x), ..., Tree_B(x) )",
+    math: "Ensemble Prediction (Majority Vote):\n$$\\hat{y} = \\text{mode}\\left( T_1(x), T_2(x), \\dots, T_B(x) \\right)$$\nwhere:\n* $T_b(x)$ = Prediction of the $b$-th decision tree",
     whatToObserve: [
       "Look at the Feature Importance plot: see which features are most heavily relied upon by the ensemble.",
       "Notice that the Random Forest achieves better generalization and test accuracy than a single Decision Tree.",
@@ -305,7 +305,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Plotting inertia against the number of clusters to find the optimal 'K' where the rate of inertia decrease levels off.",
       },
     ],
-    math: "Centroid Update:\nμ_k = (1 / |S_k|) * sum( x_i )\nwhere:\nS_k = Set of points assigned to centroid k",
+    math: "Centroid Update:\n$$\\mu_k = \\frac{1}{|S_k|} \\sum_{x_i \\in S_k} x_i$$\nwhere:\n* $S_k$ = Set of data points assigned to centroid $k$",
     whatToObserve: [
       "Watch the centroids adjust iteratively to align with the density centers of the data points.",
       "Check the Elbow Plot to identify the 'kink' representing the natural number of clusters in the dataset.",
@@ -331,7 +331,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
         definition: "The percentage of total variance captured by each principal component.",
       },
     ],
-    math: "Covariance Matrix (Σ):\nΣ = (1 / N) * X.T @ X\nProjection:\nX_projected = X @ W\nwhere:\nW = top eigenvectors of Σ",
+    math: "Covariance Matrix ($\\Sigma$):\n$$\\Sigma = \\frac{1}{N} X^T X$$\nProjection:\n$$X_{\\text{projected}} = X W$$\nwhere:\n* $W$ = Matrix containing top eigenvectors of $\\Sigma$ as columns",
     whatToObserve: [
       "Observe the 2D projection scatter plot: high-dimensional classes should cluster separately even when compressed.",
       "Check the cumulative variance curve: observe how many components are needed to explain 90%+ of the dataset's variance.",
@@ -358,7 +358,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "L1 (Lasso) and L2 (Ridge) penalties on leaf weights to control tree complexity and prevent overfitting.",
       },
     ],
-    math: "Sequential Model Update:\nF_t(x) = F_{t-1}(x) + η * f_t(x)\nwhere:\nf_t(x) = tree trained to fit residuals/gradients of step t-1",
+    math: "Sequential Model Update:\n$$F_t(x) = F_{t-1}(x) + \\eta f_t(x)$$\nwhere:\n* $f_t(x)$ = Weak learner (tree) trained to fit pseudo-residuals (gradients) of step $t-1$\n* $\\eta$ = Learning rate (shrinkage)",
     whatToObserve: [
       "Examine the feature importances to see which factors drive XGBoost classifications.",
       "Note the high test accuracy compared to standard decision trees: boosting typically yields state-of-the-art results on tabular data.",
@@ -385,7 +385,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "An extension to stochastic gradient descent that computes adaptive learning rates for each parameter based on first and second moments of gradients.",
       },
     ],
-    math: "Cross-Entropy Loss:\nL = - (1 / N) * sum( y_i * log(p_i) + (1 - y_i) * log(1 - p_i) )",
+    math: "Binary Cross-Entropy Loss:\n$$\\mathcal{L} = -\\frac{1}{N} \\sum_{i=1}^{N} \\left[ y_i \\log(p_i) + (1 - y_i) \\log(1 - p_i) \\right]$$\nwhere:\n* $y_i$ = Ground truth label ($0$ or $1$)\n* $p_i$ = Predicted probability",
     whatToObserve: [
       "Observe the training vs. validation loss curve: validation loss should decrease in step with training loss.",
       "Look for divergence: if validation loss begins rising while training loss continues falling, the model is overfitting.",
@@ -412,7 +412,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Rectified Linear Unit function: f(x) = max(0, x), which introduces non-linearities essential for complex pattern recognition.",
       },
     ],
-    math: "ReLU Activation:\nReLU(x) = max(0, x)",
+    math: "Rectified Linear Unit (ReLU):\n$$\\text{ReLU}(x) = \\max(0, x)$$\nOther activations include:\n* $\\text{Sigmoid}(x) = \\frac{1}{1 + e^{-x}}$\n* $\\tanh(x) = \\frac{e^x - e^{-x}}{e^x + e^{-x}}$",
     whatToObserve: [
       "Observe the final accuracy percentage: fully connected networks can perform basic image recognition but struggle with translation invariance.",
       "Notice how increasing the number of hidden units improves initial capacity.",
@@ -438,7 +438,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Averaging embedding vectors across the sequence dimension to compress a variable-length sequence into a fixed-length document vector.",
       },
     ],
-    math: "Embedding Lookup:\nE = EmbeddingTable[token_id]\nAverage Pooling:\nv_doc = (1 / T) * sum( E_t )",
+    math: "Embedding Lookup:\n$$E_t = \\text{EmbeddingTable}[\\text{token\\_id}_t]$$\nAverage Pooling:\n$$v_{\\text{doc}} = \\frac{1}{T} \\sum_{t=1}^{T} E_t$$",
     whatToObserve: [
       "Look at how classification accuracy increases as vocabulary indexing and embeddings stabilize.",
       "Observe the impact of maximum sequence length on classification speed and training throughput.",
@@ -464,7 +464,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The average of the absolute differences between predictions and actual values, representing typical prediction error.",
       },
     ],
-    math: "Lookback Predictor:\ny_t = f( y_{t-1}, y_{t-2}, ..., y_{t-w} )\nMAE = (1 / N) * sum( |y_actual - y_pred| )",
+    math: "Lookback Predictor:\n$$\\hat{y}_t = f(y_{t-1}, y_{t-2}, \\dots, y_{t-w})$$\nMean Absolute Error (MAE):\n$$\\text{MAE} = \\frac{1}{N} \\sum_{i=1}^{N} |y_i - \\hat{y}_i|$$",
     whatToObserve: [
       "Compare the actual time series curve against the model's predicted forecast: look for matching phase and trend amplitudes.",
       "Notice how prediction error tends to accumulate as the forecast horizon extends.",
@@ -491,7 +491,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The bottleneck dimension of the adapters. A smaller rank updates fewer parameters, while a larger rank increases capacity.",
       },
     ],
-    math: "LoRA Parameter Adaptation:\nW_updated = W_frozen + ΔW\nΔW = (α / r) * (B @ A)\nwhere:\nB is of shape (d, r) and A is of shape (r, k) with r << min(d, k)",
+    math: "LoRA Parameter Adaptation:\n$$W_{\\text{updated}} = W_{\\text{frozen}} + \\Delta W$$\n$$\\Delta W = \\frac{\\alpha}{r} (B A)$$\nwhere:\n* $B \\in \\mathbb{R}^{d \\times r}$ and $A \\in \\mathbb{R}^{r \\times k}$ are low-rank adapter matrices\n* $r \\ll \\min(d, k)$ is the rank\n* $\\alpha$ is a constant scaling factor",
     whatToObserve: [
       "Compare trainable parameters: LoRA typically reduces trainable parameter count by 99% compared to full fine-tuning.",
       "Observe that the adapter training loss drops rapidly without disrupting the pre-trained weights.",
@@ -518,7 +518,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The model outputs two values per token: one for its probability of being the start token, and one for the end token.",
       },
     ],
-    math: "Span Probability:\nP(start = i) = softmax( StartLogits_i )\nP(end = j) = softmax( EndLogits_j )",
+    math: "Span Probability:\n$$P(\\text{start} = i) = \\frac{e^{S_i}}{\\sum_{k} e^{S_k}}, \\quad P(\\text{end} = j) = \\frac{e^{E_j}}{\\sum_{k} e^{E_k}}$$\nwhere:\n* $S_i$ = Start logit score for token $i$\n* $E_j$ = End logit score for token $j$",
     whatToObserve: [
       "Observe the loss curve decreasing as the model learns to identify answer spans in text datasets.",
       "Verify that changing the context passage changes the index range predicted by the model.",
@@ -545,7 +545,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Intermediate activations representing spatial patterns detected by filters at different depths.",
       },
     ],
-    math: "2D Convolution:\nS(i, j) = sum_m sum_n ( I(i - m, j - n) * K(m, n) )\nwhere:\nI = Input Image, K = Filter Kernel",
+    math: "2D Convolution:\n$$S(i, j) = \\sum_{m} \\sum_{n} I(i - m, j - n) K(m, n)$$\nwhere:\n* $I$ = Input image matrix\n* $K$ = Filter kernel matrix",
     whatToObserve: [
       "Look at the CNN feature activation maps: early layers show simple shapes and edges, while later layers detect complex combinations.",
       "Observe the confusion matrix to see which shapes (e.g., squares vs. triangles) are most commonly confused by the network.",
@@ -572,7 +572,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The point where the Generator produces perfect representations and the Discriminator can only guess with 50% accuracy.",
       },
     ],
-    math: "Minimax Objective:\nmin_G max_D V(D, G) = E[ log D(x) ] + E[ log(1 - D(G(z))) ]",
+    math: "Minimax Objective:\n$$\\min_{G} \\max_{D} V(D, G) = \\mathbb{E}_{x \\sim p_{\\text{data}}} [\\log D(x)] + \\mathbb{E}_{z \\sim p_{z}} [\\log (1 - D(G(z)))]$$",
     whatToObserve: [
       "Examine the 2D distribution scatter plot: watch how the generated points shift and stretch to match the circular ring shape of the real data.",
       "Watch the Generator and Discriminator loss curves: they fluctuate as the two models try to outperform each other.",
@@ -599,7 +599,7 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Scaling logits during generation to control randomness. Lower temperature produces predictable text; higher temperature produces creative/chaotic text.",
       },
     ],
-    math: "Cell State Update:\nC_t = f_t * C_{t-1} + i_t * tanh( W * [h_{t-1}, x_t] + b )\nwhere:\nf_t = Forget Gate activation\ni_t = Input Gate activation",
+    math: "Cell State Update:\n$$C_t = f_t \\odot C_{t-1} + i_t \\odot \\tanh(W_c [h_{t-1}, x_t] + b_c)$$\nwhere:\n* $f_t$ = Forget gate activation vector\n* $i_t$ = Input gate activation vector\n* $\\odot$ = Element-wise (Hadamard) product",
     whatToObserve: [
       "Read the sampled text outputs generated at completion: note how spelling and syntax coherence improve as loss drops.",
       "Look at the token probability distribution bar chart: see which characters are predicted as most likely next choices given a prompt.",
@@ -626,7 +626,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The scale factor and offset used to map real-valued floats to integer indexes.",
       },
     ],
-    math: "Quantization Mapping:\nq = round( r / S ) + Z\nwhere:\nr = Real float value\nS = Scale factor\nZ = Zero-point integer",
+    math: "Quantization Mapping:\n$$q = \\text{round}\\left( \\frac{r}{S} \\right) + Z$$\nwhere:\n* $r$ = Real float weight/activation value\n* $S$ = Scale factor (positive float)\n* $Z$ = Zero-point (integer offset)",
+
     whatToObserve: [
       "Check the performance bar chart comparing FP32 vs. INT8 models.",
       "Observe that the INT8 quantized model size is ~4x smaller and latency is significantly lower, while accuracy remains almost identical.",
