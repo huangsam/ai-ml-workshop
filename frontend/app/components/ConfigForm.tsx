@@ -8,6 +8,7 @@ interface ConfigFormProps {
   disabled: boolean;
   onSubmit: (config: Record<string, number>) => void;
   initialValues?: Record<string, number> | null;
+  apiConnected?: "connected" | "disconnected" | "checking";
 }
 
 interface SchemaProperty {
@@ -20,7 +21,13 @@ interface SchemaProperty {
   exclusiveMinimum?: number;
 }
 
-export default function ConfigForm({ task, disabled, onSubmit, initialValues }: ConfigFormProps) {
+export default function ConfigForm({
+  task,
+  disabled,
+  onSubmit,
+  initialValues,
+  apiConnected,
+}: ConfigFormProps) {
   const [schema, setSchema] = useState<Record<string, SchemaProperty> | null>(null);
   const [configValues, setConfigValues] = useState<Record<string, number>>({});
   const [validationErrors, setValidationErrors] = useState<Record<string, string | null>>({});
@@ -66,6 +73,7 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
   }
 
   useEffect(() => {
+    if (apiConnected !== "connected") return;
     let active = true;
     fetchTaskSchema(task.module, task.task)
       .then((data) => {
@@ -97,11 +105,14 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
     return () => {
       active = false;
     };
-  }, [task]);
+  }, [task, apiConnected]);
 
   const handleValueChange = (key: string, valStr: string, prop: SchemaProperty) => {
     const parsed = parseFloat(valStr);
-    setConfigValues((prev) => ({ ...prev, [key]: isNaN(parsed) ? (valStr as any) : parsed }));
+    setConfigValues((prev) => ({
+      ...prev,
+      [key]: isNaN(parsed) ? (valStr as unknown as number) : parsed,
+    }));
     const err = validateField(key, parsed, prop);
     setValidationErrors((prev) => ({ ...prev, [key]: err }));
   };
@@ -171,6 +182,14 @@ export default function ConfigForm({ task, disabled, onSubmit, initialValues }: 
     e.preventDefault();
     if (Object.values(validationErrors).some((err) => err !== null)) return;
     onSubmit(configValues);
+  }
+
+  if (apiConnected !== "connected") {
+    return (
+      <p className="text-sm text-red-400/80 italic">
+        Backend server is offline. Start the backend to configure parameters.
+      </p>
+    );
   }
 
   if (error) {

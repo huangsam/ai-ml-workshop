@@ -92,7 +92,7 @@ export default function ProgressPanel({
 
   // Fetch job history for this task
   useEffect(() => {
-    if (!selectedTask) return;
+    if (!selectedTask || apiConnected !== "connected") return;
     fetchJobs(selectedTask.module, selectedTask.task)
       .then((data) => {
         setRecentJobs(data);
@@ -100,7 +100,7 @@ export default function ProgressPanel({
       .catch((err) => {
         console.error("Failed to load run history", err);
       });
-  }, [selectedTask, status]);
+  }, [selectedTask, status, apiConnected]);
 
   // Determine which metrics keys exist across all snapshots for active run
   const metricKeys = Array.from(

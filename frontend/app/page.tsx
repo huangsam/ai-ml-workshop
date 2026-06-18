@@ -80,6 +80,7 @@ export default function Home() {
   useEffect(() => {
     if (apiConnected !== "connected" || tasks.length > 0) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     fetchTasks()
       .then((data) => {
@@ -494,6 +495,7 @@ export default function Home() {
                     disabled={isRunning}
                     onSubmit={handleRun}
                     initialValues={loadedConfig}
+                    apiConnected={apiConnected}
                   />
                 </div>
               </section>
