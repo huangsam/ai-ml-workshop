@@ -200,8 +200,7 @@ def main(hook=None, config=None):
 
     plt.suptitle("PyTorch Dynamic Quantization Performance Benchmarks", fontsize=13, fontweight="bold", y=1.05)
     plt.tight_layout()
-    plt.savefig("quantization_comparison.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("quantization_comparison.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved Quantization comparison visualization.")

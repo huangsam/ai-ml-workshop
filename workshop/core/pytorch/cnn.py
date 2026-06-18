@@ -221,7 +221,7 @@ def main(hook=None, config=None):
 
     plt.suptitle("PyTorch CNN Convolutional Feature Activations", fontsize=14, fontweight="bold")
     plt.tight_layout()
-    plt.savefig("cnn_feature_activations.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("cnn_feature_activations.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     # 2. Confusion Matrix Plot
@@ -251,8 +251,7 @@ def main(hook=None, config=None):
     plt.xticks(range(3), class_labels)
     plt.yticks(range(3), class_labels)
     plt.tight_layout()
-    plt.savefig("cnn_confusion_matrix.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("cnn_confusion_matrix.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved CNN visualizations.")

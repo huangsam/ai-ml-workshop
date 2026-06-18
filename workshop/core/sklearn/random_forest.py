@@ -120,8 +120,7 @@ def main(hook=None, config=None) -> None:
     plt.title("Confusion Matrix - Random Forest (Pipeline Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("random_forest_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'random_forest_confusion_matrix.png'")
+    hook.save_plot("random_forest_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Step 7: Feature importance
     # We must access the model step to get feature importances
@@ -140,8 +139,7 @@ def main(hook=None, config=None) -> None:
         plt.xlabel("Feature Importance")
         plt.title("Top 10 Feature Importances - Random Forest")
         plt.gca().invert_yaxis()  # Highest at top
-        plt.savefig("random_forest_feature_importance.png", dpi=300, bbox_inches="tight")
-        print("Feature importance plot saved as 'random_forest_feature_importance.png'")
+        hook.save_plot("random_forest_feature_importance.png", dpi=300, bbox_inches="tight")
 
     if hook.is_cancelled():
         return

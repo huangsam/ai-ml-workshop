@@ -156,8 +156,7 @@ def main(hook=None, config=None):
     plt.grid(True, axis="y", alpha=0.3)
     plt.ylim(0, 1.0)
     plt.tight_layout()
-    plt.savefig("lstm_token_probabilities.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("lstm_token_probabilities.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved LSTM visualizations.")

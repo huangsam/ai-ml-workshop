@@ -118,8 +118,7 @@ def main(hook=None, config=None) -> None:
     plt.title(f"Confusion Matrix - KNN (Tuned, k={final_model.n_neighbors})")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("knn_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'knn_confusion_matrix.png'")
+    hook.save_plot("knn_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Step 8: Additional analysis - test different k values
     # This shows how accuracy changes with k (overfitting vs underfitting)
@@ -143,8 +142,7 @@ def main(hook=None, config=None) -> None:
     plt.title("KNN Accuracy vs Number of Neighbors")
     plt.grid(True)
     plt.xticks(k_values)
-    plt.savefig("knn_accuracy_vs_k.png", dpi=300, bbox_inches="tight")
-    print("Accuracy vs k plot saved as 'knn_accuracy_vs_k.png'")
+    hook.save_plot("knn_accuracy_vs_k.png", dpi=300, bbox_inches="tight")
 
     best_k = k_values[np.argmax(accuracies)]
     best_accuracy = max(accuracies)

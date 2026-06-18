@@ -50,6 +50,10 @@ class ProgressHook(Protocol):
         """
         ...
 
+    def save_plot(self, fname: str, *args, **kwargs) -> None:
+        """Save/persist a plot depending on the environment context."""
+        ...
+
 
 class NoOpProgressHook:
     """Silent hook used as the default when no hook is provided.
@@ -65,6 +69,9 @@ class NoOpProgressHook:
 
     def is_cancelled(self) -> bool:
         return False
+
+    def save_plot(self, fname: str, *args, **kwargs) -> None:  # noqa: ARG002
+        pass
 
 
 class ConsoleProgressHook:
@@ -98,3 +105,9 @@ class ConsoleProgressHook:
 
     def is_cancelled(self) -> bool:
         return False
+
+    def save_plot(self, fname: str, *args, **kwargs) -> None:
+        import matplotlib.pyplot as plt
+
+        plt.savefig(fname, *args, **kwargs)
+        print(f"   ✓ Saved visualization to {fname}")

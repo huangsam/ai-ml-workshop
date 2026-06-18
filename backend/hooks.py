@@ -39,3 +39,20 @@ class HTTPProgressHook:
         """Check if the job has been cancelled by the user."""
         job = registry.get_job(self._job_id)
         return job is not None and job.get("status") == "CANCELLED"
+
+    def save_plot(self, fname: str, *args, **kwargs) -> None:
+        """Capture the current figure as bytes and save to registry."""
+        import io
+        import os
+
+        import matplotlib.pyplot as plt
+
+        buf = io.BytesIO()
+        if "format" not in kwargs:
+            kwargs["format"] = "png"
+        plt.gcf().savefig(buf, *args, **kwargs)
+        buf.seek(0)
+        image_bytes = buf.getvalue()
+
+        filename = os.path.basename(str(fname))
+        registry.save_job_plot(self._job_id, filename, image_bytes)

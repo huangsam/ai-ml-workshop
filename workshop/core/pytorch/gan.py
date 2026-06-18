@@ -174,7 +174,7 @@ def main(hook=None, config=None):
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("gan_distribution_scatter.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("gan_distribution_scatter.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     # 2. Loss Curves Plot
@@ -187,8 +187,7 @@ def main(hook=None, config=None):
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("gan_loss_curves.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("gan_loss_curves.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved GAN visualizations.")

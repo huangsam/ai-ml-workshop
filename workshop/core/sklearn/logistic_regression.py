@@ -118,8 +118,7 @@ def main(hook=None, config=None) -> None:
     plt.title("Confusion Matrix - Logistic Regression (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("logistic_regression_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'logistic_regression_confusion_matrix.png'")
+    hook.save_plot("logistic_regression_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Step 8: Feature importance
     # Absolute coefficients indicate feature influence

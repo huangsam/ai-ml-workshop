@@ -123,8 +123,7 @@ def main(hook=None, config=None) -> None:
     plt.title("Confusion Matrix - Decision Tree (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("decision_tree_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'decision_tree_confusion_matrix.png'")
+    hook.save_plot("decision_tree_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Feature importance shows which features were most useful
     feature_importance = pd.DataFrame({"feature": X.columns, "importance": final_model.feature_importances_}).sort_values("importance", ascending=False)
@@ -137,8 +136,7 @@ def main(hook=None, config=None) -> None:
     plt.figure(figsize=(20, 10))
     plot_tree(final_model, feature_names=X.columns, class_names=cancer.target_names, filled=True, rounded=True, fontsize=10)
     plt.title("Decision Tree Visualization")
-    plt.savefig("decision_tree_visualization.png", dpi=300, bbox_inches="tight")
-    print("Decision tree visualization saved as 'decision_tree_visualization.png'")
+    hook.save_plot("decision_tree_visualization.png", dpi=300, bbox_inches="tight")
     if hook.is_cancelled():
         return
     hook.update_stage("Complete", 100)

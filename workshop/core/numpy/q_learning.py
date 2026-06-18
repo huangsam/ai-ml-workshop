@@ -186,7 +186,7 @@ def main(hook=None, config=None):
     plt.grid(True, which="both", color="gray", linestyle="-", linewidth=0.5)
     plt.xticks(range(env.size))
     plt.yticks(range(env.size))
-    plt.savefig("q_learning_grid_path.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("q_learning_grid_path.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     # 2. Q-Value Policy Heatmap
@@ -212,8 +212,7 @@ def main(hook=None, config=None):
     plt.title("Learned Policy Map (Arrows show best actions)")
     plt.xticks(range(env.size))
     plt.yticks(range(env.size))
-    plt.savefig("q_learning_policy_map.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("q_learning_policy_map.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved Q-Learning visualizations.")

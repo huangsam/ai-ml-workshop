@@ -360,8 +360,7 @@ def main(hook=None, config=None) -> None:
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("backpropagation_results.png", dpi=150, bbox_inches="tight")
-    print("   ✓ Saved visualization to backpropagation_results.png")
+    hook.save_plot("backpropagation_results.png", dpi=150, bbox_inches="tight")
 
     # 6. Key insights
     print("\n" + "=" * 70)

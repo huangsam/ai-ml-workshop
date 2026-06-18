@@ -106,8 +106,7 @@ def main(hook=None, config=None) -> None:
     plt.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("pca_results.png", dpi=300, bbox_inches="tight")
-    print("PCA visualization saved as 'pca_results.png'")
+    hook.save_plot("pca_results.png", dpi=300, bbox_inches="tight")
 
     # Step 6: Component loadings (feature contributions)
     # Show which original features contribute to each component
@@ -121,8 +120,7 @@ def main(hook=None, config=None) -> None:
     plt.figure(figsize=(8, 6))
     sns.heatmap(loadings, annot=True, cmap="coolwarm", center=0, xticklabels=["PC1", "PC2"], yticklabels=X.columns)
     plt.title("PCA Component Loadings")
-    plt.savefig("pca_loadings.png", dpi=300, bbox_inches="tight")
-    print("Loadings heatmap saved as 'pca_loadings.png'")
+    hook.save_plot("pca_loadings.png", dpi=300, bbox_inches="tight")
 
     # Step 7: Reconstruction error analysis
     # Show how much information is lost with fewer components
@@ -140,8 +138,7 @@ def main(hook=None, config=None) -> None:
     plt.ylabel("Mean Squared Reconstruction Error")
     plt.title("Reconstruction Error vs Number of Components")
     plt.grid(True)
-    plt.savefig("pca_reconstruction_error.png", dpi=300, bbox_inches="tight")
-    print("Reconstruction error plot saved as 'pca_reconstruction_error.png'")
+    hook.save_plot("pca_reconstruction_error.png", dpi=300, bbox_inches="tight")
     if hook.is_cancelled():
         return
     hook.update_stage("Complete", 100)

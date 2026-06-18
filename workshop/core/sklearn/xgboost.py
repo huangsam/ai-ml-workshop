@@ -122,8 +122,7 @@ def main(hook=None, config=None) -> None:
     plt.title("Confusion Matrix - XGBoost (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("xgboost_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'xgboost_confusion_matrix.png'")
+    hook.save_plot("xgboost_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Step 7: Feature importance
     # XGBoost provides built-in feature importance
@@ -141,8 +140,7 @@ def main(hook=None, config=None) -> None:
     plt.xlabel("Feature Importance")
     plt.title("Top 10 Feature Importances - XGBoost")
     plt.gca().invert_yaxis()  # Highest at top
-    plt.savefig("xgboost_feature_importance.png", dpi=300, bbox_inches="tight")
-    print("Feature importance plot saved as 'xgboost_feature_importance.png'")
+    hook.save_plot("xgboost_feature_importance.png", dpi=300, bbox_inches="tight")
     if hook.is_cancelled():
         return
     hook.update_stage("Complete", 100)

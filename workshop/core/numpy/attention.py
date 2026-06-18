@@ -166,8 +166,7 @@ def main(hook=None, config=None):
     plt.xticks(range(sequence_length), [f"Token {i}" for i in range(sequence_length)])
     plt.yticks(range(sequence_length), [f"Token {i}" for i in range(sequence_length)])
     plt.tight_layout()
-    plt.savefig("attention_weights_matrix.png", dpi=150, bbox_inches="tight")
+    hook.save_plot("attention_weights_matrix.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     hook.update_stage("Complete", 100)
-    print("✓ Saved Self-Attention visualizations.")

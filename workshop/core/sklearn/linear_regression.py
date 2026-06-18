@@ -131,8 +131,7 @@ def main(hook=None, config=None) -> None:
     plt.ylabel("Predicted Values")
     plt.title("Actual vs Predicted House Prices (Pipeline Tuned)")
     plt.grid(True)
-    plt.savefig("linear_regression_results.png", dpi=300, bbox_inches="tight")
-    print("Plot saved as 'linear_regression_results.png'")
+    hook.save_plot("linear_regression_results.png", dpi=300, bbox_inches="tight")
     if hook.is_cancelled():
         return
     hook.update_stage("Complete", 100)

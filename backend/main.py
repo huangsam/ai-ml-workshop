@@ -14,16 +14,13 @@ os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import asyncio
-import io
 import json
-import threading
 import traceback
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 
 import matplotlib
-import matplotlib.pyplot as plt
 
 matplotlib.use("Agg")
 
@@ -35,29 +32,6 @@ from backend import registry
 from backend.hooks import HTTPProgressHook
 from backend.models import TASK_CONFIG_MAP
 from backend.tasks import TASK_RUNNER_MAP
-
-_thread_local = threading.local()
-_original_savefig = plt.savefig
-
-
-def _patched_savefig(fname, *args, **kwargs):
-    """Monkey-patch plt.savefig to capture plot bytes in-memory for the current background job."""
-    job_id = getattr(_thread_local, "current_job_id", None)
-    if job_id:
-        buf = io.BytesIO()
-        if "format" not in kwargs:
-            kwargs["format"] = "png"
-        plt.gcf().savefig(buf, *args, **kwargs)
-        buf.seek(0)
-        image_bytes = buf.getvalue()
-
-        filename = os.path.basename(str(fname))
-        registry.save_job_plot(job_id, filename, image_bytes)
-    else:
-        _original_savefig(fname, *args, **kwargs)
-
-
-plt.savefig = _patched_savefig
 
 # Bounded thread pool scaled to the number of system cores (leaving at least 1 core for async loop/OS if possible).
 _NUM_CORES = os.cpu_count() or 2
@@ -209,7 +183,6 @@ async def run_task(module: str, task: str, background_tasks: BackgroundTasks, bo
 
 def _run_in_thread(job_id: str, module: str, task: str, config: dict) -> None:
     """Execute the ML task in the background worker thread pool with clean cancellation check."""
-    _thread_local.current_job_id = job_id
     try:
         runner = TASK_RUNNER_MAP[(module, task)]
         hook = HTTPProgressHook(job_id)
@@ -229,8 +202,9 @@ def _run_in_thread(job_id: str, module: str, task: str, config: dict) -> None:
                 status="FAILED",
                 error=f"{type(exc).__name__}: {exc}\n{traceback.format_exc()}",
             )
-    finally:
-        _thread_local.current_job_id = None
+    except Exception:
+        # Prevent thread crash propagation if runner resolution fails
+        pass
 
 
 @app.post("/cancel/{job_id}")

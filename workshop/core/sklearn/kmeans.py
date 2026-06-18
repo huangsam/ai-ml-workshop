@@ -129,8 +129,7 @@ def main(hook=None, config=None) -> None:
     plt.colorbar(scatter_true)
 
     plt.tight_layout()
-    plt.savefig("kmeans_clustering_results.png", dpi=300, bbox_inches="tight")
-    print("Clustering visualization saved as 'kmeans_clustering_results.png'")
+    hook.save_plot("kmeans_clustering_results.png", dpi=300, bbox_inches="tight")
 
     # Elbow plot for different k values
     k_values = range(1, 11)
@@ -147,8 +146,7 @@ def main(hook=None, config=None) -> None:
     plt.ylabel("Inertia (Within-cluster Sum of Squares)")
     plt.title("Elbow Method for Optimal k")
     plt.grid(True)
-    plt.savefig("kmeans_elbow_plot.png", dpi=300, bbox_inches="tight")
-    print("Elbow plot saved as 'kmeans_elbow_plot.png'")
+    hook.save_plot("kmeans_elbow_plot.png", dpi=300, bbox_inches="tight")
     if hook.is_cancelled():
         return
     hook.update_stage("Complete", 100)

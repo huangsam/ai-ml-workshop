@@ -118,8 +118,7 @@ def main(hook=None, config=None) -> None:
     plt.title("Confusion Matrix - SVM (Tuned)")
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
-    plt.savefig("svm_confusion_matrix.png", dpi=300, bbox_inches="tight")
-    print("Confusion matrix plot saved as 'svm_confusion_matrix.png'")
+    hook.save_plot("svm_confusion_matrix.png", dpi=300, bbox_inches="tight")
 
     # Step 8: Additional analysis - test different kernels
     # Compare kernels using the best C and gamma found
@@ -144,8 +143,7 @@ def main(hook=None, config=None) -> None:
     plt.ylim(0.9, 1.0)  # Focus on high accuracy range
     for i, acc in enumerate(accuracies):
         plt.text(i, acc + 0.001, f"{acc:.4f}", ha="center", va="bottom")
-    plt.savefig("svm_accuracy_vs_kernel.png", dpi=300, bbox_inches="tight")
-    print("Accuracy vs kernel plot saved as 'svm_accuracy_vs_kernel.png'")
+    hook.save_plot("svm_accuracy_vs_kernel.png", dpi=300, bbox_inches="tight")
 
     best_kernel = kernels[np.argmax(accuracies)]
     best_accuracy = max(accuracies)
