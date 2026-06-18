@@ -157,11 +157,24 @@ def _pytorch_quantization(hook: ProgressHook, config: dict[str, Any]) -> None:
     main(hook=hook, config=config)
 
 
+def _numpy_transformer(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.numpy.transformer import main
+
+    main(hook=hook, config=config)
+
+
+def _pytorch_rag(hook: ProgressHook, config: dict[str, Any]) -> None:
+    from workshop.core.pytorch.rag import main
+
+    main(hook=hook, config=config)
+
+
 TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("numpy", "backpropagation"): _numpy_backpropagation,
     ("numpy", "fundamentals"): _numpy_fundamentals,
     ("numpy", "q_learning"): _numpy_q_learning,
     ("numpy", "attention"): _numpy_attention,
+    ("numpy", "transformer"): _numpy_transformer,
     ("sklearn", "linear_regression"): _sklearn_linear_regression,
     ("sklearn", "logistic_regression"): _sklearn_logistic_regression,
     ("sklearn", "knn"): _sklearn_knn,
@@ -181,4 +194,5 @@ TASK_RUNNER_MAP: dict[tuple[str, str], TaskRunner] = {
     ("pytorch", "gan"): _pytorch_gan,
     ("pytorch", "lstm"): _pytorch_lstm,
     ("pytorch", "quantization"): _pytorch_quantization,
+    ("pytorch", "rag"): _pytorch_rag,
 }

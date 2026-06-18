@@ -102,6 +102,17 @@ _TASK_STAGES_MAP = {
     ("pytorch", "gan"): ["Distribution Setup", "Model Initialization", "Adversarial Training", "Sampling", "Visualization", "Complete"],
     ("pytorch", "lstm"): ["Text Tokenization", "Model Setup", "Training", "Sampling Text", "Visualization", "Complete"],
     ("pytorch", "quantization"): ["Baseline Evaluation", "Dynamic Quantization", "Quantized Evaluation", "Metrics Comparison", "Visualization", "Complete"],
+    ("numpy", "transformer"): ["Tokenization & Setup", "Embeddings & PE", "Training Loop", "Text Generation", "Visualization", "Complete"],
+    ("pytorch", "rag"): [
+        "Loading Models",
+        "Encoding Documents",
+        "Processing Query",
+        "Retrieval & Search",
+        "Generation Without Context",
+        "Generation With Context",
+        "Visualization",
+        "Complete",
+    ],
 }
 
 # Dictionary mapping tasks to their expected plot filenames
@@ -109,6 +120,7 @@ _TASK_PLOTS_MAP = {
     ("numpy", "backpropagation"): ["backpropagation_results.png"],
     ("numpy", "q_learning"): ["q_learning_grid_path.png", "q_learning_policy_map.png"],
     ("numpy", "attention"): ["attention_weights_matrix.png"],
+    ("numpy", "transformer"): ["transformer_attention_heads.png"],
     ("sklearn", "linear_regression"): ["linear_regression_results.png"],
     ("sklearn", "logistic_regression"): ["logistic_regression_confusion_matrix.png"],
     ("sklearn", "knn"): ["knn_confusion_matrix.png", "knn_accuracy_vs_k.png"],
@@ -122,6 +134,7 @@ _TASK_PLOTS_MAP = {
     ("pytorch", "gan"): ["gan_distribution_scatter.png", "gan_loss_curves.png"],
     ("pytorch", "lstm"): ["lstm_token_probabilities.png"],
     ("pytorch", "quantization"): ["quantization_comparison.png"],
+    ("pytorch", "rag"): ["rag_similarity_scores.png", "rag_embedding_space.png"],
 }
 
 # Catalogue mapping incorporating dynamic stages and plots lists

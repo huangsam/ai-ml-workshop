@@ -166,6 +166,20 @@ class QuantizationConfig(BaseModel):
     num_samples: int = Field(default=500, ge=10, le=2000, description="Evaluation samples")
 
 
+class TransformerScratchConfig(BaseModel):
+    epochs: int = Field(default=120, ge=10, le=500, description="Training epochs")
+    learning_rate: float = Field(default=0.01, gt=0.0, le=1.0, description="Learning rate")
+    embedding_dim: int = Field(default=16, ge=8, le=64, description="Embedding vector size (must be divisible by heads)")
+    num_heads: int = Field(default=2, ge=1, le=4, description="Number of attention heads")
+    hidden_dim: int = Field(default=32, ge=8, le=128, description="Feedforward network hidden dimension")
+
+
+class RAGConfig(BaseModel):
+    query_index: int = Field(default=1, ge=1, le=5, description="Query index (1: Antigravity, 2: Workshop, 3: Project Triton, 4: Babbage, 5: Arthur Samuel)")
+    top_k: int = Field(default=2, ge=1, le=5, description="Number of documents to retrieve")
+    similarity_threshold: float = Field(default=0.0, ge=0.0, le=1.0, description="Minimum cosine similarity for retrieval")
+
+
 # ---------------------------------------------------------------------------
 # Registry: maps (module, task) -> config class
 # ---------------------------------------------------------------------------
@@ -175,6 +189,7 @@ TASK_CONFIG_MAP: dict[tuple[str, str], type[BaseModel]] = {
     ("numpy", "fundamentals"): NumpyFundamentalsConfig,
     ("numpy", "q_learning"): QLearningConfig,
     ("numpy", "attention"): SelfAttentionConfig,
+    ("numpy", "transformer"): TransformerScratchConfig,
     ("sklearn", "linear_regression"): LinearRegressionConfig,
     ("sklearn", "logistic_regression"): LogisticRegressionConfig,
     ("sklearn", "knn"): KNNConfig,
@@ -194,4 +209,5 @@ TASK_CONFIG_MAP: dict[tuple[str, str], type[BaseModel]] = {
     ("pytorch", "gan"): GANConfig,
     ("pytorch", "lstm"): LSTMConfig,
     ("pytorch", "quantization"): QuantizationConfig,
+    ("pytorch", "rag"): RAGConfig,
 }

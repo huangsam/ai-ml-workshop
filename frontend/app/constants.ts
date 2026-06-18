@@ -11,6 +11,7 @@ export const TASK_LABELS: Record<string, string> = {
   fundamentals: "Fundamentals",
   q_learning: "Q-Learning",
   attention: "Self-Attention",
+  transformer: "Transformer from Scratch",
   linear_regression: "Linear Regression",
   logistic_regression: "Logistic Regression",
   knn: "K-Nearest Neighbors",
@@ -30,4 +31,5 @@ export const TASK_LABELS: Record<string, string> = {
   gan: "Generative Adversarial Network",
   lstm: "LSTM Text Generation",
   quantization: "Model Quantization",
+  rag: "Retrieval-Augmented Generation",
 };
