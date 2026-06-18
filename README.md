@@ -41,7 +41,7 @@ You can also run, configure, and monitor all workshop tasks using the real-time 
 1. **Start the FastAPI Backend**:
 
    ```bash
-   uv run uvicorn backend.main:app --reload --port 8000
+   uv run workshop server
    ```
 
 2. **Start the Next.js Frontend**:

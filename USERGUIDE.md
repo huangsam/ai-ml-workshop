@@ -109,7 +109,7 @@ Alternatively, you can run, configure, and monitor all of these tasks visually t
 ### 1. Start the FastAPI Backend
 
 ```bash
-uv run uvicorn backend.main:app --reload --port 8000
+uv run workshop server
 ```
 
 ### 2. Start the Next.js Frontend

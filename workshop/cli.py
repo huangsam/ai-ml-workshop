@@ -241,5 +241,20 @@ def transformer():
     main(hook=_hook(6))
 
 
+@cli.command()
+@click.option("--port", default=8000, help="Port to run the server on.")
+@click.option("--reload/--no-reload", default=True, help="Enable or disable auto-reload.")
+def server(port, reload):
+    """Start the FastAPI backend server with auto-reload."""
+    import os
+
+    import uvicorn
+
+    # Suppress the resource tracker warnings in this process and all spawned subprocesses
+    os.environ["PYTHONWARNINGS"] = "ignore:resource_tracker:UserWarning"
+
+    uvicorn.run("backend.main:app", host="127.0.0.1", port=port, reload=reload)
+
+
 if __name__ == "__main__":
     cli()

@@ -13,21 +13,18 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-import warnings
+import matplotlib
 
-# Suppress noisy multiprocessing resource tracker warnings on shutdown (common on macOS)
-warnings.filterwarnings("ignore", category=UserWarning, module="multiprocessing.resource_tracker")
+# Must be configured before importing matplotlib-dependent modules
+matplotlib.use("Agg")
 
 import asyncio
 import json
 import traceback
 import uuid
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-
-import matplotlib
-
-matplotlib.use("Agg")
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,6 +34,9 @@ from backend import registry
 from backend.hooks import HTTPProgressHook
 from backend.models import TASK_CONFIG_MAP
 from backend.tasks import TASK_RUNNER_MAP
+
+# Suppress noisy multiprocessing resource tracker warnings on shutdown (common on macOS)
+warnings.filterwarnings("ignore", category=UserWarning, module="multiprocessing.resource_tracker")
 
 # Bounded thread pool scaled to the number of system cores (leaving at least 1 core for async loop/OS if possible).
 _NUM_CORES = os.cpu_count() or 2
