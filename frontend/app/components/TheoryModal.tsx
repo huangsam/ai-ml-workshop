@@ -106,6 +106,21 @@ export default function TheoryModal({ isOpen, onClose, content }: TheoryModalPro
             <p className="text-gray-300 text-sm leading-relaxed text-balance">{content.overview}</p>
           </section>
 
+          {/* Analogy */}
+          {content.analogy && (
+            <section className="space-y-2">
+              <h3 className="text-xs uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" />
+                </svg>
+                Think of it like...
+              </h3>
+              <p className="text-sm text-amber-100/80 leading-relaxed italic bg-amber-500/[0.06] border border-amber-500/20 rounded-xl px-4 py-3">
+                {content.analogy}
+              </p>
+            </section>
+          )}
+
           {/* Key Terminology */}
           <section className="space-y-3">
             <h3 className="text-xs uppercase tracking-widest text-purple-400 font-bold">

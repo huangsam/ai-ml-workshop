@@ -1,6 +1,7 @@
 export interface TheoryContent {
   title: string;
   overview: string;
+  analogy?: string;
   concepts: { term: string; definition: string }[];
   math?: string;
   whatToObserve: string[];
@@ -28,6 +29,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The sum of the products of the corresponding elements of two sequences of numbers, representing projection and similarity.",
       },
     ],
+    analogy:
+      "Imagine a factory assembly line. Each worker (row in A) reads from a parts shelf (columns in B) and combines what they find into a finished product (cell in C). Vectorization means the entire factory runs at once — no waiting for one worker to finish before the next starts.",
     math: "Matrix Multiplication ($C = A \\times B$):\n$$C_{i, j} = \\sum_{k=0}^{N-1} A_{i, k} \\cdot B_{k, j}$$",
     whatToObserve: [
       "Observe the difference in execution speed between nested loops and vectorized NumPy operations.",
@@ -60,6 +63,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A calculus rule used to compute the derivative of composite functions, enabling step-by-step backpropagation.",
       },
     ],
+    analogy:
+      "Think of a chef adjusting a recipe after tasting the dish. The 'loss' is how bad it tastes. Backprop is the chef working backwards — too salty overall? Figure out which step added the most salt, and turn it down a little. Repeat after every meal until it's perfect.",
     math: "Weight Update Rule:\n$$W \\leftarrow W - \\eta \\cdot \\frac{\\partial L}{\\partial W}$$\nwhere:\n* $\\eta$ = Learning Rate\n* $\\frac{\\partial L}{\\partial W}$ = Gradient of the Loss with respect to weight $W$",
     whatToObserve: [
       "Watch how the training loss decreases steadily over epochs.",
@@ -91,6 +96,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A lookup table storing Q-values, representing the expected future reward for each state-action pair.",
       },
     ],
+    analogy:
+      "Imagine a rat in a maze that earns a gold star for reaching the cheese. At first it wanders randomly. Every time it finds a good path, it mentally upgrades its 'rating' for that corridor. Over hundreds of runs, it builds a complete mental map of which direction is worth taking from every junction — no map needed upfront.",
     math: "Q-Value Update (Bellman Equation):\n$$Q(s, a) \\leftarrow Q(s, a) + \\alpha \\left[ R + \\gamma \\max_{a'} Q(s', a') - Q(s, a) \\right]$$\nwhere:\n* $\\alpha$ = Learning Rate\n* $\\gamma$ = Discount Factor (importance of future rewards)\n* $s'$ = Next State",
     whatToObserve: [
       "Observe how the policy map develops arrows pointing toward the goal as training completes.",
@@ -117,6 +124,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "An activation function that normalizes attention scores into a probability distribution summing to 1.",
       },
     ],
+    analogy:
+      "Imagine you're in a meeting and someone says 'the bank was steep.' Your brain immediately scans back through the conversation — were we talking about rivers or finance? Every word you've heard becomes a 'witness' you silently poll, weighted by how relevant they are. Self-attention is that mental scan happening simultaneously for every word in the sentence.",
     math: "Scaled Dot-Product Attention:\n$$\\text{Attention}(Q, K, V) = \\text{softmax}\\left( \\frac{Q K^T}{\\sqrt{d_k}} \\right) V$$\nwhere:\n* $d_k$ = Dimension of the key/query vectors",
     whatToObserve: [
       "Examine the attention weights matrix heatmap: diagonal entries represent self-focus, while off-diagonals show relations between words.",
@@ -143,6 +152,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The vertical distances between the actual data points and the fitted regression line.",
       },
     ],
+    analogy:
+      "Think of stretching a rubber band through a cloud of dots on graph paper. You want to position it so it runs as close as possible to all the dots at once. The rubber band is your line (y = wx + b), and the MSE measures how far the dots are from the band on average.",
     math: "Prediction:\n$$\\hat{y} = w x + b$$\nObjective (Mean Squared Error):\n$$\\text{MSE} = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2$$",
     whatToObserve: [
       "Observe the final scatter plot showing how closely the fitted red regression line runs through the noisy data points.",
@@ -170,6 +181,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The threshold line (typically at probability = 0.5) separating predictions into Class 0 or Class 1.",
       },
     ],
+    analogy:
+      "Logistic regression is like a spam filter's confidence dial. It takes any raw score — no matter how extreme — and squishes it into a probability between 0 and 1. Above 0.5 and the email goes to spam. The sigmoid is the squishing mechanism.",
     math: "Sigmoid Activation:\n$$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$\nwhere:\n$$z = w x + b$$",
     whatToObserve: [
       "Examine the confusion matrix: high numbers on the top-left to bottom-right diagonal indicate correct classifications.",
@@ -197,6 +210,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "As the number of features grows, distance metrics become less effective because data points appear equidistant.",
       },
     ],
+    analogy:
+      "You've moved to a new city and want restaurant recommendations. Instead of reading reviews, you find the 5 people who have the most similar taste history to yours and ask what they liked. KNN does the same thing — but 'nearby' means similar feature values, not physical proximity.",
     math: "Euclidean Distance:\n$$d(p, q) = \\sqrt{\\sum_{i=1}^{d} (p_i - q_i)^2}$$",
     whatToObserve: [
       "Compare accuracy across different values of K in the accuracy vs. K plot.",
@@ -224,6 +239,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Cutting back branches of the tree to prevent overfitting and improve generalization.",
       },
     ],
+    analogy:
+      "A decision tree plays a game of 20 Questions. At each step it asks the single question that most cleanly divides what's left — 'Is it an animal?' before 'Does it have spots?' Gini impurity measures how 'mixed' the remaining pile is. A perfect split leaves one pile of all cats and another of all dogs — zero impurity.",
     math: "Gini Impurity:\n$$\\text{Gini} = 1 - \\sum_{i=1}^{C} p_i^2$$\nwhere:\n* $p_i$ = Probability of an item belonging to class $i$ in the split node",
     whatToObserve: [
       "Look at the Decision Tree visual diagram: notice how nodes split on features that maximize purity.",
@@ -251,6 +268,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Mapping input features into higher-dimensional spaces to make non-linearly separable data linearly separable.",
       },
     ],
+    analogy:
+      "Imagine trying to separate red and blue marbles on a table by placing a ruler between them. SVM finds the ruler position that leaves the biggest possible gap on each side. The marbles touching the ruler's exclusion zone are the 'support vectors' — they're the only ones that matter for deciding where the ruler goes.",
     math: "Linear Decision Hyperplane:\n$$w \\cdot x + b = 0$$\nMargin Width:\n$$\\text{Width} = \\frac{2}{\\|w\\|}$$",
     whatToObserve: [
       "Observe the support vectors indicated on the SVM decision boundary plot.",
@@ -278,6 +297,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "A method of measuring prediction error of bootstrap samples by testing them on trees that did not contain them in training.",
       },
     ],
+    analogy:
+      "Instead of trusting one doctor's diagnosis, you get a second opinion — then a third, fourth, and hundredth. Each doctor (decision tree) was trained on a slightly different set of patient records. The final diagnosis is a majority vote. No single doctor is perfect, but together they're much harder to fool.",
     math: "Ensemble Prediction (Majority Vote):\n$$\\hat{y} = \\text{mode}\\left( T_1(x), T_2(x), \\dots, T_B(x) \\right)$$\nwhere:\n* $T_b(x)$ = Prediction of the $b$-th decision tree",
     whatToObserve: [
       "Look at the Feature Importance plot: see which features are most heavily relied upon by the ensemble.",
@@ -305,6 +326,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Plotting inertia against the number of clusters to find the optimal 'K' where the rate of inertia decrease levels off.",
       },
     ],
+    analogy:
+      "Imagine sorting a bag of mixed Lego bricks by color, but you can't look at them directly — only measure distances. You guess three pile locations, assign each brick to its nearest pile, then move each pile center to the average position of its bricks. Repeat until no brick switches piles. That's K-Means.",
     math: "Centroid Update:\n$$\\mu_k = \\frac{1}{|S_k|} \\sum_{x_i \\in S_k} x_i$$\nwhere:\n* $S_k$ = Set of data points assigned to centroid $k$",
     whatToObserve: [
       "Watch the centroids adjust iteratively to align with the density centers of the data points.",
@@ -331,6 +354,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
         definition: "The percentage of total variance captured by each principal component.",
       },
     ],
+    analogy:
+      "You have a 3D sculpture and need to photograph it in 2D. PCA finds the single angle that captures the most detail — the view where the sculpture looks the least 'squished'. Each additional principal component is the next best angle, perpendicular to the first.",
     math: "Covariance Matrix ($\\Sigma$):\n$$\\Sigma = \\frac{1}{N} X^T X$$\nProjection:\n$$X_{\\text{projected}} = X W$$\nwhere:\n* $W$ = Matrix containing top eigenvectors of $\\Sigma$ as columns",
     whatToObserve: [
       "Observe the 2D projection scatter plot: high-dimensional classes should cluster separately even when compressed.",
@@ -358,6 +383,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "L1 (Lasso) and L2 (Ridge) penalties on leaf weights to control tree complexity and prevent overfitting.",
       },
     ],
+    analogy:
+      "Think of a team of junior analysts where each one is hired specifically to fix the mistakes of the person before them. Analyst 1 makes a rough prediction. Analyst 2 only looks at where Analyst 1 was wrong. Analyst 3 fixes what Analyst 2 missed. The final answer is everyone's corrections stacked on top of each other.",
     math: "Sequential Model Update:\n$$F_t(x) = F_{t-1}(x) + \\eta f_t(x)$$\nwhere:\n* $f_t(x)$ = Weak learner (tree) trained to fit pseudo-residuals (gradients) of step $t-1$\n* $\\eta$ = Learning rate (shrinkage)",
     whatToObserve: [
       "Examine the feature importances to see which factors drive XGBoost classifications.",
@@ -385,6 +412,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "An extension to stochastic gradient descent that computes adaptive learning rates for each parameter based on first and second moments of gradients.",
       },
     ],
+    analogy:
+      "The network is a student being graded on confidence. Saying '90% sure it's a cat' when it's actually a dog gets heavily penalized. Saying '55% sure it's a cat' when it's a dog is bad, but not as catastrophic. Cross-entropy rewards accurate confidence, not just correct guesses.",
     math: "Binary Cross-Entropy Loss:\n$$\\mathcal{L} = -\\frac{1}{N} \\sum_{i=1}^{N} \\left[ y_i \\log(p_i) + (1 - y_i) \\log(1 - p_i) \\right]$$\nwhere:\n* $y_i$ = Ground truth label ($0$ or $1$)\n* $p_i$ = Predicted probability",
     whatToObserve: [
       "Observe the training vs. validation loss curve: validation loss should decrease in step with training loss.",
@@ -412,6 +441,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Rectified Linear Unit function: f(x) = max(0, x), which introduces non-linearities essential for complex pattern recognition.",
       },
     ],
+    analogy:
+      "ReLU is a bouncer at a club. Positive signals get in; anything zero or below gets turned away. Without this gating, all the layers would just be one big linear equation and the network couldn't learn anything curved or complex. The bouncer creates the non-linearity that makes deep learning powerful.",
     math: "Rectified Linear Unit (ReLU):\n$$\\text{ReLU}(x) = \\max(0, x)$$\nOther activations include:\n* $\\text{Sigmoid}(x) = \\frac{1}{1 + e^{-x}}$\n* $\\tanh(x) = \\frac{e^x - e^{-x}}{e^x + e^{-x}}$",
     whatToObserve: [
       "Observe the final accuracy percentage: fully connected networks can perform basic image recognition but struggle with translation invariance.",
@@ -438,6 +469,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Averaging embedding vectors across the sequence dimension to compress a variable-length sequence into a fixed-length document vector.",
       },
     ],
+    analogy:
+      "Imagine words as cities on a map, where meaning determines geography. 'King' and 'Queen' are in the same neighborhood. 'Happy' and 'Joyful' are next-door neighbors. 'Bank' (money) and 'Bank' (river) are on opposite sides of town. The embedding layer learns this map automatically from examples.",
     math: "Embedding Lookup:\n$$E_t = \\text{EmbeddingTable}[\\text{token\\_id}_t]$$\nAverage Pooling:\n$$v_{\\text{doc}} = \\frac{1}{T} \\sum_{t=1}^{T} E_t$$",
     whatToObserve: [
       "Look at how classification accuracy increases as vocabulary indexing and embeddings stabilize.",
@@ -464,6 +497,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The average of the absolute differences between predictions and actual values, representing typical prediction error.",
       },
     ],
+    analogy:
+      "A surfer reads the ocean by watching the last several waves — their height, timing, and rhythm — to anticipate the next one. Time series forecasting does the same: the model studies the past W steps of a signal and learns which patterns reliably predict what comes next.",
     math: "Lookback Predictor:\n$$\\hat{y}_t = f(y_{t-1}, y_{t-2}, \\dots, y_{t-w})$$\nMean Absolute Error (MAE):\n$$\\text{MAE} = \\frac{1}{N} \\sum_{i=1}^{N} |y_i - \\hat{y}_i|$$",
     whatToObserve: [
       "Compare the actual time series curve against the model's predicted forecast: look for matching phase and trend amplitudes.",
@@ -491,6 +526,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The bottleneck dimension of the adapters. A smaller rank updates fewer parameters, while a larger rank increases capacity.",
       },
     ],
+    analogy:
+      "Instead of replacing your camera lens to shoot in a new style, you snap a thin corrective filter onto the front. The original lens (pre-trained weights) stays untouched and continues working perfectly. You only train the tiny filter (ΔW) for your specific task. When you're done, peel it off and the camera is back to stock.",
     math: "LoRA Parameter Adaptation:\n$$W_{\\text{updated}} = W_{\\text{frozen}} + \\Delta W$$\n$$\\Delta W = \\frac{\\alpha}{r} (B A)$$\nwhere:\n* $B \\in \\mathbb{R}^{d \\times r}$ and $A \\in \\mathbb{R}^{r \\times k}$ are low-rank adapter matrices\n* $r \\ll \\min(d, k)$ is the rank\n* $\\alpha$ is a constant scaling factor",
     whatToObserve: [
       "Compare trainable parameters: LoRA typically reduces trainable parameter count by 99% compared to full fine-tuning.",
@@ -518,6 +555,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The model outputs two values per token: one for its probability of being the start token, and one for the end token.",
       },
     ],
+    analogy:
+      "The model is like a highlighter, not a writer. Given a paragraph and a question, it doesn't compose an answer — it reads every word and asks 'is this where the answer starts?' and 'is this where the answer ends?', then highlights the winning span. All the knowledge is already in the passage; the model just learns to point.",
     math: "Span Probability:\n$$P(\\text{start} = i) = \\frac{e^{S_i}}{\\sum_{k} e^{S_k}}, \\quad P(\\text{end} = j) = \\frac{e^{E_j}}{\\sum_{k} e^{E_k}}$$\nwhere:\n* $S_i$ = Start logit score for token $i$\n* $E_j$ = End logit score for token $j$",
     whatToObserve: [
       "Observe the loss curve decreasing as the model learns to identify answer spans in text datasets.",
@@ -545,6 +584,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Intermediate activations representing spatial patterns detected by filters at different depths.",
       },
     ],
+    analogy:
+      "Think of sliding a small flashlight beam across a dark photograph in a grid pattern. At each position, the flashlight (filter) checks if a specific pattern — an edge, a curve, a corner — is present. The brighter the response, the stronger the match. Stacking dozens of different flashlights builds a full description of what's in the image.",
     math: "2D Convolution:\n$$S(i, j) = \\sum_{m} \\sum_{n} I(i - m, j - n) K(m, n)$$\nwhere:\n* $I$ = Input image matrix\n* $K$ = Filter kernel matrix",
     whatToObserve: [
       "Look at the CNN feature activation maps: early layers show simple shapes and edges, while later layers detect complex combinations.",
@@ -572,6 +613,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The point where the Generator produces perfect representations and the Discriminator can only guess with 50% accuracy.",
       },
     ],
+    analogy:
+      "A GAN is a forger locked in an arms race with an art detective. The forger (Generator) gets better at faking Picassos; the detective (Discriminator) gets better at spotting fakes. Neither can rest — every improvement by one forces an upgrade from the other. Training ends when the forger is so good the detective can only guess randomly.",
     math: "Minimax Objective:\n$$\\min_{G} \\max_{D} V(D, G) = \\mathbb{E}_{x \\sim p_{\\text{data}}} [\\log D(x)] + \\mathbb{E}_{z \\sim p_{z}} [\\log (1 - D(G(z)))]$$",
     whatToObserve: [
       "Examine the 2D distribution scatter plot: watch how the generated points shift and stretch to match the circular ring shape of the real data.",
@@ -599,6 +642,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "Scaling logits during generation to control randomness. Lower temperature produces predictable text; higher temperature produces creative/chaotic text.",
       },
     ],
+    analogy:
+      "Reading a novel with a sticky-note bookmark. As you turn pages, you add notes for important plot points and cross out ones that are no longer relevant. The LSTM's cell state is that bookmark — the forget gate decides what to cross out, the input gate decides what new note to add, and the output gate decides which notes to actually use right now.",
     math: "Cell State Update:\n$$C_t = f_t \\odot C_{t-1} + i_t \\odot \\tanh(W_c [h_{t-1}, x_t] + b_c)$$\nwhere:\n* $f_t$ = Forget gate activation vector\n* $i_t$ = Input gate activation vector\n* $\\odot$ = Element-wise (Hadamard) product",
     whatToObserve: [
       "Read the sampled text outputs generated at completion: note how spelling and syntax coherence improve as loss drops.",
@@ -626,6 +671,8 @@ export const THEORY_DATA: Record<string, TheoryContent> = {
           "The scale factor and offset used to map real-valued floats to integer indexes.",
       },
     ],
+    analogy:
+      "A GPS coordinate stored to 8 decimal places is ultra-precise but takes up lots of space. Round it to 2 decimal places and you lose almost no navigational accuracy, but the file shrinks dramatically. Quantization does the same to neural network weights — trading a tiny sliver of precision for 4× smaller models and much faster inference.",
     math: "Quantization Mapping:\n$$q = \\text{round}\\left( \\frac{r}{S} \\right) + Z$$\nwhere:\n* $r$ = Real float weight/activation value\n* $S$ = Scale factor (positive float)\n* $Z$ = Zero-point (integer offset)",
 
     whatToObserve: [
