@@ -11,6 +11,7 @@ import {
   SsePayload,
   Task,
 } from "./api";
+import { Shuffle, Info, Sliders, TrendingUp, FlaskConical, BarChart3, Zap } from "lucide-react";
 import { TASK_LABELS } from "./constants";
 import Sidebar from "./components/Sidebar";
 import ConfigForm from "./components/ConfigForm";
@@ -291,16 +292,7 @@ export default function Home() {
                   module: "numpy",
                   description:
                     "Build neural networks from scratch using only NumPy. Understand backpropagation, gradient descent, and matrix operations at a deep level.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                      />
-                    </svg>
-                  ),
+                  icon: FlaskConical,
                   gradient: "from-blue-500 to-cyan-500",
                 },
                 {
@@ -308,16 +300,7 @@ export default function Home() {
                   module: "sklearn",
                   description:
                     "Master scikit-learn with algorithms like SVM, Random Forest, XGBoost, and K-Means. Learn feature engineering, model evaluation, and hyperparameter tuning.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                      />
-                    </svg>
-                  ),
+                  icon: BarChart3,
                   gradient: "from-green-500 to-emerald-500",
                 },
                 {
@@ -325,16 +308,7 @@ export default function Home() {
                   module: "pytorch",
                   description:
                     "Build and train neural networks for image classification, text processing, time series forecasting, and question answering.",
-                  icon: (
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  ),
+                  icon: Zap,
                   gradient: "from-purple-500 to-pink-500",
                 },
               ].map((card, idx) => {
@@ -349,7 +323,7 @@ export default function Home() {
                       <div
                         className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-4 shadow-lg`}
                       >
-                        {card.icon}
+                        <card.icon className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
                         {card.title}
@@ -434,9 +408,10 @@ export default function Home() {
                       handleTaskSelect(tasks[randomIdx]);
                     }
                   }}
-                  className="mt-3 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white rounded-full transition-all duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-[0.97] cursor-pointer"
+                  className="mt-3 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white rounded-full transition-all duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-[0.97] cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  🎲 Surprise Me!
+                  <Shuffle className="w-3.5 h-3.5 animate-pulse" />
+                  <span>Surprise Me!</span>
                 </button>
               </div>
             </div>
@@ -459,34 +434,15 @@ export default function Home() {
                     {TASK_LABELS[selectedTask.task] ?? selectedTask.task}
                   </h2>
                   <div className="w-6 h-6 rounded-full bg-white/5 group-hover:bg-indigo-500/15 border border-white/5 group-hover:border-indigo-500/30 flex items-center justify-center text-gray-400 group-hover:text-indigo-400 transition-all duration-300 shadow-sm">
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <Info className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
 
               <section>
                 <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                    />
-                  </svg>
-                  Configuration
+                  <Sliders className="w-5 h-5 text-indigo-400" />
+                  <span>Configuration</span>
                 </h3>
                 <div className="glass-panel rounded-xl p-6">
                   <ConfigForm
@@ -505,15 +461,8 @@ export default function Home() {
             <div className="split:col-span-7 space-y-6">
               <section>
                 <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                  Progress & Metrics
+                  <TrendingUp className="w-5 h-5 text-indigo-400" />
+                  <span>Progress & Metrics</span>
                 </h3>
                 <div className="glass-panel rounded-xl p-6">
                   <ProgressPanel

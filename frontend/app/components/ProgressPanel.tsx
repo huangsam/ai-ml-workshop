@@ -1,6 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  Square,
+  TrendingUp,
+  Sparkles,
+  History,
+  Scale,
+  Activity,
+  BarChart3,
+  Maximize2,
+  RefreshCw,
+  AlertTriangle,
+} from "lucide-react";
 import { JobState, API_BASE, JobInfo, fetchJobs, Task } from "../api";
 import {
   LineChart,
@@ -168,9 +180,10 @@ export default function ProgressPanel({
             {onCancel && (status === "RUNNING" || status === "PENDING") && (
               <button
                 onClick={onCancel}
-                className="px-3 py-1.5 bg-red-900/40 hover:bg-red-800/60 border border-red-700/50 text-xs font-semibold text-red-200 rounded-lg transition-all duration-300 cursor-pointer shadow-lg shadow-red-900/10"
+                className="px-3 py-1.5 bg-red-900/40 hover:bg-red-800/60 border border-red-700/50 text-xs font-semibold text-red-200 rounded-lg transition-all duration-300 cursor-pointer shadow-lg shadow-red-900/10 flex items-center gap-1.5"
               >
-                ⏹ Cancel Task
+                <Square className="w-3 h-3 fill-current" />
+                <span>Cancel Task</span>
               </button>
             )}
           </div>
@@ -213,37 +226,40 @@ export default function ProgressPanel({
         <button
           type="button"
           onClick={() => setActiveTab("metrics")}
-          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer ${
+          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
             activeTab === "metrics"
               ? "text-indigo-400 border-indigo-500"
               : "text-gray-400 border-transparent hover:text-gray-200"
           }`}
         >
-          📈 Metrics & Timeline
+          <TrendingUp className="w-4 h-4" />
+          <span>Metrics & Timeline</span>
         </button>
         {availablePlots.length > 0 && (
           <button
             type="button"
             onClick={() => setActiveTab("visualizations")}
-            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer ${
+            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
               activeTab === "visualizations"
                 ? "text-indigo-400 border-indigo-500"
                 : "text-gray-400 border-transparent hover:text-gray-200"
             }`}
           >
-            🎨 Model Visualizations
+            <Sparkles className="w-4 h-4" />
+            <span>Model Visualizations</span>
           </button>
         )}
         <button
           type="button"
           onClick={() => setActiveTab("compare")}
-          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer ${
+          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
             activeTab === "compare"
               ? "text-indigo-400 border-indigo-500"
               : "text-gray-400 border-transparent hover:text-gray-200"
           }`}
         >
-          ⚖️ Compare & History
+          <History className="w-4 h-4" />
+          <span>Compare & History</span>
         </button>
       </div>
 
@@ -272,10 +288,12 @@ export default function ProgressPanel({
               </div>
               <div className="grid grid-cols-2 gap-3 w-full max-w-xs pt-2 text-[10px] text-gray-500 font-medium justify-center">
                 <div className="flex items-center gap-1.5 justify-center bg-white/[0.02] border border-white/5 py-1.5 px-2.5 rounded-lg">
-                  ⚡ Live Telemetry
+                  <Activity className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Live Telemetry</span>
                 </div>
                 <div className="flex items-center gap-1.5 justify-center bg-white/[0.02] border border-white/5 py-1.5 px-2.5 rounded-lg">
-                  📊 Epoch Tracking
+                  <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Epoch Tracking</span>
                 </div>
               </div>
             </div>
@@ -513,7 +531,8 @@ export default function ProgressPanel({
                     className="max-h-[300px] object-contain rounded-lg cursor-zoom-in group-hover:scale-[1.01] transition-transform duration-300 select-none bg-white/[0.02]"
                   />
                   <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-semibold text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1.5 pointer-events-none shadow-lg">
-                    <span>🔍 Click to expand</span>
+                    <Maximize2 className="w-3 h-3 text-indigo-400" />
+                    <span>Click to expand</span>
                   </div>
                 </div>
               </>
@@ -620,10 +639,11 @@ export default function ProgressPanel({
                               <button
                                 type="button"
                                 onClick={() => onLoadConfig(job.config)}
-                                className="px-2 py-1 bg-indigo-600/15 hover:bg-indigo-600/35 border border-indigo-500/30 text-indigo-300 font-semibold rounded text-[10px] transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                                className="px-2 py-1 bg-indigo-600/15 hover:bg-indigo-600/35 border border-indigo-500/30 text-indigo-300 font-semibold rounded text-[10px] transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98] inline-flex items-center gap-1"
                                 title="Load hyperparameters back to input form"
                               >
-                                🔄 Load
+                                <RefreshCw className="w-2.5 h-2.5" />
+                                <span>Load</span>
                               </button>
                             )}
                           </td>
@@ -696,8 +716,9 @@ export default function ProgressPanel({
                 <div className="space-y-6 pt-4 border-t border-white/5 animate-fade-in">
                   {/* Comparison Title */}
                   <div className="flex justify-between items-center">
-                    <h3 className="text-sm font-semibold text-white">
-                      ⚖️ Comparing {comparedJobs.length} Runs
+                    <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+                      <Scale className="w-4 h-4 text-indigo-400" />
+                      <span>Comparing {comparedJobs.length} Runs</span>
                     </h3>
                     <button
                       type="button"
@@ -840,10 +861,10 @@ export default function ProgressPanel({
                                   <td className="py-2 px-3 font-semibold flex items-center gap-1.5">
                                     {isDiff && (
                                       <span
-                                        className="text-amber-400 text-[10px]"
                                         title="Value varies across runs"
+                                        className="flex items-center"
                                       >
-                                        ⚠️
+                                        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                                       </span>
                                     )}
                                     {key}
@@ -954,8 +975,9 @@ export default function ProgressPanel({
 
       {/* Cancellation message */}
       {status === "CANCELLED" && (
-        <div className="p-3 bg-gray-900/40 border border-gray-700 rounded text-sm text-gray-300">
-          ⏹ Task was cancelled by the user.
+        <div className="p-3 bg-gray-900/40 border border-gray-700 rounded text-sm text-gray-300 flex items-center gap-2">
+          <Square className="w-3.5 h-3.5 fill-current text-gray-400" />
+          <span>Task was cancelled by the user.</span>
         </div>
       )}
 
