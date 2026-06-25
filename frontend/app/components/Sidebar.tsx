@@ -1,5 +1,6 @@
 "use client";
 
+import { Cpu } from "lucide-react";
 import { MODULE_LABELS, TASK_LABELS } from "../constants";
 import { Task } from "../api";
 
@@ -28,8 +29,9 @@ export default function Sidebar({ tasks, selected, onSelect, apiConnected }: Sid
           onClick={() => onSelect(null)}
           className="px-5 py-6 border-b border-white/5 text-left hover:bg-white/[0.02] active:bg-white/[0.04] transition-all duration-300 cursor-pointer group w-full flex-shrink-0"
         >
-          <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-purple-300 transition-all duration-300">
-            ML Workshop
+          <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-purple-300 transition-all duration-300 flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors flex-shrink-0" />
+            <span>ML Workshop</span>
           </h1>
           <p className="text-xs text-gray-400 mt-1">Interactive learning platform</p>
         </button>
