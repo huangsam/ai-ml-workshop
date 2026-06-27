@@ -35,7 +35,9 @@ export default function MetricsChart({ metrics }: MetricsChartProps) {
   const xAxisKey = hasEpoch
     ? "epoch"
     : (metricKeys.find((k) => k !== "loss" && k !== "accuracy") ?? "step");
-  const lineKeys = metricKeys.filter((k) => k !== xAxisKey);
+  const lineKeys = metricKeys.filter(
+    (key) => key !== xAxisKey && metrics.some((m) => typeof m[key] === "number")
+  );
 
   // Map metrics to ensure every point has an X-axis value
   const chartData = metrics.map((m, idx) => {

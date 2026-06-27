@@ -171,7 +171,7 @@ export default function Home() {
     setError(null);
     setIsRunning(true);
     setCurrentJobId(null);
-    setJobState({ status: "PENDING", stage: "", percentage: 0, metrics: [] });
+    setJobState({ status: "PENDING", stage: "", percentage: 0, metrics: [], logs: "" });
 
     let jobId: string;
     try {
@@ -193,11 +193,13 @@ export default function Home() {
 
       setJobState((prev) => {
         const prevMetrics = prev?.metrics ?? [];
+        const prevLogs = prev?.logs ?? "";
         return {
           status: payload.status,
           stage: payload.stage,
           percentage: payload.percentage,
           metrics: [...prevMetrics, ...payload.new_metrics],
+          logs: prevLogs + (payload.new_logs ?? ""),
           error: payload.error ?? null,
         };
       });

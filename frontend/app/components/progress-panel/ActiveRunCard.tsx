@@ -2,6 +2,7 @@
 
 import { Square } from "lucide-react";
 import { JobState } from "../../api";
+import StatusBadge from "./StatusBadge";
 
 interface ActiveRunCardProps {
   jobState: JobState | null;
@@ -26,21 +27,7 @@ export default function ActiveRunCard({ jobState, onCancel, apiConnected }: Acti
     <div className="space-y-4 pb-4 border-b border-white/5">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-3">
-          <span
-            className={`font-semibold px-2.5 py-1 rounded-full text-xs ${
-              status === "PENDING"
-                ? "bg-yellow-900/40 text-yellow-300 border border-yellow-700/50"
-                : status === "RUNNING"
-                  ? "bg-blue-900/40 text-blue-300 border border-blue-700/50 pulse-glow"
-                  : status === "COMPLETED"
-                    ? "bg-green-900/40 text-green-300 border border-green-700/50"
-                    : status === "FAILED"
-                      ? "bg-red-900/40 text-red-300 border border-red-700/50"
-                      : "bg-gray-800/40 text-gray-300 border border-gray-600/50"
-            }`}
-          >
-            {status}
-          </span>
+          <StatusBadge status={status} />
           {stage && (
             <span className="text-sm text-gray-400 italic bg-white/5 px-2 py-1 rounded">
               {stage}

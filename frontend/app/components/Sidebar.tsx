@@ -39,7 +39,7 @@ export default function Sidebar({ tasks, selected, onSelect, apiConnected }: Sid
         <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
           {Object.entries(groups).map(([module, moduleTasks]) => (
             <div key={module} className="mb-4 first:mt-0">
-              <p className="px-5 mb-2 text-[10px] font-bold uppercase tracking-widest text-indigo-400/70">
+              <p className="px-5 mb-2 text-[10px] font-bold uppercase tracking-widest text-indigo-400">
                 {MODULE_LABELS[module] ?? module}
               </p>
               {moduleTasks.map((t) => {

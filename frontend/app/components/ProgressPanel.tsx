@@ -1,16 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, Sparkles, History, Square, Activity, BarChart3 } from "lucide-react";
+import {
+  TrendingUp,
+  Sparkles,
+  History,
+  Square,
+  Activity,
+  BarChart3,
+  Code2,
+  Terminal,
+} from "lucide-react";
 import { JobState, JobInfo, fetchJobs, Task } from "../api";
 
-// Import our new refactored sub-components
+// Import our sub-components
 import ActiveRunCard from "./progress-panel/ActiveRunCard";
 import PipelineTimeline from "./progress-panel/PipelineTimeline";
 import MetricsChart from "./progress-panel/MetricsChart";
 import ModelVisualizations from "./progress-panel/ModelVisualizations";
 import ComparisonTab from "./progress-panel/ComparisonTab";
 import ZoomModal from "./progress-panel/ZoomModal";
+import CodeViewer from "./progress-panel/CodeViewer";
+import ConsoleTerminal from "./progress-panel/ConsoleTerminal";
+import ModelInsights from "./progress-panel/ModelInsights";
 
 interface ProgressPanelProps {
   jobState: JobState | null;
@@ -35,7 +47,9 @@ export default function ProgressPanel({
 }: ProgressPanelProps) {
   const availablePlots = plots ?? [];
 
-  const [activeTab, setActiveTab] = useState<"metrics" | "visualizations" | "compare">("metrics");
+  const [activeTab, setActiveTab] = useState<
+    "metrics" | "visualizations" | "compare" | "code" | "terminal"
+  >("metrics");
 
   // Zoom Lightbox State
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
@@ -73,7 +87,7 @@ export default function ProgressPanel({
       <ActiveRunCard jobState={jobState} onCancel={onCancel} apiConnected={apiConnected} />
 
       {/* Tab Switcher */}
-      <div className="flex border-b border-white/5 pb-1 gap-5">
+      <div className="flex flex-wrap border-b border-white/5 pb-1 gap-x-5 gap-y-2">
         <button
           type="button"
           onClick={() => setActiveTab("metrics")}
@@ -100,6 +114,32 @@ export default function ProgressPanel({
             <span>Model Visualizations</span>
           </button>
         )}
+        {selectedTask && (
+          <button
+            type="button"
+            onClick={() => setActiveTab("code")}
+            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+              activeTab === "code"
+                ? "text-indigo-400 border-indigo-500"
+                : "text-gray-400 border-transparent hover:text-gray-200"
+            }`}
+          >
+            <Code2 className="w-4 h-4" />
+            <span>Code Viewer</span>
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => setActiveTab("terminal")}
+          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            activeTab === "terminal"
+              ? "text-indigo-400 border-indigo-500"
+              : "text-gray-400 border-transparent hover:text-gray-200"
+          }`}
+        >
+          <Terminal className="w-4 h-4" />
+          <span>Console Logs</span>
+        </button>
         <button
           type="button"
           onClick={() => setActiveTab("compare")}
@@ -152,6 +192,7 @@ export default function ProgressPanel({
             <>
               <PipelineTimeline stages={stages} currentStage={jobState.stage} />
               <MetricsChart metrics={jobState.metrics ?? []} />
+              <ModelInsights jobState={jobState} />
             </>
           )}
         </div>
@@ -164,6 +205,12 @@ export default function ProgressPanel({
           plots={availablePlots}
           onZoom={handleZoom}
         />
+      )}
+
+      {activeTab === "code" && selectedTask && <CodeViewer task={selectedTask} />}
+
+      {activeTab === "terminal" && (
+        <ConsoleTerminal logs={jobState?.logs ?? ""} status={jobState?.status} />
       )}
 
       {activeTab === "compare" && (

@@ -20,6 +20,8 @@ matplotlib.use("Agg")
 
 import asyncio
 import json
+import sys
+import threading
 import traceback
 import uuid
 import warnings
@@ -37,6 +39,31 @@ from backend.tasks import TASK_RUNNER_MAP
 
 # Suppress noisy multiprocessing resource tracker warnings on shutdown (common on macOS)
 warnings.filterwarnings("ignore", category=UserWarning, module="multiprocessing.resource_tracker")
+
+
+class ThreadLocalStream:
+    """Thread-local stream wrapper for intercepting stdout/stderr writes in background jobs."""
+
+    def __init__(self, original_stream):
+        self.original_stream = original_stream
+        self.local = threading.local()
+
+    def write(self, data: str) -> int:
+        written = self.original_stream.write(data)
+        job_id = getattr(self.local, "job_id", None)
+        if job_id:
+            registry.append_job_log(job_id, data)
+        return written
+
+    def flush(self) -> None:
+        self.original_stream.flush()
+
+    def __getattr__(self, name: str):
+        return getattr(self.original_stream, name)
+
+
+sys.stdout = ThreadLocalStream(sys.stdout)
+sys.stderr = ThreadLocalStream(sys.stderr)
 
 # Bounded thread pool scaled to the number of system cores (leaving at least 1 core for async loop/OS if possible).
 _NUM_CORES = os.cpu_count() or 2
@@ -60,6 +87,8 @@ async def lifespan(app: FastAPI):
     cleanup_task = asyncio.create_task(_clean_old_jobs_loop())
     yield
     cleanup_task.cancel()
+    # Cancel all running jobs so worker threads terminate immediately to avoid reload hangs
+    registry.cancel_active_jobs()
     _executor.shutdown(wait=True)
 
 
@@ -201,6 +230,12 @@ async def run_task(module: str, task: str, background_tasks: BackgroundTasks, bo
 
 def _run_in_thread(job_id: str, module: str, task: str, config: dict) -> None:
     """Execute the ML task in the background worker thread pool with clean cancellation check."""
+    # Bind thread-local job_id for log redirection
+    if isinstance(sys.stdout, ThreadLocalStream):
+        sys.stdout.local.job_id = job_id
+    if isinstance(sys.stderr, ThreadLocalStream):
+        sys.stderr.local.job_id = job_id
+
     try:
         runner = TASK_RUNNER_MAP[(module, task)]
         hook = HTTPProgressHook(job_id)
@@ -223,6 +258,12 @@ def _run_in_thread(job_id: str, module: str, task: str, config: dict) -> None:
     except Exception:
         # Prevent thread crash propagation if runner resolution fails
         pass
+    finally:
+        # Unbind thread-local job_id
+        if isinstance(sys.stdout, ThreadLocalStream):
+            sys.stdout.local.job_id = None
+        if isinstance(sys.stderr, ThreadLocalStream):
+            sys.stderr.local.job_id = None
 
 
 @app.post("/cancel/{job_id}")
@@ -272,6 +313,7 @@ async def _sse_generator(job_id: str, start_idx: int, request: Request):
     last_stage = None
     last_percentage = None
     last_metrics_len = start_idx
+    last_logs_len = 0
 
     while True:
         # Auto-cancel job if client disconnected (tab closed / refreshed)
@@ -287,6 +329,7 @@ async def _sse_generator(job_id: str, start_idx: int, request: Request):
                     "stage": "",
                     "percentage": 0.0,
                     "new_metrics": [],
+                    "new_logs": "",
                     "error": "Job not found",
                 }
             )
@@ -296,17 +339,22 @@ async def _sse_generator(job_id: str, start_idx: int, request: Request):
         stage = job["stage"]
         percentage = job["percentage"]
         new_metrics = registry.get_job_metrics_slice(job_id, last_metrics_len)
+        new_logs, current_logs_len = registry.get_job_logs_slice(job_id, last_logs_len)
 
-        # Emit event if first poll, or if status/stage/percentage/metrics changed
-        changed = last_status is None or status != last_status or stage != last_stage or percentage != last_percentage or len(new_metrics) > 0
+        # Emit event if first poll, or if status/stage/percentage/metrics/logs changed
+        changed = (
+            last_status is None or status != last_status or stage != last_stage or percentage != last_percentage or len(new_metrics) > 0 or len(new_logs) > 0
+        )
 
         if changed:
             last_metrics_len += len(new_metrics)
+            last_logs_len = current_logs_len
             payload: dict = {
                 "status": status,
                 "stage": stage,
                 "percentage": percentage,
                 "new_metrics": new_metrics,
+                "new_logs": new_logs,
             }
             if status == "FAILED":
                 payload["error"] = job.get("error")
@@ -363,3 +411,25 @@ def get_plot(job_id: str, filename: str):
         raise HTTPException(status_code=404, detail=f"Plot file '{safe_filename}' not found for job '{job_id}'.")
 
     return Response(content=image_bytes, media_type="image/png")
+
+
+@app.get("/tasks/{module}/{task}/code")
+def get_task_code(module: str, task: str) -> dict:
+    """Retrieve the Python source code for a specific task."""
+    key = (module, task)
+    if key not in TASK_RUNNER_MAP:
+        raise HTTPException(status_code=404, detail=f"Task '{module}/{task}' not found.")
+
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filename = "main.py" if (module == "numpy" and task == "fundamentals") else f"{task}.py"
+    path = os.path.join(root, "workshop", "core", module, filename)
+
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail=f"Source file for '{module}/{task}' not found.")
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            code = f.read()
+        return {"code": code}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read source file: {e}")

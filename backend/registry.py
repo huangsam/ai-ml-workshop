@@ -33,6 +33,7 @@ def create_job(job_id: str, module: str, task: str, config: dict[str, Any]) -> d
         "percentage": 0.0,
         "metrics": [],
         "plots": {},
+        "logs": "",
         "error": None,
         "created_at": time.time(),
     }
@@ -57,6 +58,8 @@ def get_job(job_id: str) -> dict[str, Any] | None:
             copied["config"] = dict(job["config"])
         if "plots" in copied:
             del copied["plots"]
+        if "logs" in copied:
+            del copied["logs"]
         return copied
 
 
@@ -135,6 +138,23 @@ def get_job_plot(job_id: str, filename: str) -> bytes | None:
         return None
 
 
+def append_job_log(job_id: str, data: str) -> None:
+    """Append text data to the job's log buffer."""
+    with _lock:
+        if job_id in _jobs:
+            _jobs[job_id]["logs"] += data
+
+
+def get_job_logs_slice(job_id: str, start: int) -> tuple[str, int]:
+    """Return new logs since the start character index, along with the new total length."""
+    with _lock:
+        job = _jobs.get(job_id)
+        if job is None or "logs" not in job:
+            return "", start
+        full_logs = job["logs"]
+        return full_logs[start:], len(full_logs)
+
+
 def list_jobs(module: str | None = None, task: str | None = None) -> list[dict[str, Any]]:
     """List all jobs in the registry, optionally filtered by module and task, sorted by created_at desc."""
     with _lock:
@@ -151,6 +171,8 @@ def list_jobs(module: str | None = None, task: str | None = None) -> list[dict[s
                 copied["config"] = dict(job["config"])
             if "plots" in copied:
                 del copied["plots"]
+            if "logs" in copied:
+                del copied["logs"]
             items.append(copied)
         # Sort descending by created_at
         items.sort(key=lambda x: x.get("created_at", 0.0), reverse=True)

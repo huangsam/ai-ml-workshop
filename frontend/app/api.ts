@@ -17,6 +17,7 @@ export interface JobState {
   percentage: number;
   metrics: Record<string, number>[];
   error?: string | null;
+  logs?: string;
 }
 
 export interface SsePayload {
@@ -24,6 +25,7 @@ export interface SsePayload {
   stage: string;
   percentage: number;
   new_metrics: Record<string, number>[];
+  new_logs: string;
   error?: string | null;
 }
 
@@ -31,6 +33,13 @@ export async function fetchTasks(): Promise<Task[]> {
   const res = await fetch(`${API_BASE}/tasks`);
   if (!res.ok) throw new Error("Failed to fetch task list");
   return res.json();
+}
+
+export async function fetchTaskCode(module: string, task: string): Promise<string> {
+  const res = await fetch(`${API_BASE}/tasks/${module}/${task}/code`);
+  if (!res.ok) throw new Error(`Failed to fetch source code for ${module}/${task}`);
+  const data: { code: string } = await res.json();
+  return data.code;
 }
 
 export async function fetchTaskSchema(

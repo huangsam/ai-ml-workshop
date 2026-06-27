@@ -1,6 +1,7 @@
 "use client";
 
 import { API_BASE } from "../../api";
+import { formatPlotName } from "../../utils/formatters";
 
 interface ZoomModalProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ export default function ZoomModal({ isOpen, onClose, jobId, plotName }: ZoomModa
       </div>
 
       <p className="text-xs text-gray-400 mt-4 uppercase tracking-widest font-semibold">
-        {plotName.replace(".png", "").replace(/_/g, " ")}
+        {formatPlotName(plotName)}
       </p>
     </div>
   );

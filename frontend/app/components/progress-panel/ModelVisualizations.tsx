@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Maximize2 } from "lucide-react";
 import { JobState, API_BASE } from "../../api";
+import { formatPlotName } from "../../utils/formatters";
 
 interface ModelVisualizationsProps {
   jobState: JobState | null;
@@ -17,14 +18,14 @@ export default function ModelVisualizations({
   plots,
   onZoom,
 }: ModelVisualizationsProps) {
-  const availablePlots = plots ?? [];
-  const [selectedPlot, setSelectedPlot] = useState<string>("");
+  const [prevPlots, setPrevPlots] = useState<string[]>(plots);
+  const [selectedPlot, setSelectedPlot] = useState<string>((plots && plots[0]) || "");
 
-  useEffect(() => {
-    if (availablePlots.length > 0) {
-      setSelectedPlot(availablePlots[0]);
-    }
-  }, [plots]);
+  // Sync state with props during render to avoid useEffect warning and double rendering
+  if (plots !== prevPlots) {
+    setPrevPlots(plots);
+    setSelectedPlot((plots && plots[0]) || "");
+  }
 
   if (!jobState) {
     return (
@@ -95,13 +96,10 @@ export default function ModelVisualizations({
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Sub-tabs if multiple plots exist */}
-      {availablePlots.length > 1 && (
+      {plots && plots.length > 1 && (
         <div className="flex gap-2">
-          {availablePlots.map((plot) => {
-            const cleanName = plot
-              .replace(".png", "")
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (c) => c.toUpperCase());
+          {plots.map((plot) => {
+            const cleanName = formatPlotName(plot);
             return (
               <button
                 key={plot}
