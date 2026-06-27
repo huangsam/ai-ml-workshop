@@ -278,9 +278,8 @@ export default function Home() {
               </h1>
 
               <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed text-balance">
-                Configure hyperparameters, watch training in real-time, and deepen your
-                understanding of NumPy, scikit-learn, PyTorch, and more through interactive
-                workshops.
+                Tweak hyperparameters, stream live training telemetry, and build core model
+                intuition—all in real time.
               </p>
             </div>
 
@@ -288,26 +287,26 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-4 w-full">
               {[
                 {
-                  title: "NumPy Fundamentals",
+                  title: "NumPy from Scratch",
                   module: "numpy",
                   description:
-                    "Build neural networks from scratch using only NumPy. Understand backpropagation, gradient descent, and matrix operations at a deep level.",
+                    "Implement neural networks and backpropagation using raw matrix math—no library abstractions.",
                   icon: FlaskConical,
                   gradient: "from-blue-500 to-cyan-500",
                 },
                 {
-                  title: "Classical ML",
+                  title: "Classical Algorithms",
                   module: "sklearn",
                   description:
-                    "Master scikit-learn with algorithms like SVM, Random Forest, XGBoost, and K-Means. Learn feature engineering, model evaluation, and hyperparameter tuning.",
+                    "Train and evaluate SVMs, decision trees, XGBoost, and K-Means models with scikit-learn.",
                   icon: BarChart3,
                   gradient: "from-green-500 to-emerald-500",
                 },
                 {
-                  title: "Deep Learning with PyTorch",
+                  title: "Deep Learning",
                   module: "pytorch",
                   description:
-                    "Build and train neural networks for image classification, text processing, time series forecasting, and question answering.",
+                    "Train advanced PyTorch models—CNNs, text generation, LSTMs, and LoRA fine-tuning.",
                   icon: Zap,
                   gradient: "from-purple-500 to-pink-500",
                 },
