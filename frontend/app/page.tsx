@@ -270,9 +270,9 @@ export default function Home() {
           <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center space-y-12 animate-fade-in-up">
             {/* Header */}
             <div className="text-center space-y-6 max-w-5xl mx-auto px-4 pt-6 md:pt-10">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-4 text-balance leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-4 text-balance leading-tight">
                 Master Machine Learning{" "}
-                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent md:whitespace-nowrap">
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Through Hands-On Practice
                 </span>
               </h1>
