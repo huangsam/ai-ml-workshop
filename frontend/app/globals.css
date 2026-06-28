@@ -272,3 +272,14 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(99, 102, 241, 0.25) rgba(255, 255, 255, 0.01);
 }
+
+/* Disable default spinner arrows for number inputs in all browsers to keep the UI clean and premium */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield !important;
+}
