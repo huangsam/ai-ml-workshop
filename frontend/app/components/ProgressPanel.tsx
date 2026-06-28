@@ -158,7 +158,7 @@ export default function ProgressPanel({
       {activeTab === "metrics" && (
         <div className="space-y-6">
           {!jobState ? (
-            <div className="flex flex-col items-center justify-center py-12 px-6 text-center space-y-5 bg-white/[0.01] rounded-xl border border-white/5 animate-fade-in">
+            <div className="flex flex-col items-center justify-center py-20 px-6 text-center space-y-5 bg-white/[0.01] rounded-xl border border-white/5 min-h-[290px] animate-fade-in">
               <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.05)]">
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
