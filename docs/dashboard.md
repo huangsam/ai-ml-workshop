@@ -100,6 +100,7 @@ If a user realizes a configuration is wrong, they can abort it:
 ### 6. Thread-Local Console Output Interception
 
 To capture standard Python print statements and training progress bars (`tqdm`) on a per-job basis:
+
 - The backend wraps `sys.stdout` and `sys.stderr` in a custom `ThreadLocalStream` class ([main.py](file:///Users/samhuang/Playground/practice/ai-ml-workshop/backend/main.py#L44)).
 - Before a background thread executes a job, it registers the target `job_id` in its thread-local storage context.
 - When the code prints text, the `ThreadLocalStream` captures the write, checks the thread-local storage for the active `job_id`, and appends the text to that job's memory log buffer.
@@ -108,6 +109,7 @@ To capture standard Python print statements and training progress bars (`tqdm`) 
 ### 7. Terminal Emulation and Code Stacking Layout
 
 To present a readable console and scrollable codebase view:
+
 - **Carriage Return (`\r`) Processing**: Standard progress bars like `tqdm` output carriage returns to overwrite the current line. Because web browsers treat `\r` literally (causing massive text wrapping and log clutter), the frontend [ConsoleTerminal.tsx](file:///Users/samhuang/Playground/practice/ai-ml-workshop/frontend/app/components/progress-panel/ConsoleTerminal.tsx) parses lines and splits on `\r`, rendering only the final non-empty segment of each line.
 - **Snappy Programmatic Scroll**: The console uses instant scroll resets (`scrollTop` assignment) to jump to the bottom upon receiving new logs, bypassing animated smooth scrolling which can trigger state-update loop bottlenecks.
 - **Code Viewer Stacking & `h-fit` Height Alignment**: To keep line numbers aligned with the code text in [CodeViewer.tsx](file:///Users/samhuang/Playground/practice/ai-ml-workshop/frontend/app/components/progress-panel/CodeViewer.tsx) during horizontal scrolling, the Line Numbers Column is set to `sticky left-0 z-20 h-fit bg-[#0d0d0f]` and the code block `<pre>` is set to `relative z-10`. Setting `h-fit` prevents the flex container from stretching the sticky column's height to the viewport height (which leaves lines below the fold transparent); instead, it extends the solid background through the entire vertical scroll height.
