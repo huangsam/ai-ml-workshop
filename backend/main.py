@@ -428,7 +428,7 @@ def get_task_code(module: str, task: str) -> dict:
         raise HTTPException(status_code=404, detail=f"Source file for '{module}/{task}' not found.")
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             code = f.read()
         return {"code": code}
     except Exception as e:
