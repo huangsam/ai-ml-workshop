@@ -113,7 +113,7 @@ export default function CodeViewer({ task }: CodeViewerProps) {
       {/* Code Area */}
       <div className="flex-1 flex overflow-auto bg-[#050505]/40 text-xs custom-scrollbar">
         {/* Line Numbers Column */}
-        <div className="py-4 select-none text-right pr-3 pl-4 border-r border-white/5 bg-black/10 font-mono text-[10px] text-gray-600 w-12 text-balance leading-normal">
+        <div className="sticky left-0 z-10 py-4 select-none text-right pr-3 pl-4 border-r border-white/5 bg-[#0d0d0f] font-mono text-[10px] text-gray-600 w-12 text-balance leading-normal">
           {codeLines.map((_, i) => (
             <div key={i} className="h-5">
               {i + 1}
@@ -122,10 +122,10 @@ export default function CodeViewer({ task }: CodeViewerProps) {
         </div>
 
         {/* Code Content Column */}
-        <pre className="flex-1 p-4 font-mono text-[11.5px] leading-normal overflow-auto custom-scrollbar select-text text-gray-300">
+        <pre className="p-4 font-mono text-[11.5px] leading-normal select-text text-gray-300">
           <code
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-            className="block whitespace-pre text-left leading-[1.3rem]"
+            className="block whitespace-pre text-left leading-5"
           />
         </pre>
       </div>

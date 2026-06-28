@@ -87,70 +87,70 @@ export default function ProgressPanel({
       <ActiveRunCard jobState={jobState} onCancel={onCancel} apiConnected={apiConnected} />
 
       {/* Tab Switcher */}
-      <div className="flex flex-wrap border-b border-white/5 pb-1 gap-x-5 gap-y-2">
+      <div className="inline-flex flex-wrap items-center bg-white/[0.02] border border-white/5 p-1.5 rounded-xl gap-1 shadow-inner select-none">
         <button
           type="button"
           onClick={() => setActiveTab("metrics")}
-          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "metrics"
-              ? "text-indigo-400 border-indigo-500"
-              : "text-gray-400 border-transparent hover:text-gray-200"
+              ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
+              : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
           }`}
         >
-          <TrendingUp className="w-4 h-4" />
-          <span>Metrics & Timeline</span>
+          <TrendingUp className="w-3.5 h-3.5" />
+          <span>Metrics</span>
         </button>
         {availablePlots.length > 0 && (
           <button
             type="button"
             onClick={() => setActiveTab("visualizations")}
-            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
               activeTab === "visualizations"
-                ? "text-indigo-400 border-indigo-500"
-                : "text-gray-400 border-transparent hover:text-gray-200"
+                ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
+                : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Model Visualizations</span>
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Visualizations</span>
           </button>
         )}
         {selectedTask && (
           <button
             type="button"
             onClick={() => setActiveTab("code")}
-            className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
               activeTab === "code"
-                ? "text-indigo-400 border-indigo-500"
-                : "text-gray-400 border-transparent hover:text-gray-200"
+                ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
+                : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
             }`}
           >
-            <Code2 className="w-4 h-4" />
-            <span>Code Viewer</span>
+            <Code2 className="w-3.5 h-3.5" />
+            <span>Code</span>
           </button>
         )}
         <button
           type="button"
           onClick={() => setActiveTab("terminal")}
-          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "terminal"
-              ? "text-indigo-400 border-indigo-500"
-              : "text-gray-400 border-transparent hover:text-gray-200"
+              ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
+              : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
           }`}
         >
-          <Terminal className="w-4 h-4" />
-          <span>Console Logs</span>
+          <Terminal className="w-3.5 h-3.5" />
+          <span>Logs</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("compare")}
-          className={`pb-2 text-sm font-semibold transition-all border-b-2 cursor-pointer flex items-center gap-2 ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "compare"
-              ? "text-indigo-400 border-indigo-500"
-              : "text-gray-400 border-transparent hover:text-gray-200"
+              ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
+              : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
           }`}
         >
-          <History className="w-4 h-4" />
-          <span>Compare & History</span>
+          <History className="w-3.5 h-3.5" />
+          <span>History</span>
         </button>
       </div>
 
