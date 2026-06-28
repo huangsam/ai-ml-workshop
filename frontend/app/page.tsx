@@ -275,7 +275,7 @@ export default function Home() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent pb-4 text-balance leading-tight">
                 Master Machine Learning{" "}
                 <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Through Hands-On Practice
+                  From First Principles
                 </span>
               </h1>
 
@@ -292,7 +292,7 @@ export default function Home() {
                   title: "NumPy from Scratch",
                   module: "numpy",
                   description:
-                    "Implement neural networks and backpropagation using raw matrix math—no library abstractions.",
+                    "Deconstruct neural networks and backpropagation using raw matrix math—no library abstractions.",
                   icon: FlaskConical,
                   gradient: "from-blue-500 to-cyan-500",
                 },
