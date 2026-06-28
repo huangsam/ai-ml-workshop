@@ -87,7 +87,17 @@ export default function ConsoleTerminal({ logs, status, onClear }: ConsoleTermin
     );
   };
 
-  const logLines = logs.split("\n");
+  // Process carriage returns (\r) to simulate standard terminal overwriting (e.g. for progress bars)
+  const logLines = logs.split("\n").map((line) => {
+    if (line.includes("\r")) {
+      const parts = line.split("\r");
+      for (let i = parts.length - 1; i >= 0; i--) {
+        if (parts[i]) return parts[i];
+      }
+      return "";
+    }
+    return line;
+  });
 
   return (
     <div className="flex flex-col h-[340px] rounded-xl border border-white/5 bg-black/40 overflow-hidden shadow-2xl animate-fade-in group">
