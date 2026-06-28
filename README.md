@@ -1,5 +1,8 @@
 # AI/ML workshop
 
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/huangsam/ai-ml-workshop/ci.yml)](https://github.com/huangsam/ai-ml-workshop/actions)
+[![License](https://img.shields.io/github/license/huangsam/ai-ml-workshop)](https://github.com/huangsam/ai-ml-workshop/blob/main/LICENSE)
+
 The goal of this Git repository is to learn and practice AI/ML concepts and techniques through code examples, tutorials, and projects that enhance understanding of artificial intelligence and machine learning.
 
 This covers practical experience with PyTorch, TensorFlow, Hugging Face, LangChain, and other relevant libraries, alongside foundational work in Python programming, data manipulation (NumPy, Pandas), data visualization (Matplotlib, Seaborn), and reinforcement of ML theory from Coursera materials.
