@@ -28,10 +28,7 @@ export default function ConsoleTerminal({ logs, status, onClear }: ConsoleTermin
   // Auto-scroll logic (scroll container only, avoids moving the browser window)
   useEffect(() => {
     if (!userScrolledUp && containerRef.current) {
-      containerRef.current.scrollTo({
-        top: containerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [logs, userScrolledUp]);
 
@@ -100,7 +97,7 @@ export default function ConsoleTerminal({ logs, status, onClear }: ConsoleTermin
   });
 
   return (
-    <div className="flex flex-col h-[340px] rounded-xl border border-white/5 bg-black/40 overflow-hidden shadow-2xl animate-fade-in group">
+    <div className="flex flex-col h-[340px] rounded-xl border border-white/5 bg-black/40 overflow-hidden shadow-2xl animate-fade-in group relative">
       {/* Terminal Title Bar */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-black/60 border-b border-white/5 select-none">
         <div className="flex items-center gap-6">
@@ -184,23 +181,29 @@ export default function ConsoleTerminal({ logs, status, onClear }: ConsoleTermin
             </div>
           </div>
         )}
+      </div>
 
-        {/* Scroll to bottom floating button when user scrolled up */}
-        {userScrolledUp && logs.trim() && (
-          <button
-            onClick={() => {
-              setUserScrolledUp(false);
-              containerRef.current?.scrollTo({
-                top: containerRef.current.scrollHeight,
-                behavior: "smooth",
-              });
-            }}
-            className="absolute bottom-4 right-4 bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/30 text-white p-1.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider pr-2.5 animate-bounce"
-          >
-            <ArrowDown className="w-3.5 h-3.5" />
-            <span>Scroll Down</span>
-          </button>
-        )}
+      {/* Scroll to bottom floating button wrapper for smooth transition */}
+      <div
+        className={`absolute bottom-4 right-4 z-10 transition-all duration-300 ${
+          userScrolledUp && logs.trim()
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-2 pointer-events-none"
+        }`}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setUserScrolledUp(false);
+            if (containerRef.current) {
+              containerRef.current.scrollTop = containerRef.current.scrollHeight;
+            }
+          }}
+          className="bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/30 text-white p-1.5 rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider pr-2.5 animate-bounce"
+        >
+          <ArrowDown className="w-3.5 h-3.5" />
+          <span>Scroll Down</span>
+        </button>
       </div>
     </div>
   );
