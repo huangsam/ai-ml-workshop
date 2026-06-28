@@ -59,7 +59,9 @@ export default function RunHistoryTable({
                     />
                   )}
                 </td>
-                <td className="py-2.5 px-3 text-indigo-400 font-bold">Run #{runNum}</td>
+                <td className="py-2.5 px-3 text-indigo-400 font-bold whitespace-nowrap">
+                  #{runNum}
+                </td>
                 <td className="py-2.5 px-3 text-gray-300 font-medium">{formattedTime}</td>
                 <td className="py-2.5 px-3">
                   <StatusBadge status={job.status} size="sm" />
