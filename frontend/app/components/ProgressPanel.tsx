@@ -87,11 +87,11 @@ export default function ProgressPanel({
       <ActiveRunCard jobState={jobState} onCancel={onCancel} apiConnected={apiConnected} />
 
       {/* Tab Switcher */}
-      <div className="inline-flex flex-wrap items-center bg-white/[0.02] border border-white/5 p-1.5 rounded-xl gap-1 shadow-inner select-none">
+      <div className="inline-flex flex-wrap items-center bg-white/[0.02] border border-white/5 p-1.5 rounded-xl gap-1.5 shadow-inner select-none">
         <button
           type="button"
           onClick={() => setActiveTab("metrics")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "metrics"
               ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
               : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
@@ -104,7 +104,7 @@ export default function ProgressPanel({
           <button
             type="button"
             onClick={() => setActiveTab("visualizations")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
               activeTab === "visualizations"
                 ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
                 : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
@@ -118,7 +118,7 @@ export default function ProgressPanel({
           <button
             type="button"
             onClick={() => setActiveTab("code")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
               activeTab === "code"
                 ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
                 : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
@@ -131,7 +131,7 @@ export default function ProgressPanel({
         <button
           type="button"
           onClick={() => setActiveTab("terminal")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "terminal"
               ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
               : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"
@@ -143,7 +143,7 @@ export default function ProgressPanel({
         <button
           type="button"
           onClick={() => setActiveTab("compare")}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+          className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
             activeTab === "compare"
               ? "bg-indigo-500/15 border border-indigo-500/20 text-indigo-400 shadow-sm"
               : "border border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-gray-200"

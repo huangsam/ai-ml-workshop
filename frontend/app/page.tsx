@@ -334,7 +334,7 @@ export default function Home() {
                       </p>
                     </div>
                     {targetTask && (
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors mt-auto">
+                      <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-400 bg-indigo-500/5 border border-indigo-500/20 px-3.5 py-1.5 rounded-lg group-hover:bg-indigo-500/15 group-hover:text-indigo-300 transition-all duration-300 mt-auto w-fit shadow-sm">
                         <span>Explore Tasks</span>
                         <span className="transform group-hover:translate-x-1 transition-transform">
                           →
